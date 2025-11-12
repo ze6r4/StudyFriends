@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: StudyFriends
+  jackson:
+    default-property-inclusion: NON_NULL
+  datasource:
+    username: root
+    password: pass
+    url: jdbc:mysql://localhost:3306/study_friends
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+    generate-ddl: true
+server:
+  port: 8081

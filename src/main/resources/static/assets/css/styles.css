@@ -1,0 +1,56 @@
+/*Задаём общие параметры для всей страницы: шрифт и отступы*/
+body {
+  text-align: center;
+  margin: 10;
+  font-family: cursive;
+  font-size: 16px;
+  background-color: blanchedalmond;
+}
+
+.button {
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  border: 2px solid #111;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #111;
+  cursor: pointer;
+  display: flex;
+  font-size: 16px;
+  height: 48px;
+  justify-content: center;
+  line-height: 24px;
+  max-width: 100%;
+  padding: 0 25px;
+  position: relative;
+  text-align: center;
+  touch-action: manipulation;
+
+
+  background-color: white;
+
+}
+.button:after {
+  background-color: bisque;
+  border: 2px solid #111;
+  border-radius: 8px;
+  content: "";
+  display: block;
+  height: 48px;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  transform: translate(-2px, 4px);
+
+  z-index: -1;
+}
+
+@media (min-width: 768px) {
+  .button {
+    padding: 0 40px;
+  }
+  .button:active {
+    padding: 0 40px;
+  }
+}

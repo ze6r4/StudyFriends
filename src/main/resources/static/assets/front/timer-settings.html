@@ -1,89 +1,55 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Session creation</title>
-    <!--link rel="stylesheet" href="css/timer-settings.css"!-->
-</head>
 <body>
-    
-    <div class="work-minutes">
-        <label class="range-label" for="tailmetr">
-            <p>Минуты работы</p>
-        </label>
-        <input
-            class="range-input"
-            id="tailmetr"
-            type="range"
-            min="0"
-            max="100"
-            value="50"
-            step="1"
-        >
+    <div class="range-group">
+        <div class="range-label">
+            <p>Минуты работы: <span id="workValue" class="range-value">25</span> мин</p>
+        </div>
+        <input class="range-input" id="workMinutes" type="range" min="5" max="60" value="25" step="5">
     </div>
 
-    <div class="rest-minutes">
-        <label class="range-label" for="tailmetr">
-            <p>Минуты отдыха</p>
-        </label>
-        <input
-            class="range-input"
-            id="tailmetr"
-            type="range"
-            min="0"
-            max="100"
-            value="50"
-            step="1"
-        >
+    <div class="range-group">
+        <div class="range-label">
+            <p>Минуты отдыха: <span id="restValue" class="range-value">5</span> мин</p>
+        </div>
+        <input class="range-input" id="restMinutes" type="range" min="1" max="15" value="5" step="1">
     </div>
 
-    <div class="cycle-amount">
-        <label class="range-label" for="tailmetr">
-            <p>Количество циклов</p>
-        </label>
-        <input
-            class="range-input"
-            id="tailmetr"
-            type="range"
-            min="0"
-            max="10"
-            value="4"
-            step="1"
-        >
+    <div class="range-group">
+        <div class="range-label">
+            <p>Количество циклов: <span id="cyclesValue" class="range-value">4</span></p>
+        </div>
+        <input class="range-input" id="cyclesAmount" type="range" min="1" max="10" value="4" step="1">
     </div>
-    <div class="friend">
-        <label for="select-friend">
+
+    <div class="range-group">
+        <label for="selectFriend">
             <p>ID друга</p>
         </label>
-        <select
-        id="select-friend"
-        >
-            <option value="f1">Ник</option>  
-            <option value="f2">Сара</option>  
-            <option value="f3">Кэйти</option>
-            <option value="f4">Боби</option>  
+        <select id="selectFriend">
+            <option value="1">Ник (ID: 1)</option>  
+            <option value="2">Сара (ID: 2)</option>  
+            <option value="3">Кэйти (ID: 3)</option>
+            <option value="4">Боби (ID: 4)</option>  
         </select>
     </div>
-    <div class = "skill">
-        <label for="select-skill">
+
+    <div class="range-group">
+        <label for="selectSkill">
             <p>Навык</p>
         </label>
-        <select
-        id="select-skill"
-        size="4">
-            <option value="skill1">Рисование</option>  
-            <option value="skill2">Программирование</option>  
-            <option value="skill3">Уборка</option>
-            <option value="skill4">Спорт</option>  
+        <select id="selectSkill">
+            <option value="1">Рисование (ID: 1)</option>  
+            <option value="2">Программирование (ID: 2)</option>  
+            <option value="3">Уборка (ID: 3)</option>
+            <option value="4">Спорт (ID: 4)</option>  
         </select>
     </div>
     
     <div class="result-of-settings">
-        <p>Время сессии: ?? часов ?? минуты</p>
-        <p>Количество монет: ??</p>
-        <p>Очки навыка: ??EXP</p>
+        <p id="totalTime">Время сессии: 2 часа 0 минут</p>
+        <p id="totalCoins">Количество монет: 100</p>
+        <p id="totalExp">Очки навыка: 120 EXP</p>
     </div>
-    <button class="start-button">Начать</button>
+    
+    <button onclick="startSession()">Начать сессию</button>
+    <script src="js/session-settings.js"></script>
 </body>
-</html>

@@ -1,7 +1,6 @@
 package com.example.StudyFriends.controllers;
 
 
-
 import com.example.StudyFriends.dto.SessionDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Friend;
@@ -12,14 +11,10 @@ import com.example.StudyFriends.services.FriendService;
 import com.example.StudyFriends.services.PlayerService;
 import com.example.StudyFriends.services.SessionService;
 import com.example.StudyFriends.services.SkillService;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.Console;
 
 
 @RestController
@@ -39,7 +34,7 @@ public class SessionController {
     private SkillService skillService;
 
     @PostMapping("/sessions")
-    public ResponseEntity<SessionDto> addSession(@RequestBody SessionDto dto) {
+    public ResponseEntity<?> addSession(@RequestBody SessionDto dto) {
         Session session = new Session();
         //кастомная обработка ошибок в классе ResourceNotFoundException
 
@@ -55,16 +50,15 @@ public class SessionController {
             session.setFriend(friend);
             session.setSkill(skill);
             session.setCompleted(false);
-            Session saved = sessionService.addSession(session);
+            sessionService.addSession(session);
+
             return ResponseEntity.ok(dto);
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return null;
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
         }
 
 
     }
-
-
-
 }

@@ -1,6 +1,3 @@
-// js/session-settings.js
-const API_BASE = 'http://localhost:8081/api/sessions';
-const PLAYER_ID = 1;
 
 // заполнение значений ползунков
 function bindSlider(sliderId, textId) {
@@ -45,7 +42,6 @@ document.getElementById("cyclesAmount").addEventListener("input", updateTotalTim
 updateTotalTime();
 
 
-
 // окрас ползунка
 function colorTrack(sliderId) {
     const slider = document.getElementById(sliderId);
@@ -67,6 +63,9 @@ function colorTrack(sliderId) {
 colorTrack("workMinutes");
 colorTrack("restMinutes");
 colorTrack("cyclesAmount");
+
+const API_BASE = 'http://localhost:8081/api/sessions';
+const PLAYER_ID = 1;
 
 async function startSession() {
 
@@ -98,7 +97,7 @@ async function startSession() {
 
     } catch (error) {
         console.error('Ошибка:', error);
-        alert(`🤕Ой-ой-ой... Вот что ответил сервер:\n${error.message}`);
+        alert(`🤕Ой-ой-ой... Вот что случилось:\n${error.message}`);
     }
 
     localStorage.setItem(`currentSession${PLAYER_ID}`, JSON.stringify(sessionData));

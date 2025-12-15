@@ -1,7 +1,5 @@
 package com.example.StudyFriends.services;
 
-import com.example.StudyFriends.exceptions.ResourceNotFoundException;
-import com.example.StudyFriends.model.Player;
 import com.example.StudyFriends.model.Skill;
 import com.example.StudyFriends.repositories.PlayerRep;
 import com.example.StudyFriends.repositories.SkillRep;
@@ -20,14 +18,15 @@ public class SkillService {
     public Skill addSkill(Skill skill){
         return skillRep.save(skill);
     }
-    public Optional<Skill> getSkillById(Integer id){
+    public Optional<Skill> getSkillById(Long id){
         return skillRep.findById(id);
     }
-    public List<Skill> getAllSkillsOfPlayer(Integer playerId) {
-
-        Player player = playerRep.findById(playerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Player", playerId));
-        return player.getSkills();
+    public List<Skill> getAllSkillsOfPlayer(Long playerId) {
+        // Проверки на существование?
+        return skillRep.findSkillsByPlayerId(playerId);
+    }
+    public void deleteSkill(Long id) {
+        skillRep.deleteById(id);
     }
 
 }

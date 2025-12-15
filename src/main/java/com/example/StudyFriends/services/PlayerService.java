@@ -16,7 +16,7 @@ public class PlayerService {
         return repository.save(player);
     }
 
-    public Optional<Player> getPlayerById(Integer id) {
+    public Optional<Player> getPlayerById(Long id) {
         return repository.findById(id);
     }
 }

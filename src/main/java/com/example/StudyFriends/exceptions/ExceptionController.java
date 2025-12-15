@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class ExceptionController {
 
     // 404 - Не найдено
+    //кастомная обработка ошибок
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(ResourceNotFoundException ex) {

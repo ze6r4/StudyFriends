@@ -6,8 +6,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SessionDto {
-    private Integer playerId;
-    private Integer friendId;
-    private Integer skillId;
+    private Integer workMinutes;
+    private Integer restMinutes;
+    private Integer cycles;
+    private Long playerId;
+    private Long friendId;
+    private Long skillId;
 }
 

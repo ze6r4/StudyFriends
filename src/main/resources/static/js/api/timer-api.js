@@ -1,11 +1,11 @@
 
-const API_BASE = 'http://localhost:8081/api/sessions';
+const API_BASE = 'http://localhost:8081/api';
 const PLAYER_ID = 1;
 
 // GET - запрос
 async function loadSkills(playerId = 1) {
     try {
-        const response = await fetch(`${API_BASE}?playerId=${playerId}`);
+        const response = await fetch(`${API_BASE}/skills?playerId=${playerId}`);
         const skills = await response.json();
         populateSkillSelect(skills);
     } catch (error) {
@@ -48,7 +48,7 @@ async function startSession() {
     };
 
     try {
-        const response = await fetch(API_BASE, {
+        const response = await fetch(`${API_BASE}/sessions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(sessionData)

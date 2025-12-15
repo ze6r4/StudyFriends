@@ -29,32 +29,12 @@ body {
     justify-content: center;
 }
 
-/* Основная панель — плоская, с тонкой рамкой */
-.panel {
-    width: min(740px, 96vw);
-    padding: 20px;
-    background: var(--card);
-    border: 2px solid var(--line);
-    border-radius: var(--radius);
-}
-
 /* Заголовок */
 header {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 16px;
-}
-
-.logo-badge {
-    width: 50px;
-    height: 50px;
-    border-radius: var(--radius);
-    border: 2px solid var(--line);
-    display: grid;
-    place-items: center;
-    font-size: 24px;
-    background: #fff;
 }
 
 h1 {
@@ -68,213 +48,32 @@ h1 {
     color: #7a6a63;
 }
 
-/* Сетка */
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
-
 /* Карточки настроек */
 .range-group {
     border: 2px solid var(--line);
     border-radius: var(--radius);
     padding: var(--pad);
     background: #fff;
-}
 
-/* Label */
-label.range-label {
-    font-weight: 700;
+    width: 100%;
+    max-width: 320px; 
+    margin: 0 auto;
+
+    padding: 12px; 
+}
+.range-group label {
+    display: block;
     margin-bottom: 8px;
-    display: block;
-    
-}
-
-/* Значения */
-.range-value {
-    font-weight: 700;
-    color: #b35372;
-}
-
-/* Плоские селекты */
-select {
-    width: 100%;
-    font-size: 14px;
-    padding: 8px;
-    border: 2px solid var(--line);
-    border-radius: var(--radius);
-    background: #fff;
-    outline: none;
-}
-
-/* Плоские ползунки */
-input[type="range"] {
-    width: 100%;
-    appearance: none;
-    background: none;
-    outline: none;
-}
-
-/* Линия трека */
-input[type="range"]::-webkit-slider-runnable-track {
-    height: 8px;
-    background: var(--accent-2);
-    border: 2px solid var(--line);
-    border-radius: 6px;
-}
-
-/* Круглый плоский бегунок */
-input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: var(--accent-1);
-    border: 2px solid var(--line);
-    border-radius: 50%;
-    margin-top: -7px;
-}
-
-/* Firefox */
-input[type="range"]::-moz-range-track {
-    height: 6px;
-    background: var(--accent-2);
-    border: 2px solid var(--line);
-    border-radius: 6px;
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: var(--accent-1);
-    border: 2px solid var(--line);
-    border-radius: 50%;
-}
-
-/* Итоги */
-.result-of-settings {
-    grid-column: 1 / -1;
-    border: 2px solid var(--line);
-    border-radius: var(--radius);
-    padding: var(--pad);
-    background: #fff;
-    display: flex;
-    justify-content: space-between;
-}
-
-.result-of-settings p {
-    margin: 0;
-    font-weight: 600;
-}
-
-/* Кнопка — плоская, с тонким контуром */
-.controls {
-    margin-top: 16px;
-    text-align: right;
-}
-
-button {
-    padding: 10px 18px;
-    font-weight: 700;
-    border: 2px solid var(--line);
-    background: var(--accent-3);
     color: var(--text);
-    border-radius: var(--radius);
-    cursor: pointer;
+    font-weight: 700;
 }
 
-button:active {
-    background: #ffeaaa;
-}
-
-/* Мобильная версия */
-@media (max-width: 700px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
-    .controls {
-        text-align: center;
-    }
-}
-/* Центрируем всё содержимое */
-body {
-    justify-content: center;
-    align-items: flex-start;
-}
-
-/* Панель остаётся по центру */
-.panel {
-    margin: 0 auto;
-    width: 360px; /* 🔥 Уменьшенная и фиксированная ширина */
-}
-
-/* Элементы — строго вертикально */
-.grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-/* Каждая карточка тоже получает ограниченную ширину */
-.range-group,
-.result-of-settings {
-    width: 100%;
-    max-width: 320px; /* 🔥 уже, гармонично */
-    margin: 0 auto;
-}
-
-/* Селекты и слайдеры внутри — также уже */
-select,
-.range-input {
-    max-width: 100%;
-}
-
-/* Кнопка в центре и компактная */
-.controls {
-    text-align: center;
-}
-
-button {
-    width: 200px;       /* 🔥 симпатичная компактная кнопка */
-    display: block;
-    margin: 0 auto;
-}
-
-
-.slider-value {
-    position: absolute;
-    top: 28px; /* расстояние под ползунком */
-    left: 0;
-    transform: translateX(-50%);
-    font-size: 14px;
-}
-.slider-wrapper {
-    position: relative;
-    width: 100%;      /* было 300px — теперь растягивается */
-    padding-bottom: 24px;  /* даёт место числу внизу */
-}
-
-.range-group {
-    width: 100%;
-    max-width: 360px;  
-    padding: 12px;      /* чтобы контур не был впритык */
-    box-sizing: border-box;
-}
-input[list] {
-    width: 100%;
-}
-
-
-
-
-/* Опускаем трек как элемент */
-.range-input {
-    margin-top: 10px; /* 🔥 опускает саму линию вниз */
-}
+/* ползунки */
 input[type="range"] {
     width: 100%;
     appearance: none;
     background: none;
+    outline: none;
     --pos: 50%; /* позиция для градиента */
 }
 
@@ -291,5 +90,63 @@ input[type="range"]::-webkit-slider-runnable-track {
         var(--accent-2) 100%
     );
 }
+/* Круглый плоский бегунок */
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--accent-1);
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    margin-top: -7px;
+    
+}
+
+/* Кнопка */
+.controls {
+    margin-top: 16px;
+}
+
+button {
+    padding: 10px 18px;
+    font-weight: 700;
+    border: 2px solid var(--line);
+    background: var(--accent-3);
+    color: var(--text);
+    border-radius: var(--radius);
+    cursor: pointer;
+
+    width: 200px; 
+    display: block;
+    margin: 0 auto;
+}
+
+button:active {
+    background: #ffeaaa;
+}
 
 
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.slider-value {
+    position: absolute;
+    top: 28px; /* расстояние под ползунком */
+    left: 0;
+    transform: translateX(-50%);
+    font-size: 14px;
+}
+.slider-wrapper {
+    position: relative;
+    width: 100%;      /* было 300px — теперь растягивается */
+    padding-bottom: 24px;  /* даёт место числу внизу */
+}
+/* Опускаем трек как элемент */
+.range-input {
+    margin-top: 10px; /* 🔥 опускает саму линию вниз */
+}
+
+/* выбор */

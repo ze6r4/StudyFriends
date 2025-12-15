@@ -63,16 +63,17 @@
 
         <div class="range-group">
             <label for="selectSkill">Навык</label>
-            <select id="selectSkill">
+            <select id="selectSkill" class="custom-select">
                 <option value="1">Рисование (ID: 1)</option>
                 <option value="2">Программирование (ID: 2)</option>
-                <option value="3">Уборка (ID: 3)</option>
-                <option value="4">Спорт (ID: 4)</option>
+                <option value="3">Дизайн (ID: 3)</option>
+                <option value="4">Музыка (ID: 4)</option>
             </select>
         </div>
+                
 
-        <div class="result-of-settings">
-            <p id="totalTime">Время сессии: ?</p>
+        <div class="range-group">
+            <label id="totalTime">Время сессии: ?</label>
         </div>
 
     </div>
@@ -83,6 +84,7 @@
 
 </div>
 
-<script src="js/timer-settings.js"></script>
+<script src="js/api/timer-api.js"></script>
+<script src="js/ui/timer-ui.js"></script>
 </body>
 </html>

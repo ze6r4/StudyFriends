@@ -4,115 +4,91 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Timer Settings</title>
-
-   
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/custom-select.css">
-
+    <link rel="stylesheet" href="css/friends.css">
 </head>
-
 <body>
-    <div class="panel" role="region" aria-label="Настройки таймера">
+    <div class="container">
+        <div class="panel" role="region" aria-label="Настройки таймера">
+            <header>
+                <div>
+                    <h1>Настройки сессии</h1>
+                    <p class="lead">Выберите удобные для вас временные интервалы.</p>
+                </div>
+            </header>
 
-        <header>
-        
-            <div>
-                <h1>Настройки сессии</h1>
-                <p class="lead">Выберите удобные для вас временные интервалы.</p>
-            </div>
-        </header>
+            <div class="grid">
+                <div class="range-group">
+                    <label for="workMinutes">Минуты работы: <span id="workValueText">25</span> мин</label>
+                    <div class="slider-wrapper">
+                        <input class="range-input" id="workMinutes" type="range" min="5" max="90" value="25" step="5">
+                    </div>
+                </div>
 
-        <div class="grid">
+                <div class="range-group">
+                    <label for="restMinutes">Минуты отдыха: <span id="restValueText">5</span> мин</label>
+                    <div class="slider-wrapper">
+                        <input class="range-input" id="restMinutes" type="range" min="1" max="30" value="5" step="1">
+                    </div>
+                </div>
 
-        <div class="range-group">
-                <label for="workMinutes">Минуты работы: <span id="workValueText">25</span> мин</label>
+                <div class="range-group">
+                    <label for="cyclesAmount">Количество циклов: <span id="cyclesValueText">4</span></label>
+                    <div class="slider-wrapper">
+                        <input class="range-input" id="cyclesAmount" type="range" min="1" max="10" value="4" step="1">
+                    </div>
+                </div>
 
-                <div class="slider-wrapper">
-                    <input class="range-input" id="workMinutes" type="range" min="5" max="90" value="25" step="5">
-                    
+                <div class="range-group">
+                    <label id="selectSkillLabel" for="selectSkillButton">Навык</label>
+                    <div class="custom-select" id="selectSkill">
+                        <button class="select-button" id="selectSkillButton"
+                                aria-haspopup="listbox"
+                                aria-expanded="false"
+                                aria-labelledby="selectSkillLabel selectSkillValue">
+                            <span class="selected-value" id="selectSkillValue">Выберите навык</span>
+                            <span class="arrow"></span>
+                        </button>
+                        <ul class="select-dropdown hidden" role="listbox" aria-labelledby="selectSkillLabel">
+                            <li role="option" id="skillOption1">
+                                <span class="item-text">Рисование</span>
+                                <button type="button" class="delete-item-btn" aria-label="Удалить Рисование">✕</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="range-group">
+                    <label id="totalTime">Время сессии: ?</label>
                 </div>
             </div>
 
-            <div class="range-group">
-                <label for="restMinutes">Минуты отдыха: <span id="restValueText">5</span> мин</label>
+            <div class="controls">
+                <button onclick="startSession()">Начать сессию</button>
+            </div>
+        </div>
 
-                <div class="slider-wrapper">
-                    <input class="range-input" id="restMinutes" type="range" min="1" max="30" value="5" step="1">
-                    
+        <div class="friends-section">
+            <header>
+                <div>
+                    <h1>Мои друзья</h1>
+                    <p class="lead">Выберите друга для совместной работы в сессии</p>
                 </div>
+            </header>
 
-            </div>
-                
-
-
-            <div class="range-group">
-                <label for="cyclesAmount">Количество циклов: <span id="cyclesValueText">4</span></label>
-
-                <div class="slider-wrapper">
-                    <input class="range-input" id="cyclesAmount" type="range" min="1" max="10" value="4" step="1">
+            <div class="friends-grid">
+                <div class="friend-card">
+                    <img src="../../assets/front/images/characters/nick_card.png" alt="Аватар Ника" class="friend-avatar">
+                    <h3 class="friend-name">Ник</h3>
+                    <p class="friend-description">Ищет Найтмера. Не знает как тут оказался.</p>
                 </div>
             </div>
-
-
-            <div class="range-group">
-                <label for="selectFriend">ID друга</label>
-                <select id="selectFriend">
-                    <option value="1">Ник (ID: 1)</option>
-                    <option value="2">НЕТУ Сара (ID: 2)</option>
-                    <option value="3">НЕТУ Кэйти (ID: 3)</option>
-                    <option value="4">НЕТЮ Боби (ID: 4)</option>
-                </select>
-            </div>
-
-
-        <div class="range-group">
-            <label id="selectSkillLabel" for="selectSkillButton">Навык</label>
-            <div class="custom-select" id="selectSkill">
-                <button class="select-button" id="selectSkillButton"
-                        aria-haspopup="listbox"
-                        aria-expanded="false"
-                        aria-labelledby="selectSkillLabel selectSkillValue">
-                    <span class="selected-value" id="selectSkillValue">Выберите навык</span>
-                    <span class="arrow"></span>
-                </button>
-                <ul class="select-dropdown hidden" role="listbox" aria-labelledby="selectSkillLabel">
-                    <!-- Каждый li теперь содержит span для текста и кнопку для удаления -->
-                    <li role="option" id="skillOption1">
-                        <span class="item-text">Рисование</span>
-                        <!-- type="button" предотвращает случайные отправки форм -->
-                        <button type="button" class="delete-item-btn" aria-label="Удалить Рисование">✕</button>
-                    </li>
-                    <li role="option" id="skillOption2">
-                        <span class="item-text">Программирование</span>
-                        <button type="button" class="delete-item-btn" aria-label="Удалить Программирование">✕</button>
-                    </li>
-                    <li role="option" id="skillOption3">
-                        <span class="item-text">Дизайн</span>
-                        <button type="button" class="delete-item-btn" aria-label="Удалить Дизайн">✕</button>
-                    </li>
-                    <li role="option" id="skillOption4">
-                        <span class="item-text">Музыка</span>
-                        <button type="button" class="delete-item-btn" aria-label="Удалить Музыка">✕</button>
-                    </li>
-                </ul>
-            </div>
         </div>
-
-
-
-            <div class="range-group">
-                <label id="totalTime">Время сессии: ?</label>
-            </div>
-
-        </div>
-
-        <div class="controls">
-            <button onclick="startSession()">Начать сессию</button>
-        </div>
-
     </div>
-    <script type="module" src="js/api.js"></script>
+    <script type="module" src="js/session.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/custom-select.js"></script>
+    <script type="module" src="js/custom-select.js"></script>
+    <script type="module" src="js/friend-cards.js"></script>
 </body>
 </html>

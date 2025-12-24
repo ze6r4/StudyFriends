@@ -1,139 +1,180 @@
+import { getSkills} from '../../../shared/api.js';
+
 document.addEventListener("DOMContentLoaded", function() {
-
-  const customSelects = document.querySelectorAll(".custom-select");
-
-  function initializeCustomSelects() {
-    customSelects.forEach(function(customSelect) {
-      const selectButton = customSelect.querySelector(".select-button");
-      const dropdown = customSelect.querySelector(".select-dropdown");
-      const selectedValueSpan = customSelect.querySelector(".selected-value");
-      const listItems = dropdown.querySelectorAll("li");
-
-      initializeDefaultValues(selectedValueSpan, listItems, selectButton);
-      setupSelectButtonHandler(selectButton, dropdown);
-      setupListItemsHandlers(listItems, selectedValueSpan, selectButton, dropdown);
-    });
-  }
-
-  // Инициализация значений из сервера
-  // Функция инициализации значений по умолчанию
-  function initializeDefaultValues(selectedValueSpan, listItems, selectButton) {
-    if (listItems.length > 0) {
-      const firstItem = listItems[0];
-      const firstItemTextSpan = firstItem.querySelector(".item-text");
-
-      // Устанавливаем текст выбранного значения
-      if (firstItemTextSpan) {
-        selectedValueSpan.textContent = firstItemTextSpan.textContent;
-      } else {
-        selectedValueSpan.textContent = firstItem.textContent.trim();
-      }
-
-      // Устанавливаем атрибуты доступности
-      firstItem.setAttribute("aria-selected", "true");
-      selectButton.setAttribute("aria-activedescendant", firstItem.id);
-    } else {
-      selectedValueSpan.textContent = "Выберите значение";
-    }
-  }
-
-  // Функция настройки обработчика для кнопки селекта
-  function setupSelectButtonHandler(selectButton, dropdown) {
-    selectButton.addEventListener("click", handleSelectButtonClick);
-
-    function handleSelectButtonClick(event) {
-      event.stopPropagation();
-      toggleDropdown(dropdown, selectButton);
-    }
-  }
-
-  // Функция переключения видимости выпадающего списка
-  function toggleDropdown(dropdown, selectButton, forceState) {
-    const isCurrentlyOpen = !dropdown.classList.contains("hidden");
-    const shouldBeOpen = forceState !== undefined ? forceState : !isCurrentlyOpen;
-
-    dropdown.classList.toggle("hidden", !shouldBeOpen);
-    selectButton.setAttribute("aria-expanded", shouldBeOpen);
-  }
-
-  // Функция настройки обработчиков для элементов списка
-  function setupListItemsHandlers(listItems, selectedValueSpan, selectButton, dropdown) {
-    listItems.forEach(function(item) {
-      const itemTextSpan = item.querySelector(".item-text");
-      const deleteButton = item.querySelector(".delete-item-btn");
-
-      // Обработчик выбора элемента списка
-      item.addEventListener("click", handleListItemClick);
-
-      function handleListItemClick(event) {
-        // Если клик не по кнопке удаления
-        if (event.target !== deleteButton && !deleteButton.contains(event.target)) {
-          selectListItem(item, itemTextSpan, selectedValueSpan, selectButton, listItems, dropdown);
-        }
-      }
-
-      // Обработчик для кнопки удаления, если она есть
-      if (deleteButton) {
-        deleteButton.addEventListener("click", handleDeleteButtonClick);
-
-        function handleDeleteButtonClick(event) {
-          event.stopPropagation();
-
-          const itemName = itemTextSpan ? itemTextSpan.textContent : item.textContent.trim();
-          console.log('Кнопка "Удалить" нажата для элемента: "' + itemName + '"');
-
-          // Здесь может быть логика удаления элемента из DOM
-          //item.remove();
-        }
-      }
-    });
-  }
-
-  // Функция выбора элемента списка
-  function selectListItem(item, itemTextSpan, selectedValueSpan, selectButton, allListItems, dropdown) {
-    // Получаем текст выбранного элемента
-    const selectedText = itemTextSpan ? itemTextSpan.textContent : item.textContent.trim();
-
-    // Обновляем отображаемое значение
-    selectedValueSpan.textContent = selectedText;
-
-    // Сбрасываем выделение у всех элементов
-    allListItems.forEach(function(li) {
-      li.removeAttribute("aria-selected");
-    });
-
-    // Устанавливаем выделение на текущем элементе
-    item.setAttribute("aria-selected", "true");
-
-    // Обновляем атрибут доступности
-    selectButton.setAttribute("aria-activedescendant", item.id);
-
-    // Закрываем выпадающий список
-    toggleDropdown(dropdown, selectButton, false);
-  }
-
-  // Глобальный обработчик клика для закрытия выпадающих списков
-  function setupGlobalClickHandler(customSelects) {
-    document.addEventListener("click", handleGlobalClick);
-
-    function handleGlobalClick(event) {
-      customSelects.forEach(function(customSelect) {
-        const dropdown = customSelect.querySelector(".select-dropdown");
-        const selectButton = customSelect.querySelector(".select-button");
-
-        // Проверяем, открыт ли список и был ли клик вне его
-        const isOpen = !dropdown.classList.contains("hidden");
-        const isClickOutside = !customSelect.contains(event.target);
-
-        if (isOpen && isClickOutside) {
-          dropdown.classList.add("hidden");
-          selectButton.setAttribute("aria-expanded", "false");
-        }
-      });
-    }
-  }
-
-  // Инициализация всех функций
-  initializeCustomSelects();
-  setupGlobalClickHandler(customSelects);
+  initializeCustomSelectsSkills();
 });
+
+// ---------- НАВЫКИ ----------------
+function generateSkillHtml(skills) {
+    let html = '';
+
+    skills.forEach((skill) => {
+        html += `
+            <li id="skillOption${skill.skillId}" role="option">
+                <span class="item-text">${skill.name}</span>
+                <button type="button" class="delete-item-btn" aria-label="Удалить ${skill.name}">✕</button>
+            </li>
+        `;
+    });
+
+    return html;
+}
+
+async function initializeCustomSelectsSkills() {
+    const customSelects = document.querySelectorAll(".custom-select");
+
+    try {
+        const skills = await getSkills(1);
+
+        customSelects.forEach(customSelect => {
+            const dropdown = customSelect.querySelector(".select-dropdown");
+            const selectButton = customSelect.querySelector(".select-button");
+            const selectedValueSpan = customSelect.querySelector(".selected-value");
+
+            dropdown.innerHTML = generateSkillHtml(skills);
+
+            // Обновляем выбранное значение по умолчанию
+            if (skills.length > 0) {
+                selectedValueSpan.textContent = skills[0].name;
+                selectButton.setAttribute("aria-activedescendant", `skillOption${skills[0].skillId}`);
+
+                // Отмечаем первый элемент как выбранный
+                const firstListItem = dropdown.querySelector('li');
+                if (firstListItem) {
+                    firstListItem.setAttribute("aria-selected", "true");
+                }
+            } else {
+                selectedValueSpan.textContent = "Выберите навык";
+            }
+
+            setupCustomSelect(customSelect);
+        });
+
+    } catch (error) {
+        console.error('💨 Ошибка загрузки навыков:', error);
+    }
+
+    setupGlobalClickHandler(customSelects);
+}
+
+function setupCustomSelect(customSelect) {
+  const selectButton = customSelect.querySelector(".select-button");
+  const dropdown = customSelect.querySelector(".select-dropdown");
+  const selectedValueSpan = customSelect.querySelector(".selected-value");
+  const listItems = dropdown.querySelectorAll("li");
+
+  initializeDefaultValues(selectedValueSpan, listItems, selectButton);
+  setupSelectButtonHandler(selectButton, dropdown);
+  setupListItemsHandlers(listItems, selectedValueSpan, selectButton, dropdown);
+}
+
+function initializeDefaultValues(selectedValueSpan, listItems, selectButton) {
+  if (listItems.length > 0) {
+    const firstItem = listItems[0];
+    const firstItemTextSpan = firstItem.querySelector(".item-text");
+
+    if (firstItemTextSpan) {
+      selectedValueSpan.textContent = firstItemTextSpan.textContent;
+    } else {
+      selectedValueSpan.textContent = firstItem.textContent.trim();
+    }
+
+    firstItem.setAttribute("aria-selected", "true");
+    selectButton.setAttribute("aria-activedescendant", firstItem.id);
+  } else {
+    selectedValueSpan.textContent = "Выберите навык";
+  }
+}
+
+function setupSelectButtonHandler(selectButton, dropdown) {
+  selectButton.addEventListener("click", function(event) {
+    event.stopPropagation();
+    toggleDropdown(dropdown, selectButton);
+  });
+}
+
+function toggleDropdown(dropdown, selectButton, forceState) {
+  const isCurrentlyOpen = !dropdown.classList.contains("hidden");
+  const shouldBeOpen = forceState !== undefined ? forceState : !isCurrentlyOpen;
+
+  dropdown.classList.toggle("hidden", !shouldBeOpen);
+  selectButton.setAttribute("aria-expanded", shouldBeOpen);
+}
+
+function setupListItemsHandlers(listItems, selectedValueSpan, selectButton, dropdown) {
+  listItems.forEach(function(item) {
+    setupListItemHandler(item, selectedValueSpan, selectButton, listItems, dropdown);
+  });
+}
+
+function setupListItemHandler(item, selectedValueSpan, selectButton, allListItems, dropdown) {
+  const itemTextSpan = item.querySelector(".item-text");
+  const deleteButton = item.querySelector(".delete-item-btn");
+
+  item.addEventListener("click", function(event) {
+    if (event.target !== deleteButton && !deleteButton.contains(event.target)) {
+      selectListItem(item, itemTextSpan, selectedValueSpan, selectButton, allListItems, dropdown);
+    }
+  });
+
+  if (deleteButton) {
+    setupDeleteButtonHandler(deleteButton, itemTextSpan, item);
+  }
+}
+
+function selectListItem(item, itemTextSpan, selectedValueSpan, selectButton, allListItems, dropdown) {
+  const selectedText = itemTextSpan ? itemTextSpan.textContent : item.textContent.trim();
+
+  selectedValueSpan.textContent = selectedText;
+
+  allListItems.forEach(function(li) {
+    li.removeAttribute("aria-selected");
+  });
+
+  item.setAttribute("aria-selected", "true");
+  selectButton.setAttribute("aria-activedescendant", item.id);
+  toggleDropdown(dropdown, selectButton, false);
+}
+
+function setupDeleteButtonHandler(deleteButton, itemTextSpan, item) {
+  deleteButton.addEventListener("click", function(event) {
+    event.stopPropagation();
+
+    const itemName = itemTextSpan ? itemTextSpan.textContent : item.textContent.trim();
+    console.log('Кнопка "Удалить" нажата для элемента: "' + itemName + '"');
+
+    // Удаляем элемент из DOM
+    item.remove();
+
+    // Обновляем выбранное значение, если удалили выбранный элемент
+    const customSelect = item.closest('.custom-select');
+    const selectedValueSpan = customSelect.querySelector('.selected-value');
+    const remainingItems = customSelect.querySelectorAll('li');
+
+    if (remainingItems.length > 0) {
+      const firstRemaining = remainingItems[0];
+      const firstTextSpan = firstRemaining.querySelector('.item-text');
+      selectedValueSpan.textContent = firstTextSpan ? firstTextSpan.textContent : firstRemaining.textContent.trim();
+      firstRemaining.setAttribute("aria-selected", "true");
+    } else {
+      selectedValueSpan.textContent = "Выберите навык";
+    }
+  });
+}
+
+function setupGlobalClickHandler(customSelects) {
+  document.addEventListener("click", function(event) {
+    customSelects.forEach(function(customSelect) {
+      const dropdown = customSelect.querySelector(".select-dropdown");
+      const selectButton = customSelect.querySelector(".select-button");
+
+      const isOpen = !dropdown.classList.contains("hidden");
+      const isClickOutside = !customSelect.contains(event.target);
+
+      if (isOpen && isClickOutside) {
+        dropdown.classList.add("hidden");
+        selectButton.setAttribute("aria-expanded", "false");
+      }
+    });
+  });
+}

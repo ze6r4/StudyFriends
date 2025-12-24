@@ -1,0 +1,92 @@
+/* Стили для блока друзей */
+
+.container {
+    display: flex;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.panel {
+    flex: 1;
+    max-width: 380px;
+    margin: 0;
+    margin-left: 40px;
+}
+
+.friends-section {
+    flex: 1.5;
+    max-width: 600px;
+}
+
+.friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.friend-card {
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    background: #fff;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.friend-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(140, 111, 100, 0.1);
+}
+
+.friend-avatar {
+    width: 100px;  /* Увеличил размер */
+    height: 100px; /* Увеличил размер */
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 0 auto 12px;
+    display: block;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    border: 2px solid var(--line);
+}
+
+.friend-name {
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: var(--text);
+    font-size: 16px;
+}
+
+.friend-description {
+    font-size: 13px;
+    color: #7a6a63;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .panel,
+    .friends-section {
+        max-width: 100%;
+        margin: 0;
+    }
+
+    .friends-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+
+    .friend-avatar {
+        width: 90px;
+        height: 90px;
+    }
+
+}

@@ -13,7 +13,7 @@ public class FriendDto {
 
     private String name;
     private String description;
-    private String standImage;
+    private String cardImage;
 
     public static FriendDto fromEntity(Friend friend) {
         FriendDto response = new FriendDto();
@@ -25,7 +25,7 @@ public class FriendDto {
 
         response.setName(friend.getCharacter() != null? friend.getCharacter().getName(): null);
         response.setDescription(friend.getCharacter() != null? friend.getCharacter().getDescription(): null);
-        response.setStandImage(friend.getCharacter() != null? friend.getCharacter().getStandImage() : null);
+        response.setCardImage(friend.getCharacter() != null? friend.getCharacter().getCardImage() : null);
         return response;
     }
 }

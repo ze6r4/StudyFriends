@@ -1,9 +1,9 @@
 package com.example.StudyFriends.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +38,9 @@ public class Character {
 
     @Column(name = "study_image", nullable = false)
     private String studyImage;
+
+    @Column(name = "card_image")
+    private String cardImage;
 
     @OneToMany(mappedBy = "character")
     private List<Friend> playerFriends = new ArrayList<>();

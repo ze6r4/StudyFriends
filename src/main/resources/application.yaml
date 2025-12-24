@@ -19,8 +19,13 @@ spring:
         show_sql: true
         format_sql: true
     generate-ddl: true
+
 server:
   port: 8081
+  error:
+    whitelabel:
+      enabled: false
+    path: /error.html
 web:
   resources:
     add-mappings: false

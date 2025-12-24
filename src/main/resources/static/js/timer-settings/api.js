@@ -2,7 +2,8 @@
 const API_BASE = 'http://localhost:8081/api';
 const PLAYER_ID = 1;
 
-// GET - запрос
+
+// GET - запрос НАВЫКИ
 async function loadSkills(playerId = 1) {
     try {
         const response = await fetch(`${API_BASE}/skills?playerId=${playerId}`);
@@ -13,7 +14,7 @@ async function loadSkills(playerId = 1) {
     }
 }
 
-// Функция заполнения выпадающего списка
+// Функция заполнения выпадающего списка НАВЫКОВ
 function populateSkillSelect(skills) {
     const select = document.getElementById('select-dropdown hidden');
     
@@ -37,7 +38,40 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSkills(1); // playerId = 1
 });
 
-//POST - запрос
+// GET - запрос ДРУЗЬЯ
+async function loadSkills(playerId = 1) {
+    try {
+        const response = await fetch(`${API_BASE}/friends?playerId=${playerId}`);
+        const friends = await response.json();
+        populateSkillSelect(friends);
+    } catch (error) {
+        errorMessage
+    }
+}
+
+// Функция заполнения выпадающего списка ДРУЗЕЙ
+function populateSkillSelect(friends) {
+    const select = document.getElementById('selectFriend');
+    
+    // Очищаем текущие опции
+    select.innerHTML = '';
+    
+    // Добавляем новые опции
+    friends.forEach(friend => {
+        const option = document.createElement('option');
+        option.value = friend.skillId; // ID навыка как value
+        option.textContent = `${friend.name} (ID: ${skill.skillId}) - Уровень: ${skill.progress}`;
+        select.appendChild(option);
+    });
+}
+
+// Загружаем навыки при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    loadSkills(1); // playerId = 1
+});
+
+
+//POST - запрос СЕССИЯ
 async function startSession() {
 
     // Читаем значения прямо перед отправкой
@@ -64,14 +98,14 @@ async function startSession() {
         const result = await response.json();
         console.log('Сессия создана!', result);
 
-        // window.location.href = `timer.html?sessionId=${result.sessionId}`;
 
     } catch (error) {
         errorMessage(error);
     }
-
-    localStorage.setItem(`currentSession${PLAYER_ID}`, JSON.stringify(sessionData));
+    localStorage.setItem('currentSession', sessionData);
+    window.location.href = `${API_BASE}/timer.html`;
 }
+
 
 window.startSession = startSession;
 

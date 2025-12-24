@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймер Pomodoro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/timer/timer.css">
+   
+</head>
+<body>
+    <h1>Таймер Pomodoro</h1>
+    <div class="subtitle">25 минут работы • 5 минут перерыв • 3 цикла</div>
+    
+    <div class="container">
+        <!-- Блокнот для заметок -->
+        <div class="notepad-container">
+            <div class="notepad">
+                <!-- Кольца блокнота -->
+                <div class="notepad-rings">
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                    <div class="ring"></div>
+                </div>
+                
+                <div class="notepad-header">
+                    <div class="notepad-title">Мои заметки</div>
+                </div>
+                <textarea class="notes-textarea" placeholder="Начните писать здесь...">• Подготовить ингредиенты для пиццы
+• Разогреть духовку до 220°C
+• Приготовить тесто для пиццы
+• Нарезать помидоры и сыр
+• Добавить соус и начинку
+• Выпекать 12-15 минут
+• Проверить готовность
+
+• Купить продукты на неделю
+• Запланировать тренировки
+• Позвонить маме
+• Обновить портфолио
+• Прочитать 20 страниц книги</textarea>
+            </div>
+        </div>
+        
+        <!-- Таймер -->
+        <div class="timer-container">
+            <div class="timer" id="timer">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-status" id="timerStatus">Готовы начать?</div>
+                <div class="cycle-info" id="cycleInfo">Цикл: 1/3 • Перерыв: 0/3</div>
+                
+                <div class="progress-container">
+                    <div class="progress-label" id="progressLabel">Прогресс таймера</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+                
+                <button class="main-button" id="mainButton">Начать</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/timer/ui.js"></script>
+</body>
+</html>

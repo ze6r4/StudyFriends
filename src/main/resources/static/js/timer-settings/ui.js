@@ -41,7 +41,6 @@ document.getElementById("cyclesAmount").addEventListener("input", updateTotalTim
 // Первоначальный расчёт
 updateTotalTime();
 
-
 // окрас ползунка
 function colorTrack(sliderId) {
     const slider = document.getElementById(sliderId);

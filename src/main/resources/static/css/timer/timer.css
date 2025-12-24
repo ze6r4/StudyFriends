@@ -1,0 +1,273 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #fef7ff;
+    color: #5a5560;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+h1 {
+    color: #ff9bb3;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #9bb8ff;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+}
+
+/* Стили для блокнота */
+.notepad-container {
+    flex: 4; /* 40% от общего пространства */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.notepad {
+    background-color: #fff;
+    border: 2px solid #ffc9d8;
+    border-radius: 15px;
+    padding: 20px;
+    height: 520px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 0 #ffc9d8;
+    position: relative;
+    padding-left: 40px; /* Отступ для колец */
+}
+
+/* Кольца блокнота */
+.notepad-rings {
+    position: absolute;
+    left: 15px;
+    top: 30px;
+    bottom: 30px;
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    z-index: 1;
+}
+
+.ring {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffc9d8;
+    border-radius: 50%;
+    background-color: #fff;
+}
+
+.notepad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #ffc9d8;
+    margin-bottom: 15px;
+}
+
+.notepad-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff9bb3;
+}
+
+.notes-textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    color: #5a5560;
+    background-color: transparent;
+    line-height: 1.5;
+}
+
+.notes-textarea::placeholder {
+    color: #c9b8ff;
+}
+
+/* Стили для таймера */
+.timer-container {
+    flex: 6; /* 60% от общего пространства */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timer {
+    background-color: #fff;
+    border: 2px solid #9bb8ff;
+    border-radius: 15px;
+    width: 100%;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 0 #9bb8ff;
+    height: 520px;
+}
+
+.timer-display {
+    font-size: 6.5rem;
+    font-weight: 700;
+    color: #9bb8ff;
+    margin-bottom: 20px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.timer-status {
+    font-size: 1.8rem;
+    color: #ff9bb3;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.cycle-info {
+    font-size: 1.4rem;
+    color: #c9b8ff;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.progress-container {
+    width: 80%;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.progress-label {
+    font-size: 1.1rem;
+    color: #9bb8ff;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #e9e1ff;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #c9b8ff;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #9bb8ff;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.main-button {
+    background-color: #c9ffb8;
+    border: 2px solid #9bff8b;
+    color: #5a9b60;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 15px 50px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    margin-top: 10px;
+}
+
+.main-button:hover {
+    transform: translateY(-3px);
+}
+
+.main-button:active {
+    transform: translateY(0);
+}
+
+.main-button.give-up {
+    background-color: #ffc9c9;
+    border-color: #ff9b9b;
+    color: #9b5a5a;
+}
+
+/* Адаптивность */
+@media (max-width: 1000px) {
+    .container {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .timer-display {
+        font-size: 5rem;
+    }
+    
+    .timer, .notepad {
+        height: auto;
+        min-height: 450px;
+    }
+    
+    .timer-container, .notepad-container {
+        flex: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .timer-display {
+        font-size: 4rem;
+    }
+    
+    .main-button {
+        padding: 12px 30px;
+        font-size: 1.3rem;
+    }
+}
+
+/* Анимация для перерыва */
+.break-active {
+    border-color: #ffc9d8;
+    box-shadow: 0 4px 0 #ffc9d8;
+}
+
+.break-active .timer-display {
+    color: #ff9bb3;
+}
+
+.break-active .progress-fill {
+    background-color: #ff9bb3;
+}
+
+/* Стиль для неактивной кнопки */
+.main-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.main-button:disabled:hover {
+    transform: none;
+}

@@ -1,4 +1,17 @@
+# application.yml
 spring:
+  resources:
+    cache:
+      period: 0                 # Отключает кэширование статики
+      cachecontrol:
+        max-age: 0              # Указывает браузеру не кэшировать
+  thymeleaf:
+    cache: false                # Отключает кэширование шаблонов Thymeleaf
+  devtools:
+    livereload:
+      enabled: true             # LiveReload сервер (на порту 35729)
+    restart:
+      enabled: true
   mvc:
     throw-exception-if-no-handler-found: true
   application:
@@ -29,3 +42,4 @@ server:
 web:
   resources:
     add-mappings: false
+

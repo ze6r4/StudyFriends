@@ -4,6 +4,35 @@ document.addEventListener("DOMContentLoaded", function() {
   initializeCustomSelectsSkills();
 });
 
+async function initializeCustomSelectsSkills() {
+    const customSelects = document.querySelectorAll(".custom-select");
+    const skills = await getSkills(1);
+
+    customSelects.forEach(customSelect => {
+        const dropdown = customSelect.querySelector(".select-dropdown");
+        const selectButton = customSelect.querySelector(".select-button");
+        const selectedValueSpan = customSelect.querySelector(".selected-value");
+
+        dropdown.innerHTML = generateSkillHtml(skills);
+
+        // Обновляем выбранное значение по умолчанию
+        if (skills.length > 0) {
+            selectedValueSpan.textContent = skills[0].name;
+            selectButton.setAttribute("aria-activedescendant", `skillOption${skills[0].skillId}`);
+
+            // Отмечаем первый элемент как выбранный
+            const firstListItem = dropdown.querySelector('li');
+            if (firstListItem) {
+                firstListItem.setAttribute("aria-selected", "true");
+            }
+        } else {
+            selectedValueSpan.textContent = "Выберите навык";
+        }
+
+        setupCustomSelect(customSelect);
+    });
+    setupGlobalClickHandler(customSelects);
+}
 function generateSkillHtml(skills) {
     let html = '';
 
@@ -17,43 +46,6 @@ function generateSkillHtml(skills) {
     });
 
     return html;
-}
-
-async function initializeCustomSelectsSkills() {
-    const customSelects = document.querySelectorAll(".custom-select");
-
-    try {
-        const skills = await getSkills(1);
-
-        customSelects.forEach(customSelect => {
-            const dropdown = customSelect.querySelector(".select-dropdown");
-            const selectButton = customSelect.querySelector(".select-button");
-            const selectedValueSpan = customSelect.querySelector(".selected-value");
-
-            dropdown.innerHTML = generateSkillHtml(skills);
-
-            // Обновляем выбранное значение по умолчанию
-            if (skills.length > 0) {
-                selectedValueSpan.textContent = skills[0].name;
-                selectButton.setAttribute("aria-activedescendant", `skillOption${skills[0].skillId}`);
-
-                // Отмечаем первый элемент как выбранный
-                const firstListItem = dropdown.querySelector('li');
-                if (firstListItem) {
-                    firstListItem.setAttribute("aria-selected", "true");
-                }
-            } else {
-                selectedValueSpan.textContent = "Выберите навык";
-            }
-
-            setupCustomSelect(customSelect);
-        });
-
-    } catch (error) {
-        console.error('💨 Ошибка загрузки навыков:', error);
-    }
-
-    setupGlobalClickHandler(customSelects);
 }
 
 function setupCustomSelect(customSelect) {

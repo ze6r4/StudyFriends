@@ -1,11 +1,18 @@
 // Тестовые данные (в дальнейшем будут получаться с сервера)
 
-let sessionData = localStorage.getItem('currentSession');
-console.log(sessionData.workMinutes)
-const WORK_TIME = sessionData.workMinutes * 60; 
-const BREAK_TIME = sessionData.restMinutes * 60; 
-const TOTAL_CYCLES = sessionData.cycles;
-const PLAYER_ID = sessionData.playerId;
+const sessionDataStr = localStorage.getItem('currentSession');
+const sessionData = sessionDataStr ? JSON.parse(sessionDataStr) : null;
+
+if (sessionData) {
+    const WORK_TIME = sessionData.workMinutes * 60;
+    const BREAK_TIME = sessionData.restMinutes * 60;
+    const TOTAL_CYCLES = sessionData.cycles;
+    const PLAYER_ID = sessionData.playerId;
+    const SKILL_ID = sessionData.skillId;
+    const FRIEND_ID = sessionData.friendId;
+} else {
+    console.error("Нет данных сессии в localStorage");
+}
 
 // Состояние таймера
 let state = {

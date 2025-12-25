@@ -8,7 +8,7 @@ export async function getSkills(playerId = 1) {
         const skills = await response.json();
         return skills;
     } catch (error) {
-        errorMessage(error);
+        errorMessage('сервер не нашел твои навыки :(');
     }
 }
 // GET - запрос ДРУЗЬЯ ИГРОКА
@@ -18,7 +18,7 @@ export async function getFriends(playerId = 1) {
         const friends = await response.json();
         return friends;
     } catch (error) {
-        errorMessage(error);
+        errorMessage('сервер не нашел твоих друзей :(');
     }
 }
 
@@ -37,11 +37,11 @@ export async function postSession(sessionData) {
         console.log('Сессия создана!', result);
 
     } catch (error) {
-        errorMessage(error);
+        errorMessage(error.message);
     }
 }
 
 function errorMessage(error) {
-    console.error('Ошибка сервера:', error);
-    alert(`🤕Ой-ой-ой... Вот что случилось:\n${error.message}`);
+    console.error('Ошибка сервера!');
+    alert(`🤕Ой-ой-ой... Вот что случилось:\n${error}`);
 }

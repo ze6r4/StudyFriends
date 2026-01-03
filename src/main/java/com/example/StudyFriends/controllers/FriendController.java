@@ -18,7 +18,7 @@ public class FriendController {
     private FriendService friendService;
 
     @GetMapping("/friends")
-    public ResponseEntity<?> getSkillsOfPlayer(@RequestParam Long playerId) {
+    public ResponseEntity<?> getFriendsOfPlayer(@RequestParam Long playerId) {
         try{
             List<Friend> friends = friendService.getAllFriendsOfPlayer(playerId);
             List<FriendDto> response = friends.stream()

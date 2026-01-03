@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/custom-select.css">
     <link rel="stylesheet" href="css/friends.css">
+    <link rel="stylesheet" href="css/new-skill-modal.css">
 </head>
 <body>
     <div class="container">
@@ -84,9 +85,30 @@
             </div>
         </div>
     </div>
+    <!-- Модалка для добавления навыка -->
+    <div class="modal-overlay hidden" id="addSkillModal">
+        <div class="modal">
+            <header>
+                <h2>Добавить навык</h2>
+                <button class="modal-close" id="closeAddSkillModal" aria-label="Закрыть">✕</button>
+            </header>
+            <div class="modal-body">
+                <label for="newSkillName">Название навыка</label>
+                <input type="text" id="newSkillName" placeholder="Введите название" />
+
+                <label for="newSkillLevel">Уровень навыка: <span id="skillLevelValue">5</span></label>
+                <input type="range" id="newSkillLevel" min="1" max="10" value="5" />
+            </div>
+            <footer>
+                <button id="saveSkillBtn">Сохранить</button>
+            </footer>
+        </div>
+    </div>
+
     <script type="module" src="js/session.js"></script>
     <script src="js/ui.js"></script>
-    <script type="module" src="js/custom-select.js"></script>
+
+    <script type="module" src="js/skills-select-generation.js"></script>
     <script type="module" src="js/friend-cards.js"></script>
 </body>
 </html>

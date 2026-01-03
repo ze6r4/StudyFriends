@@ -24,6 +24,47 @@ public class SkillController {
     @Autowired
     private PlayerService playerService;
 
+    // более сложный get-запрос с проверкой существования skill в таблице session
+    @GetMapping("/skills/full")
+    public ResponseEntity<?> getFullSkillsOfPlayer(@RequestParam Long playerId) {
+        try{
+            List<SkillDto> response = skillService.getFullSkills(playerId);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+    }
+
+    @PatchMapping("/skills/{id}")
+    public ResponseEntity<?> updateSkill(
+            @PathVariable Long id,
+            @RequestBody SkillDto dto
+    ) {
+        try {
+            Skill skill = skillService.getSkillById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Skill", id));
+
+            if (dto.getName() != null) {
+                skill.setName(dto.getName());
+            }
+
+            if (dto.getProgress() != null) {
+                skill.setProgress(dto.getProgress());
+            }
+            skill.setIsActive(true);
+
+            Skill updatedSkill = skillService.updateSkill(skill);
+            return ResponseEntity.ok(SkillDto.fromEntity(updatedSkill));
+
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+    }
+
     @GetMapping("/skills")
     public ResponseEntity<?> getSkillsOfPlayer(@RequestParam Long playerId) {
         try{
@@ -58,14 +99,14 @@ public class SkillController {
         }
     }
 
-    @DeleteMapping("/skills")
-    public ResponseEntity<?> deleteSkill(@RequestParam Long id) {
+    @DeleteMapping("/skills/{id}")
+    public ResponseEntity<?> deleteSkill(@PathVariable Long id) {
         try {
             skillService.deleteSkill(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) { //А какие можно ловить ошибки???
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
+                    .body(ex.getMessage());
         }
     }
 }

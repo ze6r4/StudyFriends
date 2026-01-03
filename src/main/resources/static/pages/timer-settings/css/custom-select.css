@@ -189,3 +189,24 @@
     border-bottom-left-radius: 0; /* Убираем скругление снизу для стыковки с дропдауном */
     border-bottom-right-radius: 0;
 }
+/* ===== Кнопка "Добавить навык" ===== */
+
+.add-skill-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px dashed var(--line);
+    color: var(--text);
+    font-weight: 500;
+}
+
+.add-skill-item:hover {
+    background-color: var(--accent-2);
+}
+
+.add-skill-item .add-icon {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+}

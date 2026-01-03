@@ -12,4 +12,5 @@ import java.util.List;
 public interface SkillRep extends JpaRepository<Skill,Long> {
     @Query("SELECT s FROM Skill s WHERE s.player.id = :playerId")
     List<Skill> findSkillsByPlayerId(@Param("playerId") Long playerId);
+
 }

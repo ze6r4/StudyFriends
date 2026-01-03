@@ -24,4 +24,7 @@ public class Skill {
 
     @Column(nullable = false)
     private Integer progress;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 }

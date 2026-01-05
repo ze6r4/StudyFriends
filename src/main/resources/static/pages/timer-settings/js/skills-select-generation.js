@@ -1,4 +1,6 @@
 import { getSkills } from '../../../shared/api.js';
+import { openAddSkillModal } from './new-skill-modal.js';
+
 
 export let skillsChanged = false;
 const PLAYER_ID = 1;
@@ -73,6 +75,26 @@ function generateAddSkillHtml() {
       <span class="item-text">Добавить навык</span>
     </li>
   `;
+}
+export function addNewSkillToDropdown(customSelect, skill) {
+  const dropdown = customSelect.querySelector('.select-dropdown');
+
+  const li = document.createElement('li');
+  li.id = `skillOption-${Date.now()}`;
+  li.setAttribute('role', 'option');
+  li.dataset.skillId = Date.now();
+  li.dataset.progress = skill.level;
+
+  li.innerHTML = `
+    <span class="item-text">${skill.name}</span>
+    <button type="button" class="delete-item-btn" aria-label="Удалить ${skill.name}">✕</button>
+  `;
+
+  const addBtn = dropdown.querySelector('.add-skill-item');
+  dropdown.insertBefore(li, addBtn);
+
+  selectItem(li, customSelect);
+  skillsChanged = true;
 }
 
 /* =======================
@@ -168,11 +190,7 @@ function handleDelete(item, customSelect) {
 function handleAddSkill(customSelect) {
   toggleDropdown(customSelect, false);
 
-  // 🔥 здесь ты подключишь модалку / инпут / API
-
-
-  // пример:
-  // openAddSkillModal();
+   openAddSkillModal(customSelect);
 }
 
 /* =======================

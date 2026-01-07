@@ -1,138 +1,148 @@
+import { postSession } from '../../../shared/api.js';
+
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
 const sessionData = sessionDataStr ? JSON.parse(sessionDataStr) : null;
+console.log(sessionData);
 
-// Значения по умолчанию
-const DEFAULT_WORK = 25 * 60;
-const DEFAULT_BREAK = 5 * 60;
-const DEFAULT_CYCLES = 4;
-const DEFAULT_PLAYER_ID = 1;
-const DEFAULT_SKILL_ID = null;
-const DEFAULT_FRIEND_ID = null;
+const DEFAULTS = {
+    WORK_TIME: 25 * 60,
+    BREAK_TIME: 5 * 60,
+    CYCLES: 4,
+    PLAYER_ID: 1
+};
 
-// Инициализация параметров (главная проблема была здесь!)
-const WORK_TIME = sessionData?.workMinutes ? sessionData.workMinutes * 60 : DEFAULT_WORK;
-const BREAK_TIME = sessionData?.restMinutes ? sessionData.restMinutes * 60 : DEFAULT_BREAK;
-const TOTAL_CYCLES = sessionData?.cycles || DEFAULT_CYCLES;
-const PLAYER_ID = sessionData?.playerId || DEFAULT_PLAYER_ID;
-const SKILL_ID = sessionData?.skillId || DEFAULT_SKILL_ID;
-const FRIEND_ID = sessionData?.friendId || DEFAULT_FRIEND_ID;
+export const SESSION = {
+    workTime: sessionData?.workMinutes
+        ? sessionData.workMinutes * 60
+        : DEFAULTS.WORK_TIME,
 
- document.addEventListener('DOMContentLoaded', function() {
-            const minutesEl = document.getElementById('timer-minutes');
-            const secondsEl = document.getElementById('timer-seconds');
-            const startBtn = document.getElementById('startBtn');
-            const resetBtn = document.getElementById('giveupBtn');
+    breakTime: sessionData?.restMinutes
+        ? sessionData.restMinutes * 60
+        : DEFAULTS.BREAK_TIME,
 
-            const STORAGE_KEY = 'timerEndTime';
-            let animationFrameId = null;
+    cycles: sessionData?.cycles ?? DEFAULTS.CYCLES,
+    playerId: sessionData?.playerId ?? DEFAULTS.PLAYER_ID,
+    skillId: sessionData?.skillId ?? null,
+    friendId: sessionData?.friendId ?? null
+};
 
-            // Функция для сохранения времени окончания в localStorage
-            function setEndTime(minutes) {
-                const endTime = new Date().getTime() + (minutes * 60 * 1000);
-                localStorage.setItem(STORAGE_KEY, endTime.toString());
-                return endTime;
-            }
+// ==================== DOM ====================
+const minutesEl = document.getElementById('timer-minutes');
+const secondsEl = document.getElementById('timer-seconds');
+const startBtn = document.getElementById('startBtn');
+const resetBtn = document.getElementById('giveupBtn');
 
-            // Функция для получения времени окончания из localStorage
-            function getEndTime() {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                return stored ? parseInt(stored) : null;
-            }
+const STORAGE_KEY = 'timerEndTime';
+const CYCLE_KEY = 'timerCurrentCycle';
 
-            // Функция обновления таймера (как в статье)
-            function updateTimer() {
-                const endTime = getEndTime();
-                if (!endTime) {
-                    stopTimer();
-                    return;
-                }
+let animationFrameId = null;
+let currentPhase = 'WORK'; // WORK или BREAK
+let currentCycle = 1;
 
-                const now = new Date().getTime();
-                const difference = endTime - now; // Как в статье!
+// ==================== Таймер ====================
 
-                if (difference <= 0) {
-                    // Время истекло
-                    minutesEl.textContent = '00';
-                    secondsEl.textContent = '00';
-                    //timerCompleteEl.style.display = 'block';
-                    localStorage.removeItem(STORAGE_KEY);
-                    stopTimer();
-                    return;
-                }
+function startTimerPhase(phase, cycle) {
+    currentPhase = phase;
+    currentCycle = cycle;
 
-                // Конвертируем разницу в миллисекундах в минуты и секунды
-                const totalSeconds = Math.floor(difference / 1000);
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
+    const seconds = phase === 'WORK' ? SESSION.workTime : SESSION.breakTime;
+    const endTime = Date.now() + seconds * 1000;
 
-                // Обновляем отображение
-                minutesEl.textContent = minutes.toString().padStart(2, '0');
-                secondsEl.textContent = seconds.toString().padStart(2, '0');
+    localStorage.setItem(STORAGE_KEY, endTime);
+    localStorage.setItem(CYCLE_KEY, currentCycle);
 
-                // Запускаем следующий кадр анимации (альтернатива setInterval)
-                animationFrameId = requestAnimationFrame(updateTimer);
-            }
+    stopTimer();
+    updateTimer();
+}
 
-            // Запуск таймера
-            function startTimer(minutes = WORK_TIME) {
-                //timerCompleteEl.style.display = 'none';
-                setEndTime(minutes);
+function stopTimer() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+}
 
-                // Останавливаем предыдущую анимацию, если она есть
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                }
+function resetTimer() {
+    stopTimer();
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CYCLE_KEY);
+    currentCycle = 1;
+    currentPhase = 'WORK';
+    renderTime(SESSION.workTime);
+}
 
-                // Запускаем обновление
-                updateTimer();
-            }
+function renderTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    minutesEl.textContent = minutes.toString().padStart(2, '0');
+    secondsEl.textContent = seconds.toString().padStart(2, '0');
+}
 
-            // Остановка таймера
-            function stopTimer() {
-                if (animationFrameId) {
-                    cancelAnimationFrame(animationFrameId);
-                    animationFrameId = null;
-                }
-            }
+function updateTimer() {
+    const endTime = parseInt(localStorage.getItem(STORAGE_KEY));
+    if (!endTime) {
+        renderTime(currentPhase === 'WORK' ? SESSION.workTime : SESSION.breakTime);
+        return;
+    }
 
-            // Сброс таймера
-            function resetTimer() {
-                stopTimer();
-                localStorage.removeItem(STORAGE_KEY);
-                minutesEl.textContent = '50';
-                secondsEl.textContent = '00';
-                //timerCompleteEl.style.display = 'none';
-            }
+    const diff = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+    renderTime(diff);
 
-            // Проверяем, есть ли активный таймер при загрузке страницы
-            function checkExistingTimer() {
-                const endTime = getEndTime();
-                if (endTime) {
-                    const now = new Date().getTime();
-                    if (endTime > now) {
-                        // Таймер все еще активен
-                        startTimer();
-                    } else {
-                        // Таймер истек
-                        localStorage.removeItem(STORAGE_KEY);
-                    }
-                }
-            }
+    if (diff > 0) {
+        animationFrameId = requestAnimationFrame(updateTimer);
+    } else {
+        // Фаза завершена
+        timerPhaseFinished();
+    }
+}
 
-            // Обработчики событий
-            startBtn.addEventListener('click', () => startTimer(50));
-            resetBtn.addEventListener('click', resetTimer);
+function timerPhaseFinished() {
+    if (currentPhase === 'WORK') {
+        if (currentCycle < SESSION.cycles) {
+            startTimerPhase('BREAK', currentCycle); // переходим на перерыв
+        } else {
+            timerFinished();
+        }
+    } else if (currentPhase === 'BREAK') {
+        startTimerPhase('WORK', currentCycle + 1); // следующий рабочий цикл
+    }
+}
 
-            // Проверяем существующий таймер при загрузке
-            checkExistingTimer();
+function timerFinished() {
+    alert('Сессия завершена!');
+    resetTimer();
+    //sessionData.endTime =new Date().toISOString();
+    //await postSession(sessionData);
+}
 
-            // Останавливаем анимацию при скрытии вкладки (оптимизация)
-            document.addEventListener('visibilitychange', function() {
-                if (document.hidden) {
-                    stopTimer();
-                } else if (getEndTime()) {
-                    updateTimer();
-                }
-            });
-        });
+function restoreTimer() {
+    const endTime = parseInt(localStorage.getItem(STORAGE_KEY));
+    const savedCycle = parseInt(localStorage.getItem(CYCLE_KEY)) || 1;
+
+    currentCycle = savedCycle;
+
+    if (endTime && endTime > Date.now()) {
+        // Восстанавливаем текущую фазу и продолжаем
+        const remainingSeconds = Math.floor((endTime - Date.now()) / 1000);
+        currentPhase = remainingSeconds > SESSION.breakTime ? 'WORK' : 'BREAK';
+        updateTimer();
+    } else {
+        renderTime(SESSION.workTime);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CYCLE_KEY);
+        currentPhase = 'WORK';
+        currentCycle = 1;
+    }
+}
+
+// ==================== События ====================
+startBtn.addEventListener('click', () => startTimerPhase('WORK', currentCycle));
+resetBtn.addEventListener('click', resetTimer);
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) updateTimer();
+});
+
+// ==================== Инициализация ====================
+document.addEventListener('DOMContentLoaded', restoreTimer);

@@ -102,6 +102,24 @@ export async function postSession(sessionData) {
         errorMessage(error.message);
     }
 }
+//PATCH - запрос СЕССИЯ
+export async function patchSession(sessionData) {
+    try {
+        const response = await fetch(`${API_BASE}/sessions`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sessionData)
+        });
+        if (!response.ok) {
+            throw new Error(await response.text());
+        }
+        const result = await response.json();
+        console.log('Сессия обновлена!', result);
+
+    } catch (error) {
+        errorMessage(error.message);
+    }
+}
 
 function errorMessage(error) {
     console.error('Ошибка сервера!');

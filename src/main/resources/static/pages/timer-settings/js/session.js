@@ -21,7 +21,7 @@ async function startSession(){
     };
     await postSession(sessionData);
     localStorage.setItem('currentSession', JSON.stringify(sessionData));
-    //!!!!!!!!!! window.location.href = `${PATH}/timer/timer.html`;
+    window.location.href = `${PATH}/timer/timer.html`;
 }
 
 async function saveSkills() {

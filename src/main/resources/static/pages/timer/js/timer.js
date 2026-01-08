@@ -40,9 +40,12 @@ let animationFrameId = null;
 let currentPhase = 'WORK'; // WORK или BREAK
 let currentCycle = 1;
 
+const notify = new Audio('/static/assets/audio/notify1.mp3');
+notify.volume = 0.5;
 // ==================== Таймер ====================
 
 function startTimerPhase(phase, cycle) {
+
     currentPhase = phase;
     currentCycle = cycle;
 
@@ -86,18 +89,23 @@ function updateTimer() {
         return;
     }
 
-    const diff = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
-    renderTime(diff);
+    const diffMs = endTime - Date.now();
+    const diffSeconds = Math.ceil(diffMs / 1000);
 
-    if (diff > 0) {
-        animationFrameId = requestAnimationFrame(updateTimer);
-    } else {
-        // Фаза завершена
+    if (diffSeconds <= 0) {
+        // Фаза закончилась — НЕ рисуем 00
+        stopTimer();
         timerPhaseFinished();
+        return;
     }
+
+    renderTime(diffSeconds);
+    animationFrameId = requestAnimationFrame(updateTimer);
 }
 
+
 function timerPhaseFinished() {
+    playNotify();
     if (currentPhase === 'WORK') {
         if (currentCycle < SESSION.cycles) {
             startTimerPhase('BREAK', currentCycle); // переходим на перерыв
@@ -144,5 +152,52 @@ document.addEventListener('visibilitychange', () => {
     if (!document.hidden) updateTimer();
 });
 
+function playNotify() {
+    notify.src = notify.src;
+    notify.play();
+}
+
 // ==================== Инициализация ====================
 document.addEventListener('DOMContentLoaded', restoreTimer);
+
+// ==================== РЕЖИМ РАЗРАБОТЧИКА ====================
+const devModeBtn = document.getElementById('devModeBtn');
+devModeBtn.addEventListener('click', developerMode);
+
+function developerMode() {
+    if (!confirm('Активировать режим разработчика?\nWORK: 10с\nBREAK: 5с\nCYCLES: 2')) {
+        return;
+    }
+    // Устанавливаем значения для отладки
+    SESSION.workTime = 10;
+    SESSION.breakTime = 5;
+    SESSION.cycles = 2;
+
+    // Полный сброс таймера
+    resetTimer();
+}
+const resetTimerDevBtn = document.getElementById('resetTimerDevBtn');
+resetTimerDevBtn.addEventListener('click', resetTimerForTesting);
+
+function resetTimerForTesting() {
+    if (!confirm('Сбросить таймер и очистить сохранённое состояние?')) {
+        return;
+    }
+
+    // Останавливаем анимацию
+    stopTimer();
+
+    // Полностью чистим сохранённое состояние таймера
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CYCLE_KEY);
+
+    // Сбрасываем внутреннее состояние
+    currentPhase = 'WORK';
+    currentCycle = 1;
+
+    // Отрисовываем стартовое состояние (текущие настройки SESSION)
+    renderTime(SESSION.workTime);
+
+    console.log('Таймер сброшен для тестирования');
+}
+

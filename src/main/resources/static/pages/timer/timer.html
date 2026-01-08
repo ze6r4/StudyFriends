@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Marck+Script&display=swap" rel="stylesheet">
-   
+
 </head>
 <body>
 <div class="container">
@@ -37,7 +37,11 @@
 
                 <div class="notes-section">
                     <h2 class="notes-title">Мои заметки</h2>
-                    <div class="notes-content" contenteditable="true">
+                    <div
+                        id="notesContent"
+                        class="notes-content"
+                        contenteditable="true"
+                    >
                         <p>Повторить формулы по физике</p>
                         <p>Прочитать главу 5 по истории</p>
                         <p>Решить задачи 1-10</p>
@@ -46,6 +50,7 @@
                         <p>Можно редактировать этот текст прямо здесь...</p>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -72,7 +77,8 @@
 </div>
 
 <footer class="footer">
-    <p>Сфокусируйся на учебе • Пастельный таймер</p>
+    <button id="devModeBtn">Режим разработчика</button>
+    <button id="resetTimerDevBtn">Сбросить таймер</button>
 </footer>
 <script type="module" src="js/timer.js"></script>
 </body>

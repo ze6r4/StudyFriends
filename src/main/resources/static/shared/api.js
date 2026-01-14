@@ -83,6 +83,28 @@ export async function getFriends(playerId = 1) {
         errorMessage('сервер не нашел твоих друзей :(');
     }
 }
+// GET - запрос ДРУГ
+export async function getFriend(playerId = 1, friendId) {
+    try {
+        const response = await fetch(`${API_BASE}/friend?playerId=${playerId}&friendId=${friendId}`);
+        const friend = await response.json();
+        return friend;
+    } catch (error) {
+        errorMessage('сервер не нашел твоего друга :(');
+    }
+}
+// GET - запрос ПЕРСОНАЖ
+export async function getCharacter(characterId) {
+    try {
+        const response = await fetch(`${API_BASE}/characters/${characterId}`);
+        console.log(response);
+        console.log("!!!",characterId);
+        const character = await response.json();
+        return character;
+    } catch (error) {
+        errorMessage('сервер не нашел персонажа :(');
+    }
+}
 
 //POST - запрос СЕССИЯ
 export async function postSession(sessionData) {

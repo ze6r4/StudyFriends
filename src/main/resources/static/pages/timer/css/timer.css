@@ -23,17 +23,45 @@ body {
     background-color: var(--bg);
     overflow: hidden;
 }
+/* ВЕРХНИЙ ЗАГОЛОВОК ФАЗЫ */
+.phase-header {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 10px 36px;
+    border-radius: 30px;
+
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(6px);
+
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+#phaseTitle {
+    transition: opacity 0.3s ease;
+}
+
 
 .background {
     position: fixed;
-    inset: 0;
+    inset: 0;                 /* top:0 right:0 bottom:0 left:0 */
+    width: 100vw;
+    height: 100vh;
+
+    object-fit: cover;        /* КЛЮЧЕВОЕ — больше не растягивается криво */
+    object-position: right center;
+
     background-color: var(--bg);
-    background-image: url("/static/assets/images/characters/alex_study.png");
-    background-size: cover;
-    background-position: right center;
-    background-repeat: no-repeat;
     z-index: -1;
+    pointer-events: none;
 }
+
 
 /* ОСНОВНОЙ КОНТЕЙНЕР */
 .container {

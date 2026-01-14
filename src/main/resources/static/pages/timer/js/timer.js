@@ -1,4 +1,4 @@
-import { postSession } from '../../../shared/api.js';
+import { postSession, getCharacter,getFriend } from '../../../shared/api.js';
 
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
@@ -32,6 +32,9 @@ const minutesEl = document.getElementById('timer-minutes');
 const secondsEl = document.getElementById('timer-seconds');
 const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('giveupBtn');
+const phaseTitleEl = document.getElementById('phaseTitle');
+
+const bg = document.getElementById('bg');
 
 const STORAGE_KEY = 'timerEndTime';
 const CYCLE_KEY = 'timerCurrentCycle';
@@ -40,16 +43,33 @@ let animationFrameId = null;
 let currentPhase = 'WORK'; // WORK или BREAK
 let currentCycle = 1;
 
-const notify = new Audio('/static/assets/audio/notify1.mp3');
+const notify = new Audio('static/assets/audio/notify1.mp3');
 notify.volume = 0.5;
+const PATH_IMAGE = "/assets/images/characters";
+// ==================== Инициализация персонажа ====================
+async function initCharacter() {
+    const friend = await getFriend(SESSION.playerId, SESSION.friendId);
+    const character = await getCharacter(friend.characterId);
+    console.log(friend)
+    setBackground(character);
+    console.log('Персонаж загружен:', character);
+}
+function setBackground(character) {
+    bg.src = PATH_IMAGE + `/${character.studyImage}.png`;
+}
+
 // ==================== Таймер ====================
 
 function startTimerPhase(phase, cycle) {
-
     currentPhase = phase;
     currentCycle = cycle;
 
-    const seconds = phase === 'WORK' ? SESSION.workTime : SESSION.breakTime;
+    updatePhaseTitle(); // ⬅️ ВАЖНО
+
+    const seconds = phase === 'WORK'
+        ? SESSION.workTime
+        : SESSION.breakTime;
+
     const endTime = Date.now() + seconds * 1000;
 
     localStorage.setItem(STORAGE_KEY, endTime);
@@ -58,6 +78,7 @@ function startTimerPhase(phase, cycle) {
     stopTimer();
     updateTimer();
 }
+
 
 function stopTimer() {
     if (animationFrameId) {
@@ -70,10 +91,15 @@ function resetTimer() {
     stopTimer();
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CYCLE_KEY);
+
     currentCycle = 1;
     currentPhase = 'WORK';
+
+    updatePhaseTitle(); // ⬅️
+
     renderTime(SESSION.workTime);
 }
+
 
 function renderTime(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
@@ -101,6 +127,10 @@ function updateTimer() {
 
     renderTime(diffSeconds);
     animationFrameId = requestAnimationFrame(updateTimer);
+}
+function updatePhaseTitle() {
+    phaseTitleEl.textContent =
+        currentPhase === 'WORK' ? 'Работа' : 'Отдых';
 }
 
 
@@ -142,11 +172,12 @@ function restoreTimer() {
         currentPhase = 'WORK';
         currentCycle = 1;
     }
+    updatePhaseTitle();
 }
 
 // ==================== События ====================
 startBtn.addEventListener('click', () => startTimerPhase('WORK', currentCycle));
-resetBtn.addEventListener('click', resetTimer);
+//resetBtn.addEventListener('click', resetTimer);
 
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) updateTimer();
@@ -159,6 +190,7 @@ function playNotify() {
 
 // ==================== Инициализация ====================
 document.addEventListener('DOMContentLoaded', restoreTimer);
+document.addEventListener('DOMContentLoaded', initCharacter);
 
 // ==================== РЕЖИМ РАЗРАБОТЧИКА ====================
 const devModeBtn = document.getElementById('devModeBtn');

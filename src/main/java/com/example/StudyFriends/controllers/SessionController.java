@@ -41,7 +41,7 @@ public class SessionController {
         try{
             Player player = playerService.getPlayerById(dto.getPlayerId())
                     .orElseThrow(() -> new ResourceNotFoundException("Player", dto.getPlayerId()));
-            Friend friend = friendService.getFriendByIdAndPlayer(dto.getFriendId(),player.getId())
+            Friend friend = friendService.getFriendById(dto.getFriendId())
                     .orElseThrow(() -> new ResourceNotFoundException("Friend",dto.getFriendId()));
             Skill skill = skillService.getSkillById(dto.getSkillId())
                     .orElseThrow(() -> new ResourceNotFoundException("Skill",dto.getSkillId()));
@@ -94,11 +94,8 @@ public class SessionController {
             }
 
             if (dto.getFriendId() != null && dto.getPlayerId() != null) {
-                // Получаем playerId из сессии, если не передан в DTO
-                Long playerIdForFriend = dto.getPlayerId() != null ?
-                        dto.getPlayerId() : session.getPlayerId().getId();
 
-                Friend friend = friendService.getFriendByIdAndPlayer(dto.getFriendId(), playerIdForFriend)
+                Friend friend = friendService.getFriendById(dto.getFriendId())
                         .orElseThrow(() -> new ResourceNotFoundException("Friend", dto.getFriendId()));
                 session.setFriend(friend);
             }

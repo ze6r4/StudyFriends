@@ -14,4 +14,7 @@ public class CharacterService {
     public Optional<Character> getCharacterById(Long id){
         return characterRep.findById(id);
     }
+    public Character updateCharacter(Character character){
+        return characterRep.save(character);
+    }
 }

@@ -148,3 +148,23 @@ button:active {
 .range-input {
     margin-top: 10px; 
 }
+
+.toast-error {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff4d4f;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: .3s;
+    font-size: 20px;
+    z-index: 1000;
+}
+
+.toast-error.show {
+    opacity: 1;
+    transform: translateY(0);
+}

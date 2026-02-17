@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<img src="../../assets/images/room.png" alt="aaaa" class="room-bg"/>
+
+<div class="phase-header">
+    Вход
+</div>
+
+<div class="container">
+    <div class="notebook-section">
+        <div class="notebook">
+
+            <div class="notebook-rings">
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+                <div class="ring"></div>
+            </div>
+
+            <div class="notebook-title">
+                Добро пожаловать
+            </div>
+
+            <form class="form">
+                <label>
+                    Никнейм
+                    <input type="text" id="nickname">
+                </label>
+
+                <label>
+                    Пароль
+                    <input type="password" placeholder="••••••••">
+                </label>
+
+                <button class="btn" type="submit" id="submit-login">
+                    Войти
+                </button>
+            </form>
+
+            <div class="switch">
+                <a href="registration.html">Нет аккаунта?</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="character-wrapper">
+
+    <div class="character-message">
+        Привет! С возвращением!
+    </div>
+    <img src="../../assets/images/characters/nick_stand.png" alt="aaaa" class="greeting-character" width="220" height="300"/>
+
+</div>
+
+<script type="module" src="auth.js"></script>
+</body>
+</html>

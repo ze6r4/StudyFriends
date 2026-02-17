@@ -1,149 +1,98 @@
-const API_BASE = 'http://localhost:8081/api';
-const PLAYER_ID = 1;
+import { apiPublic, apiAuth } from './apiRequest.js';
 
-// GET - запрос все навыки
-export async function getSkills(playerId = 1) {
-    try {
-        const response = await fetch(`${API_BASE}/skills?playerId=${playerId}`);
-        const skills = await response.json();
-        console.log('Навыки из базы данных обычные', skills);
-        return skills;
-    } catch (error) {
-        errorMessage('сервер не нашел твои навыки :(');
-    }
-}
-// Получаем все навыки игрока с информацией о том, использовался ли навык в сессиях
-export async function getPlayerSkillsFull(playerId=1) {
-    try {
-        const response = await fetch(`${API_BASE}/skills/full?playerId=${playerId}`);
-        if (!response.ok) throw new Error('Ошибка при получении навыков игрока');
+/* ================= AUTH ================= */
 
-        const skills = await response.json();
-        console.log('Навыки из базы данных в сложном get-запросе!', skills);
-        return skills;
-    } catch (error) {
-        errorMessage('сервер не нашел активные навыки в сложном запросе')
-    }
+// регистрация
+export function postPlayer(data) {
+    return apiAuth('/register', {
+        method: 'POST',
+        body: data
+    });
 }
 
-// POST - сохранить НАВЫК ИГРОКА
-export async function postSkill(skillData) {
-    try {
-            const response = await fetch(`${API_BASE}/skills`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(skillData)
-            });
-            if (!response.ok) {
-                throw new Error(await response.text());
-            }
-            const result = await response.json();
-            console.log('Навыки сохранены!', result);
-            return result;
-
-        } catch (error) {
-            errorMessage('Навыки не сохранены.. ' + error.message);
-            return null;
-        }
-}
-// Обновляем навык (например, деактивируем)
-export async function updatePlayerSkill(skillId, data) {
-    try {
-        const response = await fetch(`${API_BASE}/skills/${skillId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error('Ошибка при обновлении навыка');
-        return await response.json();
-    } catch (error) {
-        errorMessage('ошибка при обновлении навыка (для отправки в архив)');
-    }
+// логин
+export function loginPlayer(data) {
+    return apiAuth('/login', {
+        method: 'POST',
+        body: data
+    });
 }
 
-// Удаляем навык
-export async function deletePlayerSkill(skillId) {
-    try {
-        const response = await fetch(`${API_BASE}/skills/${skillId}`, {
-            method: 'DELETE',
-        });
-        if (!response.ok) throw new Error('Ошибка при удалении навыка');
-    } catch (error) {
-        errorMessage('ошибка при удалении навыка')
-    }
+// текущий пользователь
+export function getMe() {
+    return apiAuth('/me');
 }
 
-// GET - запрос ДРУЗЬЯ ИГРОКА
-export async function getFriends(playerId = 1) {
-    try {
-        const response = await fetch(`${API_BASE}/friends?playerId=${playerId}`);
-        const friends = await response.json();
-        return friends;
-    } catch (error) {
-        errorMessage('сервер не нашел твоих друзей :(');
-    }
-}
-// GET - запрос ДРУГ
-export async function getFriend(playerId = 1, friendId) {
-    try {
-        const response = await fetch(`${API_BASE}/friend?playerId=${playerId}&friendId=${friendId}`);
-        const friend = await response.json();
-        return friend;
-    } catch (error) {
-        errorMessage('сервер не нашел твоего друга :(');
-    }
-}
-// GET - запрос ПЕРСОНАЖ
-export async function getCharacter(characterId) {
-    try {
-        const response = await fetch(`${API_BASE}/characters/${characterId}`);
-        console.log(response);
-        console.log("!!!",characterId);
-        const character = await response.json();
-        return character;
-    } catch (error) {
-        errorMessage('сервер не нашел персонажа :(');
-    }
+/* ================= SKILLS ================= */
+
+// все навыки игрока
+export function getSkills(playerId) {
+    return apiPublic(`/skills?playerId=${playerId}`);
 }
 
-//POST - запрос СЕССИЯ
-export async function postSession(sessionData) {
-    try {
-        const response = await fetch(`${API_BASE}/sessions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(sessionData)
-        });
-        if (!response.ok) {
-            throw new Error(await response.text());
-        }
-        const result = await response.json();
-        console.log('Сессия создана!', result);
-
-    } catch (error) {
-        errorMessage(error.message);
-    }
-}
-//PATCH - запрос СЕССИЯ
-export async function patchSession(sessionData) {
-    try {
-        const response = await fetch(`${API_BASE}/sessions`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(sessionData)
-        });
-        if (!response.ok) {
-            throw new Error(await response.text());
-        }
-        const result = await response.json();
-        console.log('Сессия обновлена!', result);
-
-    } catch (error) {
-        errorMessage(error.message);
-    }
+// навыки + сессии
+export function getPlayerSkillsFull(playerId) {
+    return apiPublic(`/skills/full?playerId=${playerId}`);
 }
 
-function errorMessage(error) {
-    console.error('Ошибка сервера!');
-    alert(`🤕Ой-ой-ой... Вот что случилось:\n${error}`);
+// сохранить навык
+export function postSkill(skillData) {
+    return apiPublic('/skills', {
+        method: 'POST',
+        body: skillData
+    });
+}
+
+// обновить навык
+export function updatePlayerSkill(skillId, data) {
+    return apiPublic(`/skills/${skillId}`, {
+        method: 'PATCH',
+        body: data
+    });
+}
+
+// удалить навык
+export function deletePlayerSkill(skillId) {
+    return apiPublic(`/skills/${skillId}`, {
+        method: 'DELETE'
+    });
+}
+
+/* ================= FRIENDS ================= */
+
+export function getFriends(playerId) {
+    return apiPublic(`/friends?playerId=${playerId}`);
+}
+
+export function getFriend(friendId) {
+    return apiPublic(`/friend?friendId=${friendId}`);
+}
+
+export function patchFriend(id, data) {
+    return apiPublic(`/friend/${id}`, {
+        method: 'PATCH',
+        body: data
+    });
+}
+
+/* ================= CHARACTERS ================= */
+
+export function getCharacter(characterId) {
+    return apiPublic(`/characters/${characterId}`);
+}
+
+/* ================= SESSIONS ================= */
+
+export function postSession(sessionData) {
+    return apiPublic('/sessions', {
+        method: 'POST',
+        body: sessionData
+    });
+}
+
+export function patchSession(id, sessionData) {
+    return apiPublic(`/sessions/${id}`, {
+        method: 'PATCH',
+        body: sessionData
+    });
 }

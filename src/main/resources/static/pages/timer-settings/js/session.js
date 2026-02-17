@@ -6,6 +6,7 @@ const PLAYER_ID = 1;
 import { skillsChanged } from './custom-select.logic.js';
 import {selectedFriendId} from './friend-cards.js';
 
+
 async function startSession(){
     if (skillsChanged.value === true) {
         await saveSkills();

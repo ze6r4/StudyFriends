@@ -45,8 +45,7 @@ public class ItemController {
         try {
             PlayerItem playerItem = itemService.getPlayerItemById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("PlayerItem", id));
-            Item item = itemService.getItemById(dto.getItemId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Item", id));
+            Item item = playerItem.getItem();
 
             playerItem.setInRoom(dto.getInRoom());
             playerItem.setIsBought(dto.getIsBought());

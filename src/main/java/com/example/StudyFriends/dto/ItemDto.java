@@ -13,7 +13,7 @@ public class ItemDto {
     private Boolean inRoom;
     private Boolean isBought;
 
-    // Можно также включить дополнительную информацию о предмете
+    // из сущности Item
     private String itemName;
     private String itemImage;
     private String itemCard;
@@ -32,7 +32,7 @@ public class ItemDto {
 
         if (playerItem.getItem() != null) {
             dto.setItemId(playerItem.getItem().getId());
-            // Дополнительная информация о предмете
+
             dto.setItemName(playerItem.getItem().getName());
             dto.setItemImage(playerItem.getItem().getImage());
             dto.setItemPrice(playerItem.getItem().getPrice());

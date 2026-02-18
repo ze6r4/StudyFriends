@@ -2,9 +2,9 @@ package com.example.StudyFriends.model;
 
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +24,14 @@ public class Item {
 
     @Column(nullable = false)
     private String image;
+    @Column(name = "image_card")
+    private String imageCard;
 
     @Column(nullable = false)
     private Integer price;
 
     @ManyToOne
-    @JoinColumn(name = "pos_type", nullable = false)
+    @JoinColumn(name = "pos_type")
     private Position posType;
 
     @OneToMany(mappedBy = "item")

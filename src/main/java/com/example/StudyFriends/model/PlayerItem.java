@@ -1,9 +1,9 @@
 package com.example.StudyFriends.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -25,4 +25,6 @@ public class PlayerItem {
 
     @Column(name = "in_room", nullable = false)
     private Boolean inRoom;
+    @Column(name = "is_bought", nullable = false)
+    private Boolean isBought;
 }

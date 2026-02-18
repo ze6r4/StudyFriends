@@ -3,7 +3,7 @@ export function generateItemHtml(items) {
 
     items.forEach(item => {
         html += `
-            <div class="item-card" data-item-id="${item.itemId}">
+            <div class="item-card" data-id="${item.id}">
                 <img src="../../assets/images/items/${item.itemCard}.png" alt="${item.itemName}">
                 <div>${item.itemName}</div>
                 ${!item.isBought

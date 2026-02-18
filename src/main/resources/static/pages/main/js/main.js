@@ -1,15 +1,18 @@
 import { getItems, patchItem } from '../../../shared/api.js';
-
 import { generateItemHtml } from './item-cards.html.js';
 
 const PLAYER_ID = 1;
 
-let initialInRoom = new Set();   // что было изначально
-let selectedItems = new Map();   // текущий предпросмотр
-let isShopOpen = false;
 let allItems = [];
+let initialInRoom = new Set();
+
+// 👇 ВАЖНО — ЭТИ ДВЕ СТРОКИ
+let itemsToAdd = new Set();
+let itemsToRemove = new Set();
 
 let currentTab = "bought";
+let isShopOpen = false;
+
 
 document.addEventListener("DOMContentLoaded", initMain);
 
@@ -22,11 +25,13 @@ async function initMain() {
     allItems = await loadItems();
 
     initialInRoom = new Set(
-        allItems.filter(i => i.inRoom).map(i => i.itemId)
+        allItems.filter(i => i.inRoom).map(i => i.id)
     );
 
     renderInitialRoom();
     renderCurrentTab();
+    console.log("ALL ITEMS:", allItems);
+
 }
 
 
@@ -62,7 +67,19 @@ function renderCurrentTab() {
     );
 
     grid.innerHTML = generateItemHtml(filtered);
+    highlightActiveItems();
     bindItemClicks();
+}
+function highlightActiveItems() {
+
+    document.querySelectorAll(".item-card").forEach(card => {
+
+        const id = Number(card.dataset.id);
+
+        if (initialInRoom.has(id) && !itemsToRemove.has(id)) {
+            card.classList.add("selected");
+        }
+    });
 }
 
 /* =========================
@@ -76,17 +93,39 @@ function bindItemClicks() {
 }
 
 function toggleItem(card) {
-    const id = Number(card.dataset.itemId);
-    const item = allItems.find(i => i.itemId === id);
 
-    if (selectedItems.has(id)) {
-        selectedItems.delete(id);
-        card.classList.remove("selected");
-        removePreview(id);
+    const id = Number(card.dataset.id);
+    const item = allItems.find(i => i.id === id);
+
+    const isInitiallyInRoom = initialInRoom.has(id);
+    const isMarkedToAdd = itemsToAdd.has(id);
+    const isMarkedToRemove = itemsToRemove.has(id);
+
+    // ===== Если предмет был в комнате =====
+    if (isInitiallyInRoom) {
+
+        if (isMarkedToRemove) {
+            itemsToRemove.delete(id);
+            card.classList.add("selected");
+            addPreview(item);
+        } else {
+            itemsToRemove.add(id);
+            card.classList.remove("selected");
+            removePreview(id);
+        }
+
     } else {
-        selectedItems.set(id, item);
-        card.classList.add("selected");
-        addPreview(item);
+        // ===== Если предмета не было =====
+
+        if (isMarkedToAdd) {
+            itemsToAdd.delete(id);
+            card.classList.remove("selected");
+            removePreview(id);
+        } else {
+            itemsToAdd.add(id);
+            card.classList.add("selected");
+            addPreview(item);
+        }
     }
 
     updateBottomBar();
@@ -99,7 +138,7 @@ function toggleItem(card) {
 function addPreview(item) {
     const img = document.createElement("img");
     img.src = `../../assets/images/items/${item.itemImage}.png`;
-    img.dataset.previewId = item.itemId;
+    img.dataset.previewId = item.id;
     document.getElementById("roomItems").appendChild(img);
 }
 
@@ -113,9 +152,13 @@ function removePreview(id) {
 ========================= */
 
 function updateBottomBar() {
-    const totalPrice = [...selectedItems.values()]
-        .filter(i => !i.isBought)
-        .reduce((sum, i) => sum + i.itemPrice, 0);
+
+    let totalPrice = 0;
+
+    itemsToAdd.forEach(id => {
+        const item = allItems.find(i => i.id === id);
+        if (!item.isBought) totalPrice += item.itemPrice;
+    });
 
     const priceEl = document.getElementById("totalPrice");
     const btn = document.getElementById("applyBtn");
@@ -129,39 +172,71 @@ function updateBottomBar() {
     }
 }
 
+
 function bindApplyButton() {
     document.getElementById("applyBtn")
         .addEventListener("click", applyChanges);
 }
-
 async function applyChanges() {
-
-    const selectedIds = new Set(selectedItems.keys());
 
     for (const item of allItems) {
 
-        const shouldBeInRoom = selectedIds.has(item.itemId);
+        const id = item.itemId;
 
-        const updatedData = new FormData();
-        updatedData.append("in_room", shouldBeInRoom);
-        updatedData.append("is_bought", shouldBeInRoom ? true : item.isBought);
+        let shouldBeInRoom = initialInRoom.has(id);
+
+        if (itemsToAdd.has(id)) shouldBeInRoom = true;
+        if (itemsToRemove.has(id)) shouldBeInRoom = false;
+
+        if (shouldBeInRoom === item.inRoom) continue;
+
+        const updatedData = {
+            inRoom: shouldBeInRoom,
+            isBought: shouldBeInRoom ? true : item.isBought
+        };
 
         await patchItem(item.id, updatedData);
     }
 
-    initialInRoom = new Set(selectedIds);
+    // 🔥 ПОЛНОСТЬЮ ПЕРЕЗАГРУЖАЕМ СЕРВЕРНОЕ СОСТОЯНИЕ
+    allItems = await loadItems();
 
-    selectedItems.clear();
-    toggleShop();
+    initialInRoom = new Set(
+        allItems
+            .filter(i => i.inRoom)
+            .map(i => i.itemId)
+    );
+
+    itemsToAdd.clear();
+    itemsToRemove.clear();
+
+    // Перерисовываем комнату и вкладку
+    renderInitialRoom();
+    renderCurrentTab();
+
+    // Закрываем панель без reset
+    closeShopAfterApply();
 }
+function closeShopAfterApply() {
+
+    const panel = document.getElementById("shopPanel");
+    const room = document.getElementById("room");
+
+    isShopOpen = false;
+
+    panel.classList.remove("open");
+    room.style.transform = "translateX(0)";
+}
+
 function resetChanges() {
 
-    selectedItems.clear();
+    itemsToAdd.clear();
+    itemsToRemove.clear();
 
     document.getElementById("roomItems").innerHTML = "";
 
     allItems.forEach(item => {
-        if (initialInRoom.has(item.itemId)) {
+        if (initialInRoom.has(item.id)) {
             addPreview(item);
         }
     });
@@ -169,6 +244,7 @@ function resetChanges() {
     document.querySelectorAll(".item-card")
         .forEach(card => card.classList.remove("selected"));
 
+    highlightActiveItems();
     updateBottomBar();
 }
 

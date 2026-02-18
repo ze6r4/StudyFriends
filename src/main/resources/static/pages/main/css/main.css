@@ -1,12 +1,28 @@
+:root {
+    --bg: #fffdf9;
+    --card: #fffaf4;
+
+    --line: #8c6f64;
+    --text: #5b4a44;
+
+    --accent-1: #ffd9e2;
+    --accent-2: #d8ecff;
+    --accent-3: #fff3c8;
+
+    --radius: 10px;
+    --pad: 12px;
+    --font: "Segoe UI", system-ui, sans-serif;
+}
 /*Задаём общие параметры для всей страницы: шрифт и отступы*/
 body {
-  text-align: center;
-  margin: 10;
-  font-family: cursive;
-  font-size: 16px;
-  background-color: blanchedalmond;
+    margin: 0;
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+    overflow: hidden;
+    font-size: 16px;
+    background-color: blanchedalmond;
 }
-
 .button {
   display: flex;
   margin: 0 auto;
@@ -53,4 +69,112 @@ body {
   .button:active {
     padding: 0 40px;
   }
+}
+
+
+
+
+/* ===== ОБЁРТКА ===== */
+
+.room-wrapper {
+    display: flex;
+    height: 100vh;
+    position: relative;
+}
+
+/* ===== КНОПКА ===== */
+
+.edit-room-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+
+    border: 2px solid var(--line);
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+/* ===== ПАНЕЛЬ ===== */
+
+.shop-panel {
+    width: 320px;
+    background: var(--card);
+    border-right: 2px solid var(--line);
+    padding: 20px;
+    overflow-y: auto;
+
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.shop-panel.open {
+    transform: translateX(0);
+}
+
+/* ===== СЕТКА ПРЕДМЕТОВ ===== */
+
+.items-grid {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.item-card {
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    background: #fff;
+    text-align: center;
+    cursor: pointer;
+}
+
+.item-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.item-name {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.item-price {
+    font-size: 14px;
+    color: #7a6a63;
+}
+
+/* ===== КОМНАТА ===== */
+
+.room-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    transition: margin-left 0.3s ease;
+}
+
+.room-container.shifted {
+    margin-left: 320px;
+}
+
+.room {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transform-origin: center center;
+    cursor: grab;
+}
+
+.room-image {
+    max-width: 1200px;
+    width: 100%;
+    user-select: none;
+    pointer-events: none;
 }

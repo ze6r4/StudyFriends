@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await postPlayer(data);
-            //window.location.href = '/pages/main/main.html';
+            window.location.href = '/pages/main/main.html';
         } catch (e) {
             showError(e);
         }
@@ -37,7 +37,7 @@ document.getElementById('submit-login').addEventListener('click', async (e) => {
 
     try {
         await loginPlayer(data);
-        //window.location.href = '/pages/main/main.html';
+        window.location.href = '/pages/main/main.html';
     } catch (e) {
         showError(e);
     }

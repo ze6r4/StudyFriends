@@ -82,7 +82,7 @@ export function getCharacter(characterId) {
 }
 /* ================= ITEMS ================= */
 export function getItems(playerId) {
-    return apiPublic(`/player/items/?playerId=${playerId}`);
+    return apiPublic(`/items?playerId=${playerId}`);
 }
 /* ================= SESSIONS ================= */
 

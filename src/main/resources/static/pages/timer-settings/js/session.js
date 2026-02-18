@@ -12,7 +12,7 @@ async function startSession(){
         await saveSkills();
     }
     const skillId = document.querySelector('.select-dropdown li[aria-selected="true"]')?.dataset.skillId || null;
-    const friendId = document.querySelector('.friend-card.selected')?.dataset.friendId || 1;
+    const friendId = document.querySelector('.friend-card.selected')?.dataset.friendId;
     const sessionData = {
         workMinutes: parseInt(document.getElementById('workMinutes').value, 10),
         restMinutes: parseInt(document.getElementById('restMinutes').value, 10),

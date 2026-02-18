@@ -1,23 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Study Friends</title>
+    <title>Study Friends — Комната</title>
+
+
     <link rel="stylesheet" href="css/main.css">
-    <style>
-        img {
-            width: 100%;
-            height: 700px;
-            object-fit: scale-down;
-        }
-    </style>
 </head>
 <body>
-<img src="../../assets/images/room.png" alt="Комната!!!" />
-<div style="text-align: center">
-    <button onclick="timerSettingsStartButton" class="button">Start</button>
+
+<div class="room-wrapper">
+
+    <!-- КНОПКА РЕДАКТИРОВАНИЯ -->
+    <button class="edit-room-btn" id="toggleShopBtn" aria-label="Редактировать комнату">
+        ⚙
+    </button>
+
+    <!-- ЛЕВАЯ ПАНЕЛЬ -->
+    <aside class="shop-panel" id="shopPanel">
+        <header>
+            <h2>Предметы</h2>
+            <p class="lead">Купленные и доступные</p>
+        </header>
+
+        <div class="items-grid"></div>
+    </aside>
+
+    <!-- КОМНАТА -->
+    <div class="room-container" id="roomContainer">
+        <div class="room" id="room">
+            <img src="../../assets/images/room.png" alt="Комната" class="room-image">
+        </div>
+    </div>
+
 </div>
 
+<script type="module" src="js/main.js"></script>
 </body>
 </html>

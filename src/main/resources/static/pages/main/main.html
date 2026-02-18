@@ -5,32 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Study Friends — Комната</title>
 
-
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
 <div class="room-wrapper">
 
-    <!-- КНОПКА РЕДАКТИРОВАНИЯ -->
-    <button class="edit-room-btn" id="toggleShopBtn" aria-label="Редактировать комнату">
-        ⚙
-    </button>
+    <button class="edit-room-btn" id="toggleShopBtn">⚙</button>
 
-    <!-- ЛЕВАЯ ПАНЕЛЬ -->
+    <!-- ПАНЕЛЬ -->
     <aside class="shop-panel" id="shopPanel">
-        <header>
-            <h2>Предметы</h2>
-            <p class="lead">Купленные и доступные</p>
-        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="bought">Купленные</button>
+            <button class="tab" data-tab="notBought">Не купленные</button>
+        </div>
 
         <div class="items-grid"></div>
+
+        <div class="bottom-bar">
+            <div class="total-price" id="totalPrice"></div>
+            <button class="apply-btn" id="applyBtn">Применить</button>
+        </div>
+
     </aside>
 
     <!-- КОМНАТА -->
     <div class="room-container" id="roomContainer">
         <div class="room" id="room">
-            <img src="../../assets/images/room.png" alt="Комната" class="room-image">
+            <img src="../../assets/images/room.png" class="room-base">
+            <div class="room-items" id="roomItems"></div>
         </div>
     </div>
 

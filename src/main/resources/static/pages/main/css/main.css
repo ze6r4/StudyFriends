@@ -21,7 +21,7 @@ body {
     color: var(--text);
     overflow: hidden;
     font-size: 16px;
-    background-color: blanchedalmond;
+    background-color: #ffebcd;
 }
 .button {
   display: flex;
@@ -73,53 +73,68 @@ body {
 
 
 
+body {
+    margin: 0;
 
-/* ===== ОБЁРТКА ===== */
+    font-family: var(--font);
+    color: var(--text);
+    overflow: hidden;
+}
 
 .room-wrapper {
-    display: flex;
-    height: 100vh;
     position: relative;
+    height: 100vh;
 }
 
-/* ===== КНОПКА ===== */
-
-.edit-room-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 20;
-
-    border: 2px solid var(--line);
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-/* ===== ПАНЕЛЬ ===== */
+/* ===== Панель ===== */
 
 .shop-panel {
-    width: 320px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 340px;
     background: var(--card);
     border-right: 2px solid var(--line);
     padding: 20px;
-    overflow-y: auto;
 
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .shop-panel.open {
     transform: translateX(0);
 }
 
-/* ===== СЕТКА ПРЕДМЕТОВ ===== */
+/* ===== ТАБЫ ===== */
+
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.tab {
+    flex: 1;
+    border: 2px solid var(--line);
+    background: white;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: var(--accent-1);
+}
+
+/* ===== СЕТКА ===== */
 
 .items-grid {
+    flex: 1;
+    overflow-y: auto;
     display: grid;
-    gap: 16px;
-    margin-top: 20px;
+    gap: 14px;
 }
 
 .item-card {
@@ -129,52 +144,125 @@ body {
     background: #fff;
     text-align: center;
     cursor: pointer;
+    transition: background 0.2s;
+}
+
+.item-card.selected {
+    background: #e8dcdc;
 }
 
 .item-card img {
     width: 100px;
     height: 100px;
     object-fit: contain;
-    margin-bottom: 10px;
-}
-
-.item-name {
-    font-weight: 600;
-    margin-bottom: 6px;
 }
 
 .item-price {
+    margin-top: 6px;
     font-size: 14px;
-    color: #7a6a63;
+}
+
+/* ===== НИЖНЯЯ ПАНЕЛЬ ===== */
+
+.bottom-bar {
+    border-top: 2px solid var(--line);
+    padding-top: 12px;
+}
+
+.apply-btn {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--line);
+    background: var(--accent-2);
+    cursor: pointer;
+}
+
+.total-price {
+    margin-bottom: 6px;
 }
 
 /* ===== КОМНАТА ===== */
 
 .room-container {
-    flex: 1;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
-    position: relative;
-    transition: margin-left 0.3s ease;
-}
-
-.room-container.shifted {
-    margin-left: 320px;
 }
 
 .room {
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+    position: relative;
     transform-origin: center center;
-    cursor: grab;
 }
 
-.room-image {
-    max-width: 1200px;
+.room-base {
     width: 100%;
-    user-select: none;
+    height: 100%;
+    object-fit: contain;
     pointer-events: none;
 }
+
+.room-items {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.room-items img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.room-container {
+    position: relative;
+    z-index: 1;
+}
+
+.shop-panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 340px;
+    background: var(--card);
+    border-right: 2px solid var(--line);
+    padding: 20px;
+
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 10;   /* ← ВАЖНО */
+}
+
+.edit-room-btn {
+    z-index: 20;   /* чтобы кнопка была поверх всего */
+}
+.edit-room-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+
+    width: 60px;
+    height: 60px;
+
+    font-size: 26px;
+
+    border: 2px solid var(--line);
+    background: var(--accent-3);
+    border-radius: 50%;
+    cursor: pointer;
+
+    z-index: 1000;
+}
+.shop-panel {
+    z-index: 900;
+}
+

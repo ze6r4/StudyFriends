@@ -22,6 +22,9 @@ public class ItemService {
     public Item updateItem(Item item){
         return itemRep.save(item);
     }
+    public PlayerItem updatePlayerItem(PlayerItem item){
+        return playerItemRep.save(item);
+    }
     public Optional<PlayerItem> getPlayerItemById(Long id){
         return playerItemRep.findById(id);
     }

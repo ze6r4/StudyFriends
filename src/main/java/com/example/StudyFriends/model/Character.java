@@ -35,6 +35,8 @@ public class Character {
 
     @Column(name = "study_image", nullable = false)
     private String studyImage;
+    @Column(name = "rest_image", nullable = false)
+    private String restImage;
 
     @Column(name = "card_image")
     private String cardImage;

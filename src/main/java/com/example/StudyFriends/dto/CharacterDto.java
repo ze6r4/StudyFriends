@@ -14,6 +14,7 @@ public class CharacterDto {
     private String sitImage;
     private String standImage;
     private String studyImage;
+    private String restImage;
     private String cardImage;
 
     public static CharacterDto fromEntity(Character character) {
@@ -33,6 +34,7 @@ public class CharacterDto {
         response.setStandImage(character.getStandImage());
         response.setStudyImage(character.getStudyImage());
         response.setCardImage(character.getCardImage());
+        response.setRestImage(character.getRestImage());
 
         return response;
     }

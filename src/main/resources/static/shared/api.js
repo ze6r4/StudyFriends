@@ -80,7 +80,10 @@ export function patchFriend(id, data) {
 export function getCharacter(characterId) {
     return apiPublic(`/characters/${characterId}`);
 }
-
+/* ================= ITEMS ================= */
+export function getItems(playerId) {
+    return apiPublic(`/player/items/?playerId=${playerId}`);
+}
 /* ================= SESSIONS ================= */
 
 export function postSession(sessionData) {

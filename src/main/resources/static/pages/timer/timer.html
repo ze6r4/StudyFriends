@@ -17,14 +17,27 @@
     <span id="phaseTitle">Работа</span>
 </header>
 
-<img
-        id="bg"
-        src = ""
-        alt="Фон"
-        class="background"
-        width="1920"
-        height="1080"
->
+<div class="bg">
+    <img
+            id="tableImg"
+            src = "/assets/images/table_bg.png"
+            alt="олоол"
+    >
+    <img
+            id="notesImg"
+            src = "/assets/images/notes_bg.png"
+            alt="Фон"
+
+    >
+
+    <img
+            id="characterImg"
+            src = ""
+            alt="олодлодло"
+    >
+</div>
+
+
 
 <div class="container">
 
@@ -41,7 +54,6 @@
             </div>
 
             <div class="notebook-content">
-                <h1 class="notebook-title">Заметки</h1>
 
                 <div
                         id="notesContent"
@@ -58,14 +70,14 @@
 </div>
 
 <!-- ТАЙМЕР + КНОПКА -->
-<div class="bottom-center">
+<div class="bottom-left">
 
     <div class="timer-standalone">
-        <span id="timer-minutes">25</span>:<span id="timer-seconds">00</span>
+        <span id="timer-minutes">25</span>    <span id="timer-seconds">00</span>
     </div>
 
-    <button class="btn btn-start" id="startBtn">
-        <span>Начать</span>
+    <button  class="image-button" id="startBtn" >
+        <img src="/assets/images/start_button.png" alt="Начать">
     </button>
 
 </div>

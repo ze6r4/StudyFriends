@@ -7,6 +7,12 @@
     --radius: 12px;
     --font: "Marck Script", cursive;
 }
+@font-face {
+font-family: 'overdoze';
+src: url('/shared/overdozesans.ttf') format('truetype'),local('overdozesans');
+font-style: normal;
+font-display: swap;
+}
 
 /* RESET */
 * {
@@ -17,51 +23,34 @@
 
 /* ФОН */
 body {
-    min-height: 100vh;
     font-family: var(--font);
-    color: var(--text);
-    background-color: var(--bg);
     overflow: hidden;
+    background-color: var(--bg);
 }
-/* ВЕРХНИЙ ЗАГОЛОВОК ФАЗЫ */
-.phase-header {
-    position: fixed;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    padding: 10px 36px;
-    border-radius: 30px;
-
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(6px);
-
-    font-size: 1.8rem;
-    letter-spacing: 1px;
-
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    z-index: 10;
+#notesImg,
+#tableImg,
+#characterImg {
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    display: block;
 }
+#characterImg {
+    transition: opacity 0.3s ease;
+}
+
+.bg img {
+    position: absolute;
+    inset: 0;           /* top:0 right:0 bottom:0 left:0 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 
 #phaseTitle {
     transition: opacity 0.3s ease;
 }
-
-
-.background {
-    position: fixed;
-    inset: 0;                 /* top:0 right:0 bottom:0 left:0 */
-    width: 100vw;
-    height: 100vh;
-
-    object-fit: cover;        /* КЛЮЧЕВОЕ — больше не растягивается криво */
-    object-position: right center;
-
-    background-color: var(--bg);
-    z-index: -1;
-    pointer-events: none;
-}
-
 
 /* ОСНОВНОЙ КОНТЕЙНЕР */
 .container {
@@ -70,59 +59,41 @@ body {
     align-items: flex-start;
 }
 
-/* БЛОКНОТ СЛЕВА */
-.notebook-section {
-    margin-left: 16px;
-    margin-top: 40px;
-}
-
-.notebook {
-    width: 420px;
-    min-height: 560px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 40px 30px 30px 50px;
-    position: relative;
-}
-
-/* КОЛЬЦА */
-.notebook-rings {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-}
-
-.ring {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--line);
-    opacity: 0.6;
-}
-
-/* КОНТЕНТ */
-.notebook-title {
-    text-align: center;
-    font-size: 2.4rem;
-    margin-bottom: 20px;
-    border-bottom: 1px dashed var(--line);
-    padding-bottom: 10px;
-}
 
 .notes-content {
-    margin-top: 20px;
-    font-family: "Nunito", "Segoe UI", sans-serif; /* ⬅️ простой шрифт */
-    font-size: 1.05rem;
+    position: absolute;
+    top: 100px;
+    left: 170px;
+    font-family: "overdoze";
+    font-size: 2rem;
     line-height: 1.7;
     min-height: 350px;
+    color: #714543;
     outline: none;
 }
 
+.timer-standalone{
+        position: absolute;
+        bottom: 10px;
+        left: 190px;
+        font-family:"overdoze";
+        font-size: 7rem;
+        color: #BDECB6;
+
+}
+#timer-seconds{
+    margin-left:90px;
+}
+#startBtn {
+    position: absolute;
+    left: 150px;
+    bottom: 220px;
+    background-size: cover;
+    background: transparent;
+
+    border: none;
+
+}
 
 .notes-content p {
     margin-bottom: 10px;
@@ -138,47 +109,6 @@ body {
     color: var(--line);
 }
 
-/* НИЖНИЙ ЦЕНТР */
-.bottom-center {
-    position: fixed;
-    left: 50%;
-    bottom: 40px;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-}
-
-/* ТАЙМЕР — ЭЛЕКТРОННЫЕ ЧАСЫ */
-.timer-standalone {
-    padding: 18px 40px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--card);
-
-    font-family: "Courier New", monospace;
-    font-size: 4.2rem;          /* ⬅️ увеличили */
-    letter-spacing: 6px;        /* ощущение электронных часов */
-    line-height: 1;
-}
-
-
-/* КНОПКА */
-.btn {
-    padding: 14px 42px;
-    font-size: 1.4rem;
-    border-radius: 40px;
-    border: 1px solid var(--line);
-    background: var(--accent-1);
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    background: #ffc6d0;
-}
 
 /* ФУТЕР */
 .footer {

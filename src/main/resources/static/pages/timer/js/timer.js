@@ -37,7 +37,9 @@ const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('giveupBtn');
 const phaseTitleEl = document.getElementById('phaseTitle');
 
-const bg = document.getElementById('bg');
+const characterImg = document.getElementById('characterImg');
+const tableImg = document.getElementById('tableImg');
+const notesImg = document.getElementById('notesImg');
 
 const STORAGE_KEY = 'timerEndTime';
 const CYCLE_KEY = 'timerCurrentCycle';
@@ -45,22 +47,37 @@ const CYCLE_KEY = 'timerCurrentCycle';
 let animationFrameId = null;
 let currentPhase = 'WORK'; // WORK или BREAK
 let currentCycle = 1;
+let currentCharacter = null;
 
 const notify = new Audio('/assets/audio/notify1.mp3');
 
 notify.volume = 0.5;
-const PATH_IMAGE = "/assets/images/characters";
 // ==================== Инициализация персонажа ====================
 async function initCharacter() {
-    const friend = await getFriend(SESSION.playerId, SESSION.friendId);
+    const friend = await getFriend(SESSION.friendId);
     const character = await getCharacter(friend.characterId);
-    console.log(friend)
-    setBackground(character);
-    console.log('Персонаж загружен:', character);
+
+    currentCharacter = character; // сохраняем
+
+    updateCharacterImage(); // устанавливаем картинку по текущей фазе
+
+    console.log('Персонаж загружен:', character.studyImage);
 }
-function setBackground(character) {
-    bg.src = PATH_IMAGE + `/${character.studyImage}.png`;
+
+function setBackground(imageName) {
+    characterImg.src = "/assets/images" + `/characters/${imageName}.png`;
 }
+function updateCharacterImage() {
+    if (!currentCharacter) return;
+
+    const imageName =
+        currentPhase === 'WORK'
+            ? currentCharacter.studyImage
+            : currentCharacter.restImage;
+
+    setBackground(imageName);
+}
+
 
 // ==================== Таймер ====================
 
@@ -69,6 +86,7 @@ function startTimerPhase(phase, cycle) {
     currentCycle = cycle;
 
     updatePhaseTitle();
+    updateCharacterImage(); // 👈 ВАЖНО
 
     const seconds = phase === 'WORK'
         ? SESSION.workTime
@@ -201,6 +219,7 @@ function restoreTimer() {
         }
     }
 
+
     currentPhase = phase;
     currentCycle = cycle;
 
@@ -208,6 +227,7 @@ function restoreTimer() {
     localStorage.setItem(PHASE_KEY, phase);
     localStorage.setItem(CYCLE_KEY, cycle);
 
+    updateCharacterImage();
     updatePhaseTitle();
     updateTimer();
 }

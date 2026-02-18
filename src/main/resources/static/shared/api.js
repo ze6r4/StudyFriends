@@ -84,6 +84,13 @@ export function getCharacter(characterId) {
 export function getItems(playerId) {
     return apiPublic(`/items?playerId=${playerId}`);
 }
+export function patchItem(id, itemData) {
+    return apiPublic(`/items/${id}`, {
+        method: 'PATCH',
+        body: itemData
+    });
+}
+
 /* ================= SESSIONS ================= */
 
 export function postSession(sessionData) {

@@ -6,17 +6,25 @@ const PLAYER_ID = 1;
 let allItems = [];
 let initialInRoom = new Set();
 
-// 👇 ВАЖНО — ЭТИ ДВЕ СТРОКИ
 let itemsToAdd = new Set();
 let itemsToRemove = new Set();
 
 let currentTab = "bought";
 let isShopOpen = false;
 
+let panelOffset = 0;
+let translateX = 0;
+let scale = 1;
+
+let room;
+
+/* ========================= */
 
 document.addEventListener("DOMContentLoaded", initMain);
 
 async function initMain() {
+    room = document.getElementById("room");
+
     bindTogglePanel();
     bindTabs();
     bindApplyButton();
@@ -30,10 +38,7 @@ async function initMain() {
 
     renderInitialRoom();
     renderCurrentTab();
-    console.log("ALL ITEMS:", allItems);
-
 }
-
 
 /* ========================= */
 
@@ -43,13 +48,16 @@ async function loadItems() {
 }
 
 /* =========================
-   Табы
+   ТАБЫ
 ========================= */
 
 function bindTabs() {
-    document.querySelectorAll(".tab").forEach(tab => {
+    document.querySelectorAll("#shopPanel .tab").forEach(tab => {
         tab.addEventListener("click", () => {
-            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document
+                .querySelectorAll("#shopPanel .tab")
+                .forEach(t => t.classList.remove("active"));
+
             tab.classList.add("active");
             currentTab = tab.dataset.tab;
             renderCurrentTab();
@@ -58,7 +66,9 @@ function bindTabs() {
 }
 
 function renderCurrentTab() {
-    const grid = document.querySelector(".items-grid");
+    const grid = document
+        .getElementById("shopPanel")
+        .querySelector(".items-grid");
 
     const filtered = allItems.filter(item =>
         currentTab === "bought"
@@ -67,29 +77,34 @@ function renderCurrentTab() {
     );
 
     grid.innerHTML = generateItemHtml(filtered);
+
     highlightActiveItems();
     bindItemClicks();
 }
+
 function highlightActiveItems() {
+    document
+        .querySelectorAll("#shopPanel .item-card")
+        .forEach(card => {
 
-    document.querySelectorAll(".item-card").forEach(card => {
+            const id = Number(card.dataset.id);
 
-        const id = Number(card.dataset.id);
-
-        if (initialInRoom.has(id) && !itemsToRemove.has(id)) {
-            card.classList.add("selected");
-        }
-    });
+            if (initialInRoom.has(id) && !itemsToRemove.has(id)) {
+                card.classList.add("selected");
+            }
+        });
 }
 
 /* =========================
-   Выбор предметов
+   ВЫБОР ПРЕДМЕТОВ
 ========================= */
 
 function bindItemClicks() {
-    document.querySelectorAll(".item-card").forEach(card => {
-        card.addEventListener("click", () => toggleItem(card));
-    });
+    document
+        .querySelectorAll("#shopPanel .item-card")
+        .forEach(card => {
+            card.addEventListener("click", () => toggleItem(card));
+        });
 }
 
 function toggleItem(card) {
@@ -97,11 +112,12 @@ function toggleItem(card) {
     const id = Number(card.dataset.id);
     const item = allItems.find(i => i.id === id);
 
+    if (!item) return; // защита
+
     const isInitiallyInRoom = initialInRoom.has(id);
     const isMarkedToAdd = itemsToAdd.has(id);
     const isMarkedToRemove = itemsToRemove.has(id);
 
-    // ===== Если предмет был в комнате =====
     if (isInitiallyInRoom) {
 
         if (isMarkedToRemove) {
@@ -115,7 +131,6 @@ function toggleItem(card) {
         }
 
     } else {
-        // ===== Если предмета не было =====
 
         if (isMarkedToAdd) {
             itemsToAdd.delete(id);
@@ -132,13 +147,19 @@ function toggleItem(card) {
 }
 
 /* =========================
-   Предпросмотр
+   ПРЕДПРОСМОТР
 ========================= */
 
 function addPreview(item) {
+
+    if (!item.itemImage) return;
+
+    if (document.querySelector(`[data-preview-id="${item.id}"]`)) return;
+
     const img = document.createElement("img");
     img.src = `../../assets/images/items/${item.itemImage}.png`;
     img.dataset.previewId = item.id;
+
     document.getElementById("roomItems").appendChild(img);
 }
 
@@ -148,7 +169,7 @@ function removePreview(id) {
 }
 
 /* =========================
-   Нижняя панель
+   НИЖНЯЯ ПАНЕЛЬ
 ========================= */
 
 function updateBottomBar() {
@@ -157,7 +178,9 @@ function updateBottomBar() {
 
     itemsToAdd.forEach(id => {
         const item = allItems.find(i => i.id === id);
-        if (!item.isBought) totalPrice += item.itemPrice;
+        if (item && !item.isBought) {
+            totalPrice += item.itemPrice;
+        }
     });
 
     const priceEl = document.getElementById("totalPrice");
@@ -172,17 +195,21 @@ function updateBottomBar() {
     }
 }
 
+/* =========================
+   ПРИМЕНЕНИЕ
+========================= */
 
 function bindApplyButton() {
-    document.getElementById("applyBtn")
+    document
+        .getElementById("applyBtn")
         .addEventListener("click", applyChanges);
 }
+
 async function applyChanges() {
 
     for (const item of allItems) {
 
-        const id = item.itemId;
-
+        const id = item.id;
         let shouldBeInRoom = initialInRoom.has(id);
 
         if (itemsToAdd.has(id)) shouldBeInRoom = true;
@@ -190,67 +217,39 @@ async function applyChanges() {
 
         if (shouldBeInRoom === item.inRoom) continue;
 
-        const updatedData = {
+        await patchItem(id, {
             inRoom: shouldBeInRoom,
             isBought: shouldBeInRoom ? true : item.isBought
-        };
-
-        await patchItem(item.id, updatedData);
+        });
     }
 
-    // 🔥 ПОЛНОСТЬЮ ПЕРЕЗАГРУЖАЕМ СЕРВЕРНОЕ СОСТОЯНИЕ
     allItems = await loadItems();
 
     initialInRoom = new Set(
-        allItems
-            .filter(i => i.inRoom)
-            .map(i => i.itemId)
+        allItems.filter(i => i.inRoom).map(i => i.id)
     );
 
     itemsToAdd.clear();
     itemsToRemove.clear();
 
-    // Перерисовываем комнату и вкладку
     renderInitialRoom();
     renderCurrentTab();
 
-    // Закрываем панель без reset
-    closeShopAfterApply();
-}
-function closeShopAfterApply() {
-
-    const panel = document.getElementById("shopPanel");
-    const room = document.getElementById("room");
-
-    isShopOpen = false;
-
-    panel.classList.remove("open");
-    room.style.transform = "translateX(0)";
+    closeShop();
 }
 
-function resetChanges() {
+function renderInitialRoom() {
 
-    itemsToAdd.clear();
-    itemsToRemove.clear();
+    const container = document.getElementById("roomItems");
+    container.innerHTML = "";
 
-    document.getElementById("roomItems").innerHTML = "";
-
-    allItems.forEach(item => {
-        if (initialInRoom.has(item.id)) {
-            addPreview(item);
-        }
-    });
-
-    document.querySelectorAll(".item-card")
-        .forEach(card => card.classList.remove("selected"));
-
-    highlightActiveItems();
-    updateBottomBar();
+    allItems
+        .filter(i => i.inRoom)
+        .forEach(item => addPreview(item));
 }
-
 
 /* =========================
-   Панель
+   ПАНЕЛЬ
 ========================= */
 
 function bindTogglePanel() {
@@ -260,20 +259,32 @@ function bindTogglePanel() {
 }
 
 function toggleShop() {
+
     const panel = document.getElementById("shopPanel");
-    const room = document.getElementById("room");
 
     isShopOpen = !isShopOpen;
-
     panel.classList.toggle("open");
 
     if (isShopOpen) {
-        room.style.transform = "translateX(80px)";
+        panelOffset = 80;
     } else {
         resetChanges();
-        room.style.transform = "translateX(0)";
+        panelOffset = 0;
     }
+
+    updateRoomTransform();
 }
+
+function closeShop() {
+    const panel = document.getElementById("shopPanel");
+
+    isShopOpen = false;
+    panel.classList.remove("open");
+
+    panelOffset = 0;
+    updateRoomTransform();
+}
+
 function bindOutsideClick() {
     document.addEventListener("click", (e) => {
         if (!isShopOpen) return;
@@ -287,15 +298,24 @@ function bindOutsideClick() {
     });
 }
 
+function resetChanges() {
 
-/* =========================
-   Загрузка inRoom
-========================= */
+    itemsToAdd.clear();
+    itemsToRemove.clear();
 
-function renderInitialRoom() {
-    const inRoomItems = allItems.filter(i => i.inRoom);
+    renderInitialRoom();
 
-    inRoomItems.forEach(item => {
-        addPreview(item);
-    });
+    document
+        .querySelectorAll("#shopPanel .item-card")
+        .forEach(card => card.classList.remove("selected"));
+
+    highlightActiveItems();
+    updateBottomBar();
+}
+
+function updateRoomTransform() {
+    room.style.transform = `
+        translateX(${translateX + panelOffset}px)
+        scale(${scale})
+    `;
 }

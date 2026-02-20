@@ -11,7 +11,22 @@
 
 <div class="room-wrapper">
 
-    <button class="edit-room-btn" id="toggleShopBtn">⚙</button>
+
+    <!-- ПАНЕЛЬ ДРУЗЕЙ (СПРАВА) -->
+    <aside class="shop-panel friends-panel" id="friendsPanel">
+
+        <div class="panel-header">
+            <h2>Друзья</h2>
+            <p class="panel-subtitle">Выберите друга для комнаты</p>
+        </div>
+
+        <div class="items-grid"></div>
+
+        <div class="bottom-bar">
+            <button class="apply-btn" id="applyFriendsBtn">Применить</button>
+        </div>
+
+    </aside>
 
     <!-- ПАНЕЛЬ -->
     <aside class="shop-panel" id="shopPanel">
@@ -33,13 +48,36 @@
     <!-- КОМНАТА -->
     <div class="room-container" id="roomContainer">
         <div class="room" id="room">
-            <img src="../../assets/images/room.png" class="room-base">
-            <div class="room-items" id="roomItems"></div>
+            <img src="../../assets/images/room_empty.png"
+                 class="room-base"
+                 alt="комната">
+
+            <div class="room-items" id="roomItems">
+                <img src="../../assets/images/items/sofa_test.png"
+                     id="sofaTest"
+                     alt="диван">
+            </div>
+
+            <div class="room-characters" id="roomCharacters"></div>
+
         </div>
     </div>
 
 </div>
+<button class="edit-room-btn" id="toggleShopBtn">⚙</button>
+<button class="edit-room-btn" id="toggleCharacterBtn">
+    <img src="../../assets/images/free-icon-home.png" alt="I" width="28" height="28"/>
+</button>
+<button class="edit-room-btn" id="gachaCharacterBtn">
+    <img src="../../assets/images/free-icon-ticket.png" alt="V"/>
+</button>
+<button class="edit-room-btn" id="statisticsBtn">
+    <img src="../../assets/images/graph.png" alt="V"/>
+</button>
 
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/friend-cards.js"></script>
+
+<script src="js/room-zoom.js"></script>
 </body>
 </html>

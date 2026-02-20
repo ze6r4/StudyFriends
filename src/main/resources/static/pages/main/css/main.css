@@ -13,7 +13,9 @@
     --pad: 12px;
     --font: "Segoe UI", system-ui, sans-serif;
 }
-/*Задаём общие параметры для всей страницы: шрифт и отступы*/
+
+/* ================= БАЗА ================= */
+
 body {
     margin: 0;
     background: var(--bg);
@@ -24,69 +26,72 @@ body {
     background-color: #ffebcd;
 }
 
-.button:after {
-  background-color: bisque;
-  border: 2px solid #111;
-  border-radius: 8px;
-  content: "";
-  display: block;
-  height: 48px;
-  left: 0;
-  width: 100%;
-  position: absolute;
-  transform: translate(-2px, 4px);
-
-  z-index: -1;
-}
-
-@media (min-width: 768px) {
-  .button {
-    padding: 0 40px;
-  }
-  .button:active {
-    padding: 0 40px;
-  }
-}
-
-
-
-body {
-    margin: 0;
-
-    font-family: var(--font);
-    color: var(--text);
-    overflow: hidden;
-}
-
 .room-wrapper {
     position: relative;
     height: 100vh;
 }
 
-/* ===== Панель ===== */
+/* ================= ПАНЕЛИ ================= */
 
+/* Общий стиль панели (как у предметов) */
 .shop-panel {
     position: absolute;
-    left: 0;
     top: 0;
     bottom: 0;
 
     width: 340px;
     background: var(--card);
-    border-right: 2px solid var(--line);
     padding: 20px;
 
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+
     display: flex;
     flex-direction: column;
+
+    z-index: 900;
 }
 
-.shop-panel.open {
+/* Панель предметов (слева) */
+#shopPanel {
+    left: 0;
+    border-right: 2px solid var(--line);
+}
+
+#shopPanel.open {
     transform: translateX(0);
 }
 
-/* ===== ТАБЫ ===== */
+/* Панель друзей (СПРАВА) */
+#friendsPanel {
+    right: 0;
+    left: auto;
+    border-left: 2px solid var(--line);
+    transform: translateX(100%);
+}
+
+#friendsPanel.open {
+    transform: translateX(0);
+}
+
+/* ================= ЗАГОЛОВОК ПАНЕЛИ ================= */
+
+.panel-header {
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.panel-subtitle {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+/* ================= ТАБЫ (если используются) ================= */
 
 .tabs {
     display: flex;
@@ -105,7 +110,7 @@ body {
     background: var(--accent-1);
 }
 
-/* ===== СЕТКА ===== */
+/* ================= СЕТКА ================= */
 
 .items-grid {
     flex: 1;
@@ -114,6 +119,8 @@ body {
     gap: 14px;
 }
 
+/* ================= КАРТОЧКИ ================= */
+
 .item-card {
     border: 2px solid var(--line);
     border-radius: var(--radius);
@@ -121,7 +128,11 @@ body {
     background: #fff;
     text-align: center;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.item-card:hover {
+    transform: translateY(-2px);
 }
 
 .item-card.selected {
@@ -139,7 +150,7 @@ body {
     font-size: 14px;
 }
 
-/* ===== НИЖНЯЯ ПАНЕЛЬ ===== */
+/* ================= НИЖНЯЯ ПАНЕЛЬ ================= */
 
 .bottom-bar {
     border-top: 2px solid var(--line);
@@ -152,15 +163,24 @@ body {
     border: 2px solid var(--line);
     background: var(--accent-2);
     cursor: pointer;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.apply-btn:hover {
+    background: var(--accent-1);
 }
 
 .total-price {
     margin-bottom: 6px;
 }
 
-/* ===== КОМНАТА ===== */
+/* ================= КОМНАТА ================= */
 
 .room-container {
+    position: relative;
+    z-index: 1;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -194,38 +214,20 @@ body {
     height: 100%;
     object-fit: contain;
 }
-.room-container {
-    position: relative;
-    z-index: 1;
-}
 
-.shop-panel {
+#sofaTest {
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-
-    width: 340px;
-    background: var(--card);
-    border-right: 2px solid var(--line);
-    padding: 20px;
-
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-
-    display: flex;
-    flex-direction: column;
-
-    z-index: 10;   /* ← ВАЖНО */
+    top: 500px;
+    left: 500px;
+    outline: 2px solid red;
+    width: 20%;
+    height: 27%;
 }
 
-.edit-room-btn {
-    z-index: 20;   /* чтобы кнопка была поверх всего */
-}
+/* ================= КНОПКИ ================= */
+
 .edit-room-btn {
     position: fixed;
-    top: 20px;
-    left: 20px;
 
     width: 60px;
     height: 60px;
@@ -233,13 +235,33 @@ body {
     font-size: 26px;
 
     border: 2px solid var(--line);
-    background: var(--accent-3);
+    background: var(--bg);
     border-radius: 50%;
     cursor: pointer;
 
-    z-index: 1000;
+    z-index: 700;
 }
-.shop-panel {
-    z-index: 900;
+.friend-card {
+    width: 20%;
+    height:20%
 }
 
+#toggleCharacterBtn {
+    top: 20px;
+    right: 100px;
+}
+
+#toggleShopBtn {
+    top: 20px;
+    left: 20px;
+}
+
+#gachaCharacterBtn {
+    top: 20px;
+    right: 20px;
+}
+
+#statisticsBtn {
+    bottom: 20px;
+    right: 20px;
+}

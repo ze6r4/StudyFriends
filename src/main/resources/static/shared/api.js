@@ -74,11 +74,26 @@ export function patchFriend(id, data) {
         body: data
     });
 }
+/* ================= VISITORS ================= */
+export function postVisitor(visitorData) {
+    return apiPublic('/visitors', {
+        method: 'POST',
+        body: visitorData
+    });
+}
+export function deleteVisitor(playerFriendId) {
+    return apiPublic(`/visitors/${playerFriendId}`, {
+        method: 'DELETE'
+    });
+}
 
 /* ================= CHARACTERS ================= */
 
 export function getCharacter(characterId) {
     return apiPublic(`/characters/${characterId}`);
+}
+export function getVisitors(playerFriendId) {
+    return apiPublic(`/visitors/${playerFriendId}`);
 }
 /* ================= ITEMS ================= */
 export function getItems(playerId) {

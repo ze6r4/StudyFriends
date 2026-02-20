@@ -1,9 +1,9 @@
 package com.example.StudyFriends.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -19,10 +19,10 @@ public class FriendVisit {
     @JoinColumn(name = "player_friend_id", nullable = false)
     private Friend playerFriend;
 
-    @Column(name = "friend_action", nullable = false)
+    @Column(name = "friend_action")
     private String friendAction;
 
     @ManyToOne
-    @JoinColumn(name = "friend_pos_type", nullable = false)
+    @JoinColumn(name = "friend_pos_type")
     private Position friendPosType;
 }

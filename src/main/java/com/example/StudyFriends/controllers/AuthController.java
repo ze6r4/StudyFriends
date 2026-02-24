@@ -48,7 +48,7 @@ public class AuthController {
                 user.getPassword()
         );
 
-        //session.setAttribute("USER_ID", player.getId());
+        session.setAttribute("USER_ID", player.getId());
 
         return ResponseEntity.ok(
                 Map.of("message", "Успешный вход")

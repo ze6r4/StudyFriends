@@ -34,6 +34,7 @@ document.getElementById('submit-login').addEventListener('click', async (e) => {
         name: document.querySelector('input[type="text"]').value,
         password: document.querySelectorAll('input[type="password"]')[0].value
     };
+    console.log(data);
 
     try {
         await loginPlayer(data);

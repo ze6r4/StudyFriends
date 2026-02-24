@@ -27,10 +27,7 @@ async function baseRequest(endpoint, options = {}, withAuth = false) {
         error.status = response.status;
         error.code = data?.code || 'UNKNOWN_ERROR';
 
-        // 🔥 глобальная реакция на 401
-        if (response.status === 401) {
-            window.location.href = '/pages/auth/auth.html';
-        }
+
         if(response.status ===500) {
             window.location.href = '/pages/error.html';
         }

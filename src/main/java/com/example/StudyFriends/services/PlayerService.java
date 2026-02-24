@@ -39,6 +39,7 @@ public class PlayerService {
         return playerRep.save(user);
     }
 
+
     public Player authenticate(String username, String rawPassword) {
 
         Player player = playerRep.findByName(username)

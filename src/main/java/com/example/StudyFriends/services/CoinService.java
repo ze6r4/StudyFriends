@@ -46,4 +46,11 @@ public class CoinService {
 
         return player.getCoins();
     }
+    public void setBalance(Long userId, int amount) {
+        Player player = playerRep.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        player.setCoins(amount);
+        playerRep.save(player);
+    }
 }

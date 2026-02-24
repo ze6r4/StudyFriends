@@ -1,23 +1,23 @@
-import { getItems, patchItem, getCoinBalance, spendCoins } from '../../../shared/api.js';
+import {
+    getItems,
+    patchItem,
+    getCoinBalance,
+    spendCoins,
+    updateCoinBalance
+} from '../../../shared/api.js';
+
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { generateItemHtml } from './item-cards.html.js';
 
-
 let allItems = [];
 let initialInRoom = new Set();
-
 let itemsToAdd = new Set();
 let itemsToRemove = new Set();
 
 let currentTab = "bought";
 let isShopOpen = false;
 
-let translateX = 0;
-let scale = 1;
-
 let room;
-
-/* ========================= */
 
 document.addEventListener("DOMContentLoaded", initMain);
 
@@ -27,6 +27,8 @@ async function initMain() {
     bindTogglePanel();
     bindTabs();
     bindApplyButton();
+    bindStartButton();
+    initBalanceButton();
 
     await loadData();
     await renderCoins();
@@ -34,57 +36,41 @@ async function initMain() {
     renderCurrentTab();
 }
 
-/* ========================= */
-
 async function loadData() {
-    allItems = await loadItems();
+    const playerId = await getCurrentPlayerId();
+    const items = await getItems(playerId);
+    allItems = Array.isArray(items) ? items : [];
 
     initialInRoom = new Set(
         allItems.filter(i => i.inRoom).map(i => i.id)
     );
 }
 
-async function loadItems() {
-    const playerId = await getCurrentPlayerId();
-    const items = await getItems(playerId);
-    return Array.isArray(items) ? items : [];
-}
-
-
 async function renderCoins() {
     const coinData = await getCoinBalance();
     const coins = Number(coinData?.coins ?? 0);
 
     const coinCount = document.querySelector('.coin-count');
-    if (coinCount) {
-        coinCount.textContent = String(coins);
-    }
+    if (coinCount) coinCount.textContent = String(coins);
 
     return coins;
 }
 
 function getPendingPurchasePrice() {
-    let totalPrice = 0;
+    let total = 0;
 
     itemsToAdd.forEach(id => {
         const item = allItems.find(i => i.id === id);
-        if (item && !item.isBought) {
-            totalPrice += item.itemPrice;
-        }
+        if (item && !item.isBought) total += item.itemPrice;
     });
 
-    return totalPrice;
+    return total;
 }
-
-/* =========================
-   ТАБЫ
-========================= */
 
 function bindTabs() {
     document.querySelectorAll("#shopPanel .tab").forEach(tab => {
         tab.addEventListener("click", () => {
-            document
-                .querySelectorAll("#shopPanel .tab")
+            document.querySelectorAll("#shopPanel .tab")
                 .forEach(t => t.classList.remove("active"));
 
             tab.classList.add("active");
@@ -113,44 +99,21 @@ function renderCurrentTab() {
 }
 
 function updateSelectionHighlight() {
-    document
-        .querySelectorAll("#shopPanel .item-card")
+    document.querySelectorAll("#shopPanel .item-card")
         .forEach(card => {
             const id = Number(card.dataset.id);
-
-            // Проверяем, должен ли предмет быть выделен
-            const shouldBeSelected = isItemSelected(id);
-
-            if (shouldBeSelected) {
-                card.classList.add("selected");
-            } else {
-                card.classList.remove("selected");
-            }
+            card.classList.toggle("selected", isItemSelected(id));
         });
 }
 
 function isItemSelected(id) {
-    // Если предмет есть в itemsToAdd - он выделен
-    if (itemsToAdd.has(id)) {
-        return true;
-    }
-
-    // Если предмет есть в itemsToRemove - он НЕ выделен
-    if (itemsToRemove.has(id)) {
-        return false;
-    }
-
-    // Иначе проверяем, был ли он изначально в комнате
+    if (itemsToAdd.has(id)) return true;
+    if (itemsToRemove.has(id)) return false;
     return initialInRoom.has(id);
 }
 
-/* =========================
-   ВЫБОР ПРЕДМЕТОВ
-========================= */
-
 function bindItemClicks() {
-    document
-        .querySelectorAll("#shopPanel .item-card")
+    document.querySelectorAll("#shopPanel .item-card")
         .forEach(card => {
             card.addEventListener("click", () => toggleItem(card));
         });
@@ -159,43 +122,31 @@ function bindItemClicks() {
 function toggleItem(card) {
     const id = Number(card.dataset.id);
     const item = allItems.find(i => i.id === id);
-
     if (!item) return;
 
     const isInitiallyInRoom = initialInRoom.has(id);
 
     if (isInitiallyInRoom) {
-        // Предмет уже в комнате
         if (itemsToRemove.has(id)) {
-            // Отменяем удаление
             itemsToRemove.delete(id);
             addPreview(item);
         } else {
-            // Помечаем на удаление
             itemsToRemove.add(id);
             removePreview(id);
         }
     } else {
-        // Предмета нет в комнате
         if (itemsToAdd.has(id)) {
-            // Отменяем добавление
             itemsToAdd.delete(id);
             removePreview(id);
         } else {
-            // Помечаем на добавление
             itemsToAdd.add(id);
             addPreview(item);
         }
     }
 
-    // Обновляем выделение на основе временных изменений
     updateSelectionHighlight();
     updateBottomBar();
 }
-
-/* =========================
-   ПРЕДПРОСМОТР
-========================= */
 
 function addPreview(item) {
     if (!item.itemImage) return;
@@ -214,13 +165,8 @@ function removePreview(id) {
     if (el) el.remove();
 }
 
-/* =========================
-   НИЖНЯЯ ПАНЕЛЬ
-========================= */
-
 function updateBottomBar() {
     const totalPrice = getPendingPurchasePrice();
-
     const priceEl = document.getElementById("totalPrice");
     const applyBtn = document.getElementById("applyBtn");
 
@@ -233,18 +179,12 @@ function updateBottomBar() {
     }
 }
 
-/* =========================
-   ПРИМЕНЕНИЕ
-========================= */
-
 function bindApplyButton() {
-    document
-        .getElementById("applyBtn")
+    document.getElementById("applyBtn")
         .addEventListener("click", applyChanges);
 }
 
 async function applyChanges() {
-    // Блокируем кнопку во время сохранения
     const applyBtn = document.getElementById("applyBtn");
     const originalText = applyBtn.textContent;
 
@@ -255,11 +195,10 @@ async function applyChanges() {
         const totalPrice = getPendingPurchasePrice();
 
         if (totalPrice > 0) {
-            const coinData = await getCoinBalance();
-            const currentCoins = Number(coinData?.coins ?? 0);
+            const currentCoins = await renderCoins();
 
             if (currentCoins < totalPrice) {
-                alert(`Недостаточно монет. Нужно ${totalPrice}, доступно ${currentCoins}`);
+                alert("Не хватает монет");
                 return;
             }
 
@@ -281,24 +220,18 @@ async function applyChanges() {
             });
         }
 
-        // Перезагружаем данные
         await loadData();
-
-        // Очищаем временные наборы
         itemsToAdd.clear();
         itemsToRemove.clear();
 
-        // Обновляем отображение
         await renderCoins();
         renderInitialRoom();
         renderCurrentTab();
-
         closeShop();
-    } catch (error) {
-        console.error('Ошибка при сохранении:', error);
-        alert('Не удалось сохранить изменения');
+
+    } catch (e) {
+        alert("Ошибка сохранения");
     } finally {
-        // Разблокируем кнопку
         applyBtn.textContent = originalText;
         applyBtn.disabled = false;
     }
@@ -313,25 +246,17 @@ function renderInitialRoom() {
         .forEach(item => addPreview(item));
 }
 
-/* =========================
-   ПАНЕЛЬ
-========================= */
-
 function bindTogglePanel() {
-    document
-        .getElementById("toggleShopBtn")
+    document.getElementById("toggleShopBtn")
         .addEventListener("click", toggleShop);
 }
 
 function toggleShop() {
     const panel = document.getElementById("shopPanel");
-
     isShopOpen = !isShopOpen;
     panel.classList.toggle("open");
 
-    if (!isShopOpen) {
-        resetChanges();
-    }
+    if (!isShopOpen) resetChanges();
 }
 
 function closeShop() {
@@ -342,44 +267,42 @@ function closeShop() {
 }
 
 function resetChanges() {
-    // Очищаем все временные изменения
     itemsToAdd.clear();
     itemsToRemove.clear();
-
-    // Возвращаем оригинальное состояние комнаты
     renderInitialRoom();
-
-    // Обновляем выделение карточек
     updateSelectionHighlight();
-
-    // Обновляем нижнюю панель
     updateBottomBar();
 }
 
-// Обработчик клика вне панелей
-document.addEventListener("click", (e) => {
-    const shopPanel = document.getElementById("shopPanel");
-    const friendsPanel = document.getElementById("friendsPanel");
-    const shopBtn = document.getElementById("toggleShopBtn");
-    const friendsBtn = document.getElementById("toggleCharacterBtn");
+function bindStartButton() {
+    document.getElementById("startBtn")
+        .addEventListener("click", () => {
+            window.location.href =
+                'http://localhost:8081/pages/timer-settings/timer-settings.html';
+        });
+}
 
-    const clickInsideShop = shopPanel.contains(e.target) || shopBtn.contains(e.target);
-    const clickInsideFriends = friendsPanel.contains(e.target) || friendsBtn.contains(e.target);
+function initBalanceButton() {
+    const footer = document.createElement("div");
+    footer.className = "footer";
 
-    if (!clickInsideShop && !clickInsideFriends) {
-        if (shopPanel.classList.contains("open")) {
-            resetChanges();
-            shopPanel.classList.remove("open");
+    const btn = document.createElement("button");
+    btn.textContent = "Изменить баланс";
+
+    btn.addEventListener("click", async () => {
+        const value = prompt("Введите новое количество монет:");
+        if (value === null) return;
+
+        const amount = Number(value);
+        if (isNaN(amount) || amount < 0) {
+            alert("Введите корректное число");
+            return;
         }
-        if (friendsPanel.classList.contains("open")) {
-            // Здесь можно добавить reset для друзей, если нужно
-            friendsPanel.classList.remove("open");
-        }
-    }
-});
 
+        await updateCoinBalance(amount);
+        await renderCoins();
+    });
 
-startBtn.addEventListener('click', async () => {
-
-    window.location.href = 'http://localhost:8081/pages/timer-settings/timer-settings.html';
-});
+    footer.appendChild(btn);
+    document.body.appendChild(footer);
+}

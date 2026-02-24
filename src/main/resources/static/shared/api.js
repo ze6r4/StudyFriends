@@ -23,6 +23,21 @@ export function getMe() {
     return apiAuth('/me');
 }
 
+export function isDeveloper(playerId) {
+    const data = getMe();
+    return data.role == ''
+}
+/* ================= COINS ================= */
+
+export function getCoins(playerId) {
+    return apiAuth(`/coins?playerId={playerId}`);
+}
+export function updateCoinBalance(amount) {
+    return apiAuth('coins/update', {
+        method: 'POST',
+        body: JSON.stringify({ amount })
+    });
+}
 /* ================= SKILLS ================= */
 
 // все навыки игрока

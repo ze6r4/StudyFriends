@@ -67,18 +67,18 @@ public class AuthController {
         Player player = playerService.getPlayerById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Пользователь не найден"));
 
-        return ResponseEntity.ok(toPlayerDto(player));
+        return ResponseEntity.ok(PlayerDto.fromEntity(player));
+    }
+    @GetMapping("/{playerId}/is-developer")
+    public ResponseEntity<?> isDeveloper(@PathVariable Long playerId) {
+        Player player = playerService.getPlayerById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        boolean isDeveloper = "DEVELOPER".equals(player.getRole());
+
+        return ResponseEntity.ok(Map.of("isDeveloper", isDeveloper));
     }
 
-
-    private PlayerDto toPlayerDto(Player player) {
-        PlayerDto dto = new PlayerDto();
-        dto.setId(player.getId());
-        dto.setName(player.getName());
-        dto.setEmail(player.getEmail());
-        dto.setCoins(player.getCoins());
-        return dto;
-    }
 
     @PostMapping("/logout")
     public void logout(HttpSession session) {

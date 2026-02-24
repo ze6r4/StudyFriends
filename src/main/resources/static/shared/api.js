@@ -75,6 +75,9 @@ export function patchFriend(id, data) {
     });
 }
 /* ================= VISITORS ================= */
+export function getVisitors(playerId) {
+    return apiPublic(`/visitors?playerId=${playerId}`);
+}
 export function postVisitor(visitorData) {
     return apiPublic('/visitors', {
         method: 'POST',
@@ -91,9 +94,6 @@ export function deleteVisitor(playerFriendId) {
 
 export function getCharacter(characterId) {
     return apiPublic(`/characters/${characterId}`);
-}
-export function getVisitors(playerFriendId) {
-    return apiPublic(`/visitors/${playerFriendId}`);
 }
 /* ================= ITEMS ================= */
 export function getItems(playerId) {

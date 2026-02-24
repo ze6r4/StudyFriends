@@ -1,4 +1,5 @@
 import { getSkills } from '../../../shared/api.js';
+import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { openAddSkillModal } from './custom-select.modal.js';
 
 import {
@@ -21,7 +22,6 @@ import {
 
 export const skillsChanged = { value: false };
 
-const PLAYER_ID = 1;
 
 /* =======================
    Init
@@ -34,7 +34,8 @@ async function initialize() {
   let skills = [];
 
   try {
-    skills = (await getSkills(PLAYER_ID)).filter(s => s.isActive);
+    const playerId = await getCurrentPlayerId();
+    skills = (await getSkills(playerId)).filter(s => s.isActive);
   } catch {
     console.warn('Не удалось получить навыки с сервера');
   }

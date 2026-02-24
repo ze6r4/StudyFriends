@@ -106,6 +106,18 @@ export function patchItem(id, itemData) {
     });
 }
 
+/* ================= COINS ================= */
+
+export function getCoinBalance() {
+    return apiAuth('/coins');
+}
+
+export function spendCoins(amount) {
+    return apiAuth(`/coins/spend?amount=${amount}`, {
+        method: 'POST'
+    });
+}
+
 /* ================= SESSIONS ================= */
 
 export function postSession(sessionData) {

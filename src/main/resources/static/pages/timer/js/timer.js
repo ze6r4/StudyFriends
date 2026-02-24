@@ -10,8 +10,7 @@ const PHASE_KEY = 'timerPhase';
 const DEFAULTS = {
     WORK_TIME: 25 * 60,
     BREAK_TIME: 5 * 60,
-    CYCLES: 4,
-    PLAYER_ID: 1
+    CYCLES: 4
 };
 
 let actualRest = 0;
@@ -25,7 +24,7 @@ export const SESSION = {
         ? sessionData.restMinutes * 60
         : DEFAULTS.BREAK_TIME,
     cycles: sessionData?.cycles ?? DEFAULTS.CYCLES,
-    playerId: sessionData?.playerId ?? DEFAULTS.PLAYER_ID,
+    playerId: sessionData?.playerId ?? null,
     skillId: sessionData?.skillId ?? null,
     friendId: sessionData?.friendId ?? null
 };

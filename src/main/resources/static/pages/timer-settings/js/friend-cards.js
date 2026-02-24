@@ -1,4 +1,5 @@
 import { getFriends } from '../../../shared/api.js';
+import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { generateFriendHtml } from './friend-cards.html.js';
 
 let selectedFriendId = null;
@@ -16,7 +17,8 @@ async function initFriends() {
 }
 
 async function loadFriends() {
-    const friends = await getFriends(1);
+    const playerId = await getCurrentPlayerId();
+    const friends = await getFriends(playerId);
     return Array.isArray(friends) ? friends : [];
 }
 

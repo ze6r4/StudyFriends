@@ -13,6 +13,12 @@
     --pad: 12px;
     --font: "Segoe UI", system-ui, sans-serif;
 }
+@font-face {
+font-family: 'overdoze';
+src: url('/shared/overdozesans.ttf') format('truetype'),local('overdozesans');
+font-style: normal;
+font-display: swap;
+}
 
 /* ================= БАЗА ================= */
 
@@ -33,26 +39,21 @@ body {
 
 /* ================= ПАНЕЛИ ================= */
 
-/* Общий стиль панели (как у предметов) */
 .shop-panel {
-    position: absolute;
+    position: fixed;
     top: 0;
-    bottom: 0;
-
+    height: 100%;
     width: 340px;
     background: var(--card);
     padding: 20px;
-
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-
     display: flex;
     flex-direction: column;
-
     z-index: 900;
+    box-sizing: border-box;
 }
 
-/* Панель предметов (слева) */
 #shopPanel {
     left: 0;
     border-right: 2px solid var(--line);
@@ -62,7 +63,6 @@ body {
     transform: translateX(0);
 }
 
-/* Панель друзей (СПРАВА) */
 #friendsPanel {
     right: 0;
     left: auto;
@@ -78,6 +78,7 @@ body {
 
 .panel-header {
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .panel-header h2 {
@@ -91,11 +92,12 @@ body {
     margin-top: 4px;
 }
 
-/* ================= ТАБЫ (если используются) ================= */
+/* ================= ТАБЫ ================= */
 
 .tabs {
     display: flex;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .tab {
@@ -115,8 +117,11 @@ body {
 .items-grid {
     flex: 1;
     overflow-y: auto;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 14px;
+    padding: 4px;
+    min-height: 0;
 }
 
 /* ================= КАРТОЧКИ ================= */
@@ -124,47 +129,103 @@ body {
 .item-card {
     border: 2px solid var(--line);
     border-radius: var(--radius);
-    padding: 12px;
+    padding: 20px;
     background: #fff;
     text-align: center;
     cursor: pointer;
     transition: background 0.2s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .item-card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .item-card.selected {
     background: #e8dcdc;
+    border-color: var(--text);
 }
 
 .item-card img {
-    width: 100px;
-    height: 100px;
+    width: 180px;
+    height: 180px;
     object-fit: contain;
 }
 
 .item-price {
     margin-top: 6px;
     font-size: 14px;
+    font-weight: 600;
+}
+
+/* ===== FRIEND CARDS ===== */
+
+.friend-card {
+    border: 2px solid var(--line);
+    border-radius: var(--radius);
+    padding: 25px 20px;
+    background: #fff;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.friend-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.friend-card.selected {
+    background: #e8dcdc;
+    border-color: var(--text);
+}
+
+.friend-card img {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+}
+
+.friend-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 5px;
 }
 
 /* ================= НИЖНЯЯ ПАНЕЛЬ ================= */
 
 .bottom-bar {
     border-top: 2px solid var(--line);
-    padding-top: 12px;
+    padding-top: 16px;
+    margin-top: 16px;
+    background: var(--card);
+    flex-shrink: 0;
 }
 
 .apply-btn {
     width: 100%;
-    padding: 10px;
+    padding: 14px;
     border: 2px solid var(--line);
     background: var(--accent-2);
     cursor: pointer;
     border-radius: var(--radius);
     font-weight: 600;
+    font-size: 16px;
     transition: background 0.2s;
 }
 
@@ -173,7 +234,9 @@ body {
 }
 
 .total-price {
-    margin-bottom: 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    text-align: right;
 }
 
 /* ================= КОМНАТА ================= */
@@ -215,35 +278,27 @@ body {
     object-fit: contain;
 }
 
-#sofaTest {
-    position: absolute;
-    top: 500px;
-    left: 500px;
-    outline: 2px solid red;
-    width: 20%;
-    height: 27%;
-}
-
 /* ================= КНОПКИ ================= */
 
 .edit-room-btn {
     position: fixed;
-
     width: 60px;
     height: 60px;
-
     font-size: 26px;
-
     border: 2px solid var(--line);
     background: var(--bg);
     border-radius: 50%;
     cursor: pointer;
-
     z-index: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s;
 }
-.friend-card {
-    width: 20%;
-    height:20%
+
+.edit-room-btn:hover {
+    background: var(--accent-2);
+    transform: scale(1.05);
 }
 
 #toggleCharacterBtn {
@@ -265,3 +320,68 @@ body {
     bottom: 20px;
     right: 20px;
 }
+/* ================= СЧЕТЧИК МОНЕТ ================= */
+
+
+.coin-display {
+    position: fixed;
+    top: 20px;
+    right: 180px; /* расположение между кнопками */
+    background: rgba(255, 250, 244, 0.95); /* нежный цвет из палитры --card */
+    border: 2px solid var(--line); /* ЖИРНЫЙ КОНТУР как у кнопок */
+    border-radius: 40px;
+    padding: 8px 24px 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 800;
+    min-width: 80px;
+    min-height: 40px;
+}
+
+.coin-count {
+    font-family: var(--font);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text); /* основной цвет текста */
+    position: relative;
+    padding-left: 32px; /* место для иконки монеты */
+    line-height: 1;
+}
+
+.coin-count::before {
+    content: "🪙";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    opacity: 0.9;
+}
+/* ================= КНОПКА НАЧАТЬ ================= */
+
+.start-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 47%;
+    font-family: 'overdoze', var(--font);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    background: var(--bg); /* нежный желтоватый #fff3c8 */
+    border: 2px solid var(--line); /* жирный контур как у всех элементов */
+    border-radius: 50px;
+    padding: 14px 42px;
+    cursor: pointer;
+    z-index: 800;
+    letter-spacing: 1px;
+    transition: background 0.2s ease;
+    text-transform: uppercase;
+    box-shadow: none; /* без тени */
+    line-height: 1;
+}
+
+.start-btn:hover {
+    background: var(--accent-1); /* нежный розовый при наведении */
+}
+

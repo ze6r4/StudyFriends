@@ -12,7 +12,6 @@ let itemsToRemove = new Set();
 let currentTab = "bought";
 let isShopOpen = false;
 
-let panelOffset = 0;
 let translateX = 0;
 let scale = 1;
 
@@ -28,19 +27,21 @@ async function initMain() {
     bindTogglePanel();
     bindTabs();
     bindApplyButton();
-    bindOutsideClick();
 
-    allItems = await loadItems();
-
-    initialInRoom = new Set(
-        allItems.filter(i => i.inRoom).map(i => i.id)
-    );
-
+    await loadData();
     renderInitialRoom();
     renderCurrentTab();
 }
 
 /* ========================= */
+
+async function loadData() {
+    allItems = await loadItems();
+
+    initialInRoom = new Set(
+        allItems.filter(i => i.inRoom).map(i => i.id)
+    );
+}
 
 async function loadItems() {
     const items = await getItems(PLAYER_ID);
@@ -78,21 +79,41 @@ function renderCurrentTab() {
 
     grid.innerHTML = generateItemHtml(filtered);
 
-    highlightActiveItems();
+    updateSelectionHighlight();
     bindItemClicks();
+    updateBottomBar();
 }
 
-function highlightActiveItems() {
+function updateSelectionHighlight() {
     document
         .querySelectorAll("#shopPanel .item-card")
         .forEach(card => {
-
             const id = Number(card.dataset.id);
 
-            if (initialInRoom.has(id) && !itemsToRemove.has(id)) {
+            // Проверяем, должен ли предмет быть выделен
+            const shouldBeSelected = isItemSelected(id);
+
+            if (shouldBeSelected) {
                 card.classList.add("selected");
+            } else {
+                card.classList.remove("selected");
             }
         });
+}
+
+function isItemSelected(id) {
+    // Если предмет есть в itemsToAdd - он выделен
+    if (itemsToAdd.has(id)) {
+        return true;
+    }
+
+    // Если предмет есть в itemsToRemove - он НЕ выделен
+    if (itemsToRemove.has(id)) {
+        return false;
+    }
+
+    // Иначе проверяем, был ли он изначально в комнате
+    return initialInRoom.has(id);
 }
 
 /* =========================
@@ -108,41 +129,39 @@ function bindItemClicks() {
 }
 
 function toggleItem(card) {
-
     const id = Number(card.dataset.id);
     const item = allItems.find(i => i.id === id);
 
-    if (!item) return; // защита
+    if (!item) return;
 
     const isInitiallyInRoom = initialInRoom.has(id);
-    const isMarkedToAdd = itemsToAdd.has(id);
-    const isMarkedToRemove = itemsToRemove.has(id);
 
     if (isInitiallyInRoom) {
-
-        if (isMarkedToRemove) {
+        // Предмет уже в комнате
+        if (itemsToRemove.has(id)) {
+            // Отменяем удаление
             itemsToRemove.delete(id);
-            card.classList.add("selected");
             addPreview(item);
         } else {
+            // Помечаем на удаление
             itemsToRemove.add(id);
-            card.classList.remove("selected");
             removePreview(id);
         }
-
     } else {
-
-        if (isMarkedToAdd) {
+        // Предмета нет в комнате
+        if (itemsToAdd.has(id)) {
+            // Отменяем добавление
             itemsToAdd.delete(id);
-            card.classList.remove("selected");
             removePreview(id);
         } else {
+            // Помечаем на добавление
             itemsToAdd.add(id);
-            card.classList.add("selected");
             addPreview(item);
         }
     }
 
+    // Обновляем выделение на основе временных изменений
+    updateSelectionHighlight();
     updateBottomBar();
 }
 
@@ -151,14 +170,13 @@ function toggleItem(card) {
 ========================= */
 
 function addPreview(item) {
-
     if (!item.itemImage) return;
-
     if (document.querySelector(`[data-preview-id="${item.id}"]`)) return;
 
     const img = document.createElement("img");
     img.src = `../../assets/images/items/${item.itemImage}.png`;
     img.dataset.previewId = item.id;
+    img.alt = item.name;
 
     document.getElementById("roomItems").appendChild(img);
 }
@@ -173,7 +191,6 @@ function removePreview(id) {
 ========================= */
 
 function updateBottomBar() {
-
     let totalPrice = 0;
 
     itemsToAdd.forEach(id => {
@@ -184,14 +201,14 @@ function updateBottomBar() {
     });
 
     const priceEl = document.getElementById("totalPrice");
-    const btn = document.getElementById("applyBtn");
+    const applyBtn = document.getElementById("applyBtn");
 
     if (totalPrice > 0) {
         priceEl.textContent = `Стоимость: ${totalPrice} 🪙`;
-        btn.textContent = "Купить";
+        applyBtn.textContent = "Купить";
     } else {
         priceEl.textContent = "";
-        btn.textContent = "Применить";
+        applyBtn.textContent = "Применить";
     }
 }
 
@@ -206,40 +223,52 @@ function bindApplyButton() {
 }
 
 async function applyChanges() {
+    // Блокируем кнопку во время сохранения
+    const applyBtn = document.getElementById("applyBtn");
+    const originalText = applyBtn.textContent;
 
-    for (const item of allItems) {
+    applyBtn.textContent = "Сохранение...";
+    applyBtn.disabled = true;
 
-        const id = item.id;
-        let shouldBeInRoom = initialInRoom.has(id);
+    try {
+        for (const item of allItems) {
+            const id = item.id;
+            let shouldBeInRoom = initialInRoom.has(id);
 
-        if (itemsToAdd.has(id)) shouldBeInRoom = true;
-        if (itemsToRemove.has(id)) shouldBeInRoom = false;
+            if (itemsToAdd.has(id)) shouldBeInRoom = true;
+            if (itemsToRemove.has(id)) shouldBeInRoom = false;
 
-        if (shouldBeInRoom === item.inRoom) continue;
+            if (shouldBeInRoom === item.inRoom) continue;
 
-        await patchItem(id, {
-            inRoom: shouldBeInRoom,
-            isBought: shouldBeInRoom ? true : item.isBought
-        });
+            await patchItem(id, {
+                inRoom: shouldBeInRoom,
+                isBought: shouldBeInRoom ? true : item.isBought
+            });
+        }
+
+        // Перезагружаем данные
+        await loadData();
+
+        // Очищаем временные наборы
+        itemsToAdd.clear();
+        itemsToRemove.clear();
+
+        // Обновляем отображение
+        renderInitialRoom();
+        renderCurrentTab();
+
+        closeShop();
+    } catch (error) {
+        console.error('Ошибка при сохранении:', error);
+        alert('Не удалось сохранить изменения');
+    } finally {
+        // Разблокируем кнопку
+        applyBtn.textContent = originalText;
+        applyBtn.disabled = false;
     }
-
-    allItems = await loadItems();
-
-    initialInRoom = new Set(
-        allItems.filter(i => i.inRoom).map(i => i.id)
-    );
-
-    itemsToAdd.clear();
-    itemsToRemove.clear();
-
-    renderInitialRoom();
-    renderCurrentTab();
-
-    closeShop();
 }
 
 function renderInitialRoom() {
-
     const container = document.getElementById("roomItems");
     container.innerHTML = "";
 
@@ -259,63 +288,62 @@ function bindTogglePanel() {
 }
 
 function toggleShop() {
-
     const panel = document.getElementById("shopPanel");
 
     isShopOpen = !isShopOpen;
     panel.classList.toggle("open");
 
-    if (isShopOpen) {
-        panelOffset = 80;
-    } else {
+    if (!isShopOpen) {
         resetChanges();
-        panelOffset = 0;
     }
-
-    updateRoomTransform();
 }
 
 function closeShop() {
     const panel = document.getElementById("shopPanel");
-
     isShopOpen = false;
     panel.classList.remove("open");
-
-    panelOffset = 0;
-    updateRoomTransform();
-}
-
-function bindOutsideClick() {
-    document.addEventListener("click", (e) => {
-        if (!isShopOpen) return;
-
-        const panel = document.getElementById("shopPanel");
-        const button = document.getElementById("toggleShopBtn");
-
-        if (!panel.contains(e.target) && !button.contains(e.target)) {
-            toggleShop();
-        }
-    });
+    resetChanges();
 }
 
 function resetChanges() {
-
+    // Очищаем все временные изменения
     itemsToAdd.clear();
     itemsToRemove.clear();
 
+    // Возвращаем оригинальное состояние комнаты
     renderInitialRoom();
 
-    document
-        .querySelectorAll("#shopPanel .item-card")
-        .forEach(card => card.classList.remove("selected"));
+    // Обновляем выделение карточек
+    updateSelectionHighlight();
 
-    highlightActiveItems();
+    // Обновляем нижнюю панель
     updateBottomBar();
 }
 
-function updateRoomTransform() {
-    room.style.transform = `
-        translateX(${translateX + panelOffset}px)
-        scale(${scale})
-    `;
-}
+// Обработчик клика вне панелей
+document.addEventListener("click", (e) => {
+    const shopPanel = document.getElementById("shopPanel");
+    const friendsPanel = document.getElementById("friendsPanel");
+    const shopBtn = document.getElementById("toggleShopBtn");
+    const friendsBtn = document.getElementById("toggleCharacterBtn");
+
+    const clickInsideShop = shopPanel.contains(e.target) || shopBtn.contains(e.target);
+    const clickInsideFriends = friendsPanel.contains(e.target) || friendsBtn.contains(e.target);
+
+    if (!clickInsideShop && !clickInsideFriends) {
+        if (shopPanel.classList.contains("open")) {
+            resetChanges();
+            shopPanel.classList.remove("open");
+        }
+        if (friendsPanel.classList.contains("open")) {
+            // Здесь можно добавить reset для друзей, если нужно
+            friendsPanel.classList.remove("open");
+        }
+    }
+});
+
+
+startBtn.addEventListener('click', async () => {
+
+    window.location.href = 'http://localhost:8081/pages/timer-settings/timer-settings.html';
+});

@@ -4,10 +4,9 @@ import {
     postVisitor,
     deleteVisitor
 } from '../../../shared/api.js';
+import { getCurrentPlayerId } from '../../../shared/current-player.js';
 
 import { generateFriendHtml } from './friend-cards.html.js';
-
-const PLAYER_ID = 1;
 
 let allFriends = [];
 let visitors = [];
@@ -31,8 +30,9 @@ async function initFriends() {
 }
 
 async function loadData() {
-    allFriends = await getFriends(PLAYER_ID);
-    visitors = await getVisitors(PLAYER_ID);
+    const playerId = await getCurrentPlayerId();
+    allFriends = await getFriends(playerId);
+    visitors = await getVisitors(playerId);
 
     if (!Array.isArray(allFriends)) allFriends = [];
     if (!Array.isArray(visitors)) visitors = [];
@@ -130,8 +130,9 @@ async function applyChanges() {
 
     // Добавление
     for (const friendId of visitorsToAdd) {
+        const playerId = await getCurrentPlayerId();
         await postVisitor({
-            playerId: PLAYER_ID,
+            playerId: playerId,
             friendId: friendId
         });
     }

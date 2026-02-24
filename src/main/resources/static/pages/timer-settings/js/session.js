@@ -1,7 +1,8 @@
 // Импортируем всё нужное
 import {postSession, getPlayerSkillsFull, updatePlayerSkill, deletePlayerSkill, postSkill } from '../../../shared/api.js';
+import { getCurrentPlayerId } from '../../../shared/current-player.js';
+
 const PATH = 'http://localhost:8081/pages';
-const PLAYER_ID = 1;
 
 import { skillsChanged } from './custom-select.logic.js';
 import {selectedFriendId} from './friend-cards.js';
@@ -17,7 +18,7 @@ async function startSession(){
         workMinutes: parseInt(document.getElementById('workMinutes').value, 10),
         restMinutes: parseInt(document.getElementById('restMinutes').value, 10),
         cycles: parseInt(document.getElementById('cyclesAmount').value, 10),
-        playerId: PLAYER_ID,
+        playerId: await getCurrentPlayerId(),
         friendId: friendId,
         skillId: skillId
     };
@@ -31,10 +32,11 @@ async function startSession(){
 async function saveSkills() {
     const customSelect = document.getElementById('selectSkill');
 
-    const newSkills = mapSkillsFromDom(customSelect, PLAYER_ID);
+    const playerId = await getCurrentPlayerId();
+    const newSkills = mapSkillsFromDom(customSelect, playerId);
     console.log('НАВЫКИ ИЗ ДОМА', newSkills);
 
-    const oldSkills = await getPlayerSkillsFull(PLAYER_ID);
+    const oldSkills = await getPlayerSkillsFull(playerId);
 
     for (const oldSkill of oldSkills) {
         // Если навык есть в БД, но его нет в DOM

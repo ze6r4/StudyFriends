@@ -1,7 +1,7 @@
-import { getItems, patchItem } from '../../../shared/api.js';
+import { getItems, patchItem, getCoinBalance, spendCoins } from '../../../shared/api.js';
+import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { generateItemHtml } from './item-cards.html.js';
 
-const PLAYER_ID = 1;
 
 let allItems = [];
 let initialInRoom = new Set();
@@ -29,6 +29,7 @@ async function initMain() {
     bindApplyButton();
 
     await loadData();
+    await renderCoins();
     renderInitialRoom();
     renderCurrentTab();
 }
@@ -44,8 +45,35 @@ async function loadData() {
 }
 
 async function loadItems() {
-    const items = await getItems(PLAYER_ID);
+    const playerId = await getCurrentPlayerId();
+    const items = await getItems(playerId);
     return Array.isArray(items) ? items : [];
+}
+
+
+async function renderCoins() {
+    const coinData = await getCoinBalance();
+    const coins = Number(coinData?.coins ?? 0);
+
+    const coinCount = document.querySelector('.coin-count');
+    if (coinCount) {
+        coinCount.textContent = String(coins);
+    }
+
+    return coins;
+}
+
+function getPendingPurchasePrice() {
+    let totalPrice = 0;
+
+    itemsToAdd.forEach(id => {
+        const item = allItems.find(i => i.id === id);
+        if (item && !item.isBought) {
+            totalPrice += item.itemPrice;
+        }
+    });
+
+    return totalPrice;
 }
 
 /* =========================
@@ -191,14 +219,7 @@ function removePreview(id) {
 ========================= */
 
 function updateBottomBar() {
-    let totalPrice = 0;
-
-    itemsToAdd.forEach(id => {
-        const item = allItems.find(i => i.id === id);
-        if (item && !item.isBought) {
-            totalPrice += item.itemPrice;
-        }
-    });
+    const totalPrice = getPendingPurchasePrice();
 
     const priceEl = document.getElementById("totalPrice");
     const applyBtn = document.getElementById("applyBtn");
@@ -231,6 +252,20 @@ async function applyChanges() {
     applyBtn.disabled = true;
 
     try {
+        const totalPrice = getPendingPurchasePrice();
+
+        if (totalPrice > 0) {
+            const coinData = await getCoinBalance();
+            const currentCoins = Number(coinData?.coins ?? 0);
+
+            if (currentCoins < totalPrice) {
+                alert(`Недостаточно монет. Нужно ${totalPrice}, доступно ${currentCoins}`);
+                return;
+            }
+
+            await spendCoins(totalPrice);
+        }
+
         for (const item of allItems) {
             const id = item.id;
             let shouldBeInRoom = initialInRoom.has(id);
@@ -254,6 +289,7 @@ async function applyChanges() {
         itemsToRemove.clear();
 
         // Обновляем отображение
+        await renderCoins();
         renderInitialRoom();
         renderCurrentTab();
 

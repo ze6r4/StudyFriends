@@ -1,6 +1,7 @@
 package com.example.StudyFriends.controllers;
 
 
+import com.example.StudyFriends.dto.PlayerDto;
 import com.example.StudyFriends.dto.UserDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Player;
@@ -66,7 +67,17 @@ public class AuthController {
         Player player = playerService.getPlayerById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Пользователь не найден"));
 
-        return ResponseEntity.ok(player);
+        return ResponseEntity.ok(toPlayerDto(player));
+    }
+
+
+    private PlayerDto toPlayerDto(Player player) {
+        PlayerDto dto = new PlayerDto();
+        dto.setId(player.getId());
+        dto.setName(player.getName());
+        dto.setEmail(player.getEmail());
+        dto.setCoins(player.getCoins());
+        return dto;
     }
 
     @PostMapping("/logout")

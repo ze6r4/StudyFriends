@@ -129,6 +129,7 @@ async function applyChanges() {
     }
 
     // Добавление
+    const playerId = await getCurrentPlayerId();
     for (const friendId of visitorsToAdd) {
         const playerId = await getCurrentPlayerId();
         await postVisitor({

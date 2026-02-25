@@ -147,3 +147,30 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
+/* ВАЖНО: добавьте pointer-events: none для фоновых изображений */
+.bg img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;  /* ← ЭТО РЕШИТ ПРОБЛЕМУ */
+}
+
+/* А заметки должны получать события */
+.notes-content {
+    position: absolute;
+    top: 100px;
+    left: 170px;
+    font-family: "overdoze";
+    font-size: 2rem;
+    line-height: 1.7;
+    min-height: 350px;
+    color: #714543;
+    outline: none;
+    pointer-events: auto;  /* ← ЯВНО УКАЗЫВАЕМ */
+    max-width: 500px;      /* ← ОГРАНИЧИВАЕМ ШИРИНУ */
+    max-height: 400px;     /* ← ОГРАНИЧИЧИВАЕМ ВЫСОТУ */
+    overflow-y: auto;      /* ← СКРОЛЛ, если текст не влезает */
+    word-wrap: break-word; /* ← ПЕРЕНОС ДЛИННЫХ СЛОВ */
+}

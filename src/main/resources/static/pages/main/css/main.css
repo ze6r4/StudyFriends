@@ -320,6 +320,10 @@ body {
     bottom: 20px;
     right: 20px;
 }
+#devBalanceBtn {
+    bottom: 20px;
+    right: 90px;
+}
 /* ================= СЧЕТЧИК МОНЕТ ================= */
 
 
@@ -385,3 +389,6 @@ body {
     background: var(--accent-1); /* нежный розовый при наведении */
 }
 
+.hidden {
+    display: none;
+}

@@ -3,7 +3,8 @@ import {
     patchItem,
     getCoinBalance,
     spendCoins,
-    updateCoinBalance
+    updateCoinBalance,
+    getMe
 } from '../../../shared/api.js';
 
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
@@ -282,27 +283,53 @@ function bindStartButton() {
         });
 }
 
-function initBalanceButton() {
-    const footer = document.createElement("div");
-    footer.className = "footer";
+async function initBalanceButton() {
+    try {
+        const me = await getMe();
+        if (!me || !me.developer) return;
 
-    const btn = document.createElement("button");
-    btn.textContent = "Изменить баланс";
+        const btn = document.getElementById("devBalanceBtn");
+        if (!btn) return;
 
-    btn.addEventListener("click", async () => {
-        const value = prompt("Введите новое количество монет:");
-        if (value === null) return;
+        btn.classList.remove("hidden");
 
-        const amount = Number(value);
-        if (isNaN(amount) || amount < 0) {
-            alert("Введите корректное число");
-            return;
-        }
+        btn.addEventListener("click", async () => {
+            const value = prompt("Введите новое количество монет:");
+            if (value === null) return;
 
-        await updateCoinBalance(amount);
-        await renderCoins();
-    });
+            const amount = Number(value);
 
-    footer.appendChild(btn);
-    document.body.appendChild(footer);
+            if (isNaN(amount) || amount < 0) {
+                alert("Введите корректное число");
+                return;
+            }
+
+            await updateCoinBalance(amount);
+            await renderCoins();
+        });
+
+    } catch (e) {
+        console.error("Ошибка получения пользователя", e);
+    }
 }
+// Обработчик клика вне панелей
+document.addEventListener("click", (e) => {
+    const shopPanel = document.getElementById("shopPanel");
+    const friendsPanel = document.getElementById("friendsPanel");
+    const shopBtn = document.getElementById("toggleShopBtn");
+    const friendsBtn = document.getElementById("toggleCharacterBtn");
+
+    const clickInsideShop = shopPanel.contains(e.target) || shopBtn.contains(e.target);
+    const clickInsideFriends = friendsPanel.contains(e.target) || friendsBtn.contains(e.target);
+
+    if (!clickInsideShop && !clickInsideFriends) {
+        if (shopPanel.classList.contains("open")) {
+            resetChanges();
+            shopPanel.classList.remove("open");
+        }
+        if (friendsPanel.classList.contains("open")) {
+            // Здесь можно добавить reset для друзей, если нужно
+            friendsPanel.classList.remove("open");
+        }
+    }
+});

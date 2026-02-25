@@ -1,4 +1,4 @@
-import { patchSession, getCharacter,getFriend } from '../../../shared/api.js';
+import { patchSession, getCharacter, getFriend, getMe } from '../../../shared/api.js';
 
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
@@ -254,11 +254,38 @@ function playNotify() {
 // ==================== Инициализация ====================
 document.addEventListener('DOMContentLoaded', restoreTimer);
 document.addEventListener('DOMContentLoaded', initCharacter);
+document.addEventListener('DOMContentLoaded', initDeveloperButtons);
 
 // ==================== РЕЖИМ РАЗРАБОТЧИКА ====================
-const devModeBtn = document.getElementById('devModeBtn');
-devModeBtn.addEventListener('click', developerMode);
 
+async function initDeveloperButtons() {
+    try {
+        const me = await getMe();
+
+        if (!me?.developer) return;
+
+        const footer = document.querySelector('.footer');
+        if (!footer) return;
+
+        // создаём кнопки
+        const devModeBtn = document.createElement('button');
+        devModeBtn.textContent = 'Режим разработчика';
+        devModeBtn.id = 'devModeBtn';
+        devModeBtn.addEventListener('click', developerMode);
+
+        const resetTimerDevBtn = document.createElement('button');
+        resetTimerDevBtn.textContent = 'Очистить localStorage';
+        resetTimerDevBtn.id = 'resetTimerDevBtn';
+        resetTimerDevBtn.addEventListener('click', resetTimerForTesting);
+
+        footer.appendChild(devModeBtn);
+        footer.appendChild(resetTimerDevBtn);
+
+        console.log('Developer mode enabled');
+    } catch (e) {
+        console.error('Ошибка проверки developer:', e);
+    }
+}
 function developerMode() {
     if (!confirm('Активировать режим разработчика?\nWORK: 10с\nBREAK: 5с\nCYCLES: 2')) {
         return;
@@ -271,8 +298,7 @@ function developerMode() {
     // Полный сброс таймера
     resetTimer();
 }
-const resetTimerDevBtn = document.getElementById('resetTimerDevBtn');
-resetTimerDevBtn.addEventListener('click', resetTimerForTesting);
+
 
 function resetTimerForTesting() {
     if (!confirm('Сбросить таймер и очистить сохранённое состояние?')) {

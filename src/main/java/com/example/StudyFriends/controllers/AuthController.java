@@ -22,6 +22,14 @@ public class AuthController {
     @Autowired
     private PlayerService playerService;
 
+    private Long getUserId(HttpSession session) {
+        Long userId = (Long) session.getAttribute("USER_ID");
+        if (userId == null) {
+            throw new RuntimeException("Не авторизован");
+        }
+        return userId;
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestBody UserDto user,
@@ -58,27 +66,13 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<?> me(HttpSession session) {
-        Long userId = (Long) session.getAttribute("USER_ID");
-
-        if (userId == null) {
-            return ResponseEntity.status(401).build();
-        }
+        Long userId = getUserId(session);
 
         Player player = playerService.getPlayerById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Пользователь не найден"));
 
         return ResponseEntity.ok(PlayerDto.fromEntity(player));
     }
-    @GetMapping("/{playerId}/is-developer")
-    public ResponseEntity<?> isDeveloper(@PathVariable Long playerId) {
-        Player player = playerService.getPlayerById(playerId)
-                .orElseThrow(() -> new RuntimeException("Player not found"));
-
-        boolean isDeveloper = "DEVELOPER".equals(player.getRole());
-
-        return ResponseEntity.ok(Map.of("isDeveloper", isDeveloper));
-    }
-
 
     @PostMapping("/logout")
     public void logout(HttpSession session) {

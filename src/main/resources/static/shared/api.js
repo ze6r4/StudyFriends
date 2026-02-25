@@ -30,12 +30,11 @@ export function isDeveloper(playerId) {
 /* ================= COINS ================= */
 
 export function getCoins(playerId) {
-    return apiAuth(`/coins?playerId={playerId}`);
+    return apiAuth(`/coins?playerId=${playerId}`);
 }
 export function updateCoinBalance(amount) {
-    return apiAuth('coins/update', {
-        method: 'POST',
-        body: JSON.stringify({ amount })
+    return apiAuth(`/coins/set?amount=${amount}`, {
+        method: 'POST'
     });
 }
 /* ================= SKILLS ================= */

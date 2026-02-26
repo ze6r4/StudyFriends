@@ -392,3 +392,20 @@ body {
 .hidden {
     display: none;
 }
+/* ================= СДВИГ КНОПОК ПРИ ОТКРЫТИИ ================= */
+
+#toggleShopBtn {
+    transition: left 0.3s ease;
+}
+
+#toggleShopBtn.shifted {
+    left: 360px; /* 340px ширина панели + 20px отступ */
+}
+
+#toggleCharacterBtn {
+    transition: right 0.3s ease;
+}
+
+#toggleCharacterBtn.shifted {
+    right: 360px; /* 340px панель + 20px отступ */
+}

@@ -1,6 +1,7 @@
 import {
-    getItems,
+    getShopItems,
     patchItem,
+    buyItem,
     getCoinBalance,
     spendCoins,
     updateCoinBalance,
@@ -10,21 +11,17 @@ import {
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { generateItemHtml } from './item-cards.html.js';
 
-let allItems = [];
-let initialInRoom = new Set();
-let itemsToAdd = new Set();
-let itemsToRemove = new Set();
+let allItems = [];              // объединённый список
+let initialInRoom = new Set();  // Set<itemId>
+let itemsToAdd = new Set();     // Set<itemId>
+let itemsToRemove = new Set();  // Set<itemId>
 
 let currentTab = "bought";
 let isShopOpen = false;
 
-let room;
-
 document.addEventListener("DOMContentLoaded", initMain);
 
 async function initMain() {
-    room = document.getElementById("room");
-
     bindTogglePanel();
     bindTabs();
     bindApplyButton();
@@ -39,11 +36,38 @@ async function initMain() {
 
 async function loadData() {
     const playerId = await getCurrentPlayerId();
-    const items = await getItems(playerId);
-    allItems = Array.isArray(items) ? items : [];
+    const data = await getShopItems(playerId);
+
+    const owned = data.owned ?? [];
+    const available = data.available ?? [];
+
+    allItems = [
+        ...owned.map(i => ({
+            playerItemId: i.id,
+            itemId: i.itemId,
+            itemName: i.itemName,
+            itemImage: i.itemImage,
+            itemPrice: i.itemPrice,
+            inRoom: i.inRoom,
+            itemCard: i.itemCard,
+            isBought: true
+        })),
+        ...available.map(i => ({
+            playerItemId: null,
+            itemId: i.itemId,
+            itemName: i.itemName,
+            itemImage: i.itemImage,
+            itemPrice: i.itemPrice,
+            itemCard: i.itemCard,
+            inRoom: false,
+            isBought: false
+        }))
+    ];
 
     initialInRoom = new Set(
-        allItems.filter(i => i.inRoom).map(i => i.id)
+        allItems
+            .filter(i => i.isBought && i.inRoom)
+            .map(i => i.itemId)
     );
 }
 
@@ -61,8 +85,10 @@ function getPendingPurchasePrice() {
     let total = 0;
 
     itemsToAdd.forEach(id => {
-        const item = allItems.find(i => i.id === id);
-        if (item && !item.isBought) total += item.itemPrice;
+        const item = allItems.find(i => i.itemId === id);
+        if (item && !item.isBought) {
+            total += item.itemPrice;
+        }
     });
 
     return total;
@@ -107,10 +133,10 @@ function updateSelectionHighlight() {
         });
 }
 
-function isItemSelected(id) {
-    if (itemsToAdd.has(id)) return true;
-    if (itemsToRemove.has(id)) return false;
-    return initialInRoom.has(id);
+function isItemSelected(itemId) {
+    if (itemsToAdd.has(itemId)) return true;
+    if (itemsToRemove.has(itemId)) return false;
+    return initialInRoom.has(itemId);
 }
 
 function bindItemClicks() {
@@ -121,26 +147,26 @@ function bindItemClicks() {
 }
 
 function toggleItem(card) {
-    const id = Number(card.dataset.id);
-    const item = allItems.find(i => i.id === id);
+    const itemId = Number(card.dataset.id);
+    const item = allItems.find(i => i.itemId === itemId);
     if (!item) return;
 
-    const isInitiallyInRoom = initialInRoom.has(id);
+    const isInitiallyInRoom = initialInRoom.has(itemId);
 
     if (isInitiallyInRoom) {
-        if (itemsToRemove.has(id)) {
-            itemsToRemove.delete(id);
+        if (itemsToRemove.has(itemId)) {
+            itemsToRemove.delete(itemId);
             addPreview(item);
         } else {
-            itemsToRemove.add(id);
-            removePreview(id);
+            itemsToRemove.add(itemId);
+            removePreview(itemId);
         }
     } else {
-        if (itemsToAdd.has(id)) {
-            itemsToAdd.delete(id);
-            removePreview(id);
+        if (itemsToAdd.has(itemId)) {
+            itemsToAdd.delete(itemId);
+            removePreview(itemId);
         } else {
-            itemsToAdd.add(id);
+            itemsToAdd.add(itemId);
             addPreview(item);
         }
     }
@@ -151,18 +177,18 @@ function toggleItem(card) {
 
 function addPreview(item) {
     if (!item.itemImage) return;
-    if (document.querySelector(`[data-preview-id="${item.id}"]`)) return;
+    if (document.querySelector(`[data-preview-id="${item.itemId}"]`)) return;
 
     const img = document.createElement("img");
     img.src = `../../assets/images/items/${item.itemImage}.png`;
-    img.dataset.previewId = item.id;
-    img.alt = item.name;
+    img.dataset.previewId = item.itemId;
+    img.alt = item.itemName;
 
     document.getElementById("roomItems").appendChild(img);
 }
 
-function removePreview(id) {
-    const el = document.querySelector(`[data-preview-id="${id}"]`);
+function removePreview(itemId) {
+    const el = document.querySelector(`[data-preview-id="${itemId}"]`);
     if (el) el.remove();
 }
 
@@ -206,18 +232,32 @@ async function applyChanges() {
             await spendCoins(totalPrice);
         }
 
-        for (const item of allItems) {
-            const id = item.id;
-            let shouldBeInRoom = initialInRoom.has(id);
+        const playerId = await getCurrentPlayerId();
 
-            if (itemsToAdd.has(id)) shouldBeInRoom = true;
-            if (itemsToRemove.has(id)) shouldBeInRoom = false;
+        // 1️⃣ Покупка новых
+        for (const itemId of itemsToAdd) {
+            const item = allItems.find(i => i.itemId === itemId);
+            if (!item) continue;
+
+            if (!item.isBought) {
+                await buyItem(playerId, itemId);
+            }
+        }
+
+        // 2️⃣ Обновление inRoom только у купленных
+        for (const item of allItems) {
+            if (!item.isBought) continue;
+
+            const itemId = item.itemId;
+            let shouldBeInRoom = initialInRoom.has(itemId);
+
+            if (itemsToAdd.has(itemId)) shouldBeInRoom = true;
+            if (itemsToRemove.has(itemId)) shouldBeInRoom = false;
 
             if (shouldBeInRoom === item.inRoom) continue;
 
-            await patchItem(id, {
-                inRoom: shouldBeInRoom,
-                isBought: shouldBeInRoom ? true : item.isBought
+            await patchItem(item.playerItemId, {
+                inRoom: shouldBeInRoom
             });
         }
 
@@ -231,6 +271,7 @@ async function applyChanges() {
         closeShop();
 
     } catch (e) {
+        console.error(e);
         alert("Ошибка сохранения");
     } finally {
         applyBtn.textContent = originalText;
@@ -243,7 +284,7 @@ function renderInitialRoom() {
     container.innerHTML = "";
 
     allItems
-        .filter(i => i.inRoom)
+        .filter(i => i.isBought && i.inRoom)
         .forEach(item => addPreview(item));
 }
 
@@ -254,16 +295,28 @@ function bindTogglePanel() {
 
 function toggleShop() {
     const panel = document.getElementById("shopPanel");
-    isShopOpen = !isShopOpen;
-    panel.classList.toggle("open");
+    const btn = document.getElementById("toggleShopBtn");
 
-    if (!isShopOpen) resetChanges();
+    const isOpen = panel.classList.contains("open");
+
+    if (isOpen) {
+        panel.classList.remove("open");
+        btn.classList.remove("shifted");
+        resetChanges();
+    } else {
+        panel.classList.add("open");
+        btn.classList.add("shifted");
+    }
 }
 
 function closeShop() {
     const panel = document.getElementById("shopPanel");
+    const btn = document.getElementById("toggleShopBtn");
+
     isShopOpen = false;
     panel.classList.remove("open");
+    btn.classList.remove("shifted"); // ← ВАЖНО
+
     resetChanges();
 }
 
@@ -312,24 +365,3 @@ async function initBalanceButton() {
         console.error("Ошибка получения пользователя", e);
     }
 }
-// Обработчик клика вне панелей
-document.addEventListener("click", (e) => {
-    const shopPanel = document.getElementById("shopPanel");
-    const friendsPanel = document.getElementById("friendsPanel");
-    const shopBtn = document.getElementById("toggleShopBtn");
-    const friendsBtn = document.getElementById("toggleCharacterBtn");
-
-    const clickInsideShop = shopPanel.contains(e.target) || shopBtn.contains(e.target);
-    const clickInsideFriends = friendsPanel.contains(e.target) || friendsBtn.contains(e.target);
-
-    if (!clickInsideShop && !clickInsideFriends) {
-        if (shopPanel.classList.contains("open")) {
-            resetChanges();
-            shopPanel.classList.remove("open");
-        }
-        if (friendsPanel.classList.contains("open")) {
-            // Здесь можно добавить reset для друзей, если нужно
-            friendsPanel.classList.remove("open");
-        }
-    }
-});

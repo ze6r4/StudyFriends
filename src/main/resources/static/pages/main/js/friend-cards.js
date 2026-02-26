@@ -157,13 +157,24 @@ function bindToggle() {
 
 function togglePanel() {
     const panel = document.getElementById("friendsPanel");
-    isFriendsOpen = !isFriendsOpen;
-    panel.classList.toggle("open");
+    const btn = document.getElementById("toggleCharacterBtn");
+
+    const isOpen = panel.classList.contains("open");
+
+    if (isOpen) {
+        panel.classList.remove("open");
+        btn.classList.remove("shifted");
+    } else {
+        panel.classList.add("open");
+        btn.classList.add("shifted");
+    }
 }
 
 function closePanel() {
     const panel = document.getElementById("friendsPanel");
     isFriendsOpen = false;
     panel.classList.remove("open");
+    document.getElementById("toggleCharacterBtn")
+        .classList.remove("shifted");
 }
 

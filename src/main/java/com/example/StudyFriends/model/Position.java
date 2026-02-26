@@ -23,10 +23,14 @@ public class Position {
     private PositionName name;
 
     @Column(nullable = false)
-    private Long x;
+    private Double x;
 
     @Column(nullable = false)
-    private Long y;
+    private Double y;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Direction direction;
 
     @OneToMany(mappedBy = "posType")
     private List<Item> items = new ArrayList<>();

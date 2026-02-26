@@ -28,7 +28,7 @@ public class VisitController {
         try {
 
             List<FriendVisit> visitors = visitService.getVisitorsOfPlayer(playerId);
-            List<Friend> friendsNotVisitors = friendService.getFriendsNotVisitors(playerId);
+            List<Friend> friendsNotVisitors = friendService.getFriendsNotVisitorsOfPlayer(playerId);
 
             List<FriendDto> visitDto = visitors.stream()
                     .map(FriendDto::fromEntity)

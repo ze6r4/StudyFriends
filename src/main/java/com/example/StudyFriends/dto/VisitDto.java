@@ -1,5 +1,6 @@
 package com.example.StudyFriends.dto;
 
+import com.example.StudyFriends.model.Direction;
 import com.example.StudyFriends.model.FriendVisit;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +10,10 @@ import lombok.Setter;
 public class VisitDto {
     private Long id;
     private Long playerFriendId;
-    private String friendAction;
-    private Long friendPosTypeId;
-
+    private Action friendAction;
+    private Direction direction;
+    private Double x;
+    private Double y;
     public static VisitDto fromEntity(FriendVisit visit) {
 
         VisitDto dto = new VisitDto();
@@ -25,8 +27,14 @@ public class VisitDto {
         if (visit.getFriendAction() != null) {
             dto.friendAction = visit.getFriendAction();
         }
-        if (visit.getFriendPosType() != null) {
-            dto.friendPosTypeId = visit.getFriendPosType().getId();
+        if (visit.getDirection() != null) {
+            dto.direction = visit.getDirection();
+        }
+        if (visit.getX() != null) {
+            dto.x = visit.getX();
+        }
+        if (visit.getY() != null) {
+            dto.y = visit.getY();
         }
         return dto;
     }

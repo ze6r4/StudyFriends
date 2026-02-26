@@ -1,5 +1,6 @@
 package com.example.StudyFriends.model;
 
+import com.example.StudyFriends.dto.Action;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +20,14 @@ public class FriendVisit {
     @JoinColumn(name = "player_friend_id", nullable = false)
     private Friend playerFriend;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "friend_action")
-    private String friendAction;
+    private Action friendAction;
 
-    @ManyToOne
-    @JoinColumn(name = "friend_pos_type")
-    private Position friendPosType;
+    @Enumerated(EnumType.STRING)
+    private Direction direction;
+
+    private Double x;
+    private Double y;
+
 }

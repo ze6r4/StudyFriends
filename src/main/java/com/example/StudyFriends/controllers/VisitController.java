@@ -1,16 +1,15 @@
 package com.example.StudyFriends.controllers;
 
 import com.example.StudyFriends.dto.VisitDto;
+import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Friend;
+import com.example.StudyFriends.model.FriendVisit;
 import com.example.StudyFriends.services.FriendService;
 import com.example.StudyFriends.services.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,18 +21,7 @@ public class VisitController {
     private VisitService visitService;
     @Autowired
     private FriendService friendService;
-//    @GetMapping("/visitors")
-//    public ResponseEntity<?> getVisitor(@RequestParam Long playerFriendId) {
-//        try{
-//            FriendVisit visit = visitService.getVisitor(playerFriendId);
-//
-//            return ResponseEntity.ok(visit);
-//        } catch (Exception ex) {
-//            return ResponseEntity
-//                    .status(HttpStatus.BAD_REQUEST)
-//                    .body("Ошибка: " + ex.getMessage());
-//        }
-//    }
+
     @GetMapping("/visitors")
     public ResponseEntity<?> getAllVisitors(@RequestParam Long playerId) {
         try{
@@ -50,6 +38,31 @@ public class VisitController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());
         }
+    }
+    @PostMapping("/visitors")
+    public ResponseEntity<?> addVisitor(@RequestBody VisitDto dto) {
+        FriendVisit visit = new FriendVisit();
+        try{
+            Friend friend = friendService.getFriendById(dto.getPlayerFriendId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Friend",dto.getPlayerFriendId()));
+
+            visit.setPlayerFriend(friend);
+            visit.setX(dto.getX());
+            visit.setY(dto.getY());
+            visit.setDirection(dto.getDirection());
+            visit.setFriendAction(dto.getFriendAction());
+
+            FriendVisit savedVisitor = visitService.addVisitor(visit);
+            visit.setId(savedVisitor.getId());
+
+            return ResponseEntity.ok(VisitDto.fromEntity(visit));
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+
+
     }
 
 

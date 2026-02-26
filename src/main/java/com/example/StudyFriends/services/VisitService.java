@@ -12,5 +12,5 @@ public class VisitService {
     public FriendVisit getVisitor(Long playerFriendId){
         return visitRep.findVisitorOfPlayerFriends(playerFriendId);
     }
-
+    public FriendVisit addVisitor(FriendVisit visit){return visitRep.save(visit);}
 }

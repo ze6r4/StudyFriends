@@ -409,3 +409,11 @@ body {
 #toggleCharacterBtn.shifted {
     right: 360px; /* 340px панель + 20px отступ */
 }
+#deleteBtn {
+    position: fixed;
+    bottom: 20px;
+    left:30%;
+}
+.room-character {
+     height: 20%;
+}

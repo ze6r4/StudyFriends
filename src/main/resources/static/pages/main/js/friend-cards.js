@@ -1,153 +1,87 @@
 import {
-    getFriends,
-    getVisitors,
-    postVisitor,
-    deleteVisitor
+    getVisitors
 } from '../../../shared/api.js';
-import { getCurrentPlayerId } from '../../../shared/current-player.js';
 
+import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { generateFriendHtml } from './friend-cards.html.js';
 
-let allFriends = [];
-let visitors = [];
+import {
+    startCharacterPlacement,
+    loadVisitorsToRoom,
+    clearCardSelection
+} from './visit-transform.js';
 
-let initialVisitorIds = new Set(); // playerFriendId
-let visitorsToAdd = new Set();     // friendId
-let visitorsToRemove = new Set();  // playerFriendId
-
-let isFriendsOpen = false;
+let visitFriends = [];
+let notVisitFriends = [];
+let selectedCard = null;
 
 document.addEventListener("DOMContentLoaded", initFriends);
 
-/* ================= INIT ================= */
-
 async function initFriends() {
     bindToggle();
-    bindApply();
-
     await loadData();
     renderFriends();
 }
 
 async function loadData() {
+
     const playerId = await getCurrentPlayerId();
-    allFriends = await getFriends(playerId);
-    visitors = await getVisitors(playerId);
 
-    if (!Array.isArray(allFriends)) allFriends = [];
-    if (!Array.isArray(visitors)) visitors = [];
+    const panelDto = await getVisitors(playerId);
 
-    initialVisitorIds = new Set(
-        visitors.map(v => v.playerFriendId)
-    );
+    visitFriends = panelDto.visit || [];
+    notVisitFriends = panelDto.notVisit || [];
+    console.log(panelDto);
+
+    // загружаем персонажей в комнату
+    loadVisitorsToRoom(visitFriends);
 }
 
-/* ================= RENDER ================= */
-
 function renderFriends() {
+
     const grid = document
         .getElementById("friendsPanel")
         .querySelector(".items-grid");
 
-    grid.innerHTML = generateFriendHtml(allFriends);
+    const all = [...visitFriends, ...notVisitFriends];
 
-    highlightVisitors();
+    grid.innerHTML = generateFriendHtml(all);
+
     bindCardClicks();
 }
 
-function highlightVisitors() {
-    const cards = document.querySelectorAll("#friendsPanel .friend-card");
-
-    cards.forEach(card => {
-        const friendId = Number(card.dataset.friendId);
-
-        const visitor = visitors.find(v => v.friendId === friendId);
-
-        if (
-            visitor &&
-            initialVisitorIds.has(visitor.playerFriendId) &&
-            !visitorsToRemove.has(visitor.playerFriendId)
-        ) {
-            card.classList.add("selected");
-        }
-    });
-}
-
-/* ================= CLICK ================= */
-
 function bindCardClicks() {
+
     const cards = document.querySelectorAll("#friendsPanel .friend-card");
 
     cards.forEach(card => {
-        card.addEventListener("click", () => toggleFriend(card));
+        card.addEventListener("click", () => selectCard(card));
     });
 }
 
-function toggleFriend(card) {
+function selectCard(card) {
+
+    // убираем старое выделение
+    if (selectedCard) {
+        selectedCard.classList.remove("selected");
+    }
+
+    selectedCard = card;
+    selectedCard.classList.add("selected");
+
     const friendId = Number(card.dataset.friendId);
 
-    const visitor = visitors.find(v => v.friendId === friendId);
+    const friend =
+        [...visitFriends, ...notVisitFriends]
+            .find(f => Number(f.id) === friendId);
 
-    const isInitiallyInRoom = !!visitor;
+    const isAlreadyInRoom =
+        visitFriends.some(f => Number(f.id) === friendId);
 
-    if (isInitiallyInRoom) {
-        const playerFriendId = visitor.playerFriendId;
-
-        if (visitorsToRemove.has(playerFriendId)) {
-            visitorsToRemove.delete(playerFriendId);
-            card.classList.add("selected");
-        } else {
-            visitorsToRemove.add(playerFriendId);
-            card.classList.remove("selected");
-        }
-
-    } else {
-
-        if (visitorsToAdd.has(friendId)) {
-            visitorsToAdd.delete(friendId);
-            card.classList.remove("selected");
-        } else {
-            visitorsToAdd.add(friendId);
-            card.classList.add("selected");
-        }
-    }
+    startCharacterPlacement(friend, isAlreadyInRoom);
 }
 
-/* ================= APPLY ================= */
-
-function bindApply() {
-    document
-        .getElementById("applyFriendsBtn")
-        .addEventListener("click", applyChanges);
-}
-
-async function applyChanges() {
-
-    // Удаление
-    for (const playerFriendId of visitorsToRemove) {
-        await deleteVisitor(playerFriendId);
-    }
-
-    // Добавление
-    const playerId = await getCurrentPlayerId();
-    for (const friendId of visitorsToAdd) {
-        const playerId = await getCurrentPlayerId();
-        await postVisitor({
-            playerId: playerId,
-            friendId: friendId
-        });
-    }
-
-    await loadData();
-
-    visitorsToAdd.clear();
-    visitorsToRemove.clear();
-
-    renderFriends();
-    closePanel();
-}
-
-/* ================= PANEL ================= */
+/* ===== ПАНЕЛЬ ===== */
 
 function bindToggle() {
     document
@@ -156,12 +90,14 @@ function bindToggle() {
 }
 
 function togglePanel() {
+
     const panel = document.getElementById("friendsPanel");
     const btn = document.getElementById("toggleCharacterBtn");
 
     const isOpen = panel.classList.contains("open");
 
     if (isOpen) {
+        clearCardSelection();
         panel.classList.remove("open");
         btn.classList.remove("shifted");
     } else {
@@ -169,12 +105,3 @@ function togglePanel() {
         btn.classList.add("shifted");
     }
 }
-
-function closePanel() {
-    const panel = document.getElementById("friendsPanel");
-    isFriendsOpen = false;
-    panel.classList.remove("open");
-    document.getElementById("toggleCharacterBtn")
-        .classList.remove("shifted");
-}
-

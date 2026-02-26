@@ -1,84 +1,138 @@
-import { postVisitor } from '../../../shared/api.js';
+import {
+    postVisitor,
+    deleteVisitor
+} from '../../../shared/api.js';
 
 const BASE_PATH = '../../assets/images/characters';
 
-let isDragging = false;
-let dragStartX = 0;
-let activeFriend = null;
-
 let placementMode = false;
-let currentCharacter = null;
+let editingExisting = false;
 
-let currentAction = "SIT";     // SIT | STAND
-let currentDirection = "RIGHT"; // RIGHT | LEFT
+let currentCharacter = null;
+let selectedFriendId = null;
+
+let currentAction = "SIT";
+let currentDirection = "RIGHT";
 
 let posXPercent = null;
 let posYPercent = null;
 
 const room = document.getElementById("room");
-const roomContainer = document.getElementById("roomContainer");
 const roomCharacters = document.getElementById("roomCharacters");
+
 const doneBtn = document.getElementById("doneBtn");
-doneBtn.addEventListener("click", finishPlacement);
+const deleteBtn = document.getElementById("deleteBtn");
 const startBtn = document.getElementById("startBtn");
 
-document.addEventListener("mousedown", (e) => {
-    const card = e.target.closest(".friend-card");
-    if (!card) return;
+doneBtn.addEventListener("click", finishPlacement);
+deleteBtn.addEventListener("click", removeCharacter);
 
-    isDragging = true;
-    dragStartX = e.clientX;
-    activeFriend = card;
-});
+/* ================= LOAD EXISTING ================= */
 
-document.addEventListener("mouseup", () => {
-    isDragging = false;
-});
+export function loadVisitorsToRoom(visitFriends) {
 
-document.addEventListener("mousemove", (e) => {
-    if (!isDragging || !activeFriend) return;
+    visitFriends.forEach(friend => {
 
-    const deltaX = e.clientX - dragStartX;
+        const img = document.createElement("img");
+        img.classList.add("room-character");
 
-    // если потянули влево достаточно сильно — запускаем режим
-    if (deltaX < -80) {
-        startPlacement(activeFriend);
-        isDragging = false;
-        activeFriend = null;
-    }
-});
+        img.dataset.friendId = friend.id;
+        img.dataset.sitImage =
+            `${BASE_PATH}/${friend.sitImage}.png`;
 
-function startPlacement(card) {
-    placementMode = true;
+        img.dataset.standImage =
+            `${BASE_PATH}/${friend.standImage}.png`;
+
+        img.src =
+            friend.friendAction === "STAND"
+                ? img.dataset.standImage
+                : img.dataset.sitImage;
+
+        img.style.position = "absolute";
+        img.style.left = (friend.x * 100) + "%";
+        img.style.top = (friend.y * 100) + "%";
+
+        img.style.transform =
+            friend.direction === "LEFT"
+                ? "translate(-50%, -100%) scaleX(-1)"
+                : "translate(-50%, -100%)";
+
+        roomCharacters.appendChild(img);
+    });
+}
+
+/* ================= START ================= */
+
+export function startCharacterPlacement(friend, alreadyInRoom) {
 
     resetRoomTransform();
-    showDoneButton();
 
-    const friendId = card.dataset.friendId;
-    const img = card.querySelector("img");
+    placementMode = true;
+    editingExisting = alreadyInRoom;
 
-    currentCharacter = document.createElement("img");
-    currentCharacter.classList.add("placing-character");
+    selectedFriendId = friend.id;
 
-    currentCharacter.dataset.friendId = friendId;
-    currentCharacter.dataset.sit = img.src.replace(".png", "_sit.png");
-    currentCharacter.dataset.stand = img.src.replace(".png", "_stand.png");
+    const existing =
+        document.querySelector(
+            `.room-character[data-friend-id="${friend.id}"]`
+        );
 
-    currentCharacter.src = currentCharacter.dataset.sit;
+    if (existing) {
+        currentCharacter = existing;
+        posXPercent = parseFloat(existing.style.left) / 100;
+        posYPercent = parseFloat(existing.style.top) / 100;
 
-    roomCharacters.appendChild(currentCharacter);
+        doneBtn.textContent = "Переместить";
+        deleteBtn.classList.remove("hidden");
+    } else {
+        currentCharacter = createCharacter(friend);
+        doneBtn.textContent = "Готово";
+        deleteBtn.classList.add("hidden");
+    }
+
+    showButtons();
 
     room.addEventListener("click", placeCharacter);
     document.addEventListener("wheel", handleWheel, { passive: false });
     document.addEventListener("keydown", handleKey);
 }
 
-function resetRoomTransform() {
-    room.style.transform = `translateX(0px) scale(1)`;
+function createCharacter(friend) {
+
+    const img = document.createElement("img");
+
+    img.classList.add("room-character");
+
+    img.dataset.friendId = friend.id;
+    img.dataset.sitImage =
+        `${BASE_PATH}/${friend.sitImage}.png`;
+
+    img.dataset.standImage =
+        `${BASE_PATH}/${friend.standImage}.png`;
+
+    img.src = img.dataset.sitImage;
+
+    roomCharacters.appendChild(img);
+
+    return img;
 }
 
+/* ================= DELETE ================= */
+
+async function removeCharacter() {
+
+    if (!selectedFriendId) return;
+
+    await deleteVisitor(selectedFriendId);
+
+    currentCharacter.remove();
+
+    exitPlacementMode();
+}
+
+/* ================= POSITION ================= */
+
 function placeCharacter(e) {
-    if (!placementMode) return;
 
     const rect = room.getBoundingClientRect();
 
@@ -88,40 +142,38 @@ function placeCharacter(e) {
     posXPercent = x / rect.width;
     posYPercent = y / rect.height;
 
-    updateCharacterPosition();
+    updatePosition();
 }
 
-function updateCharacterPosition() {
-    if (!currentCharacter) return;
+function updatePosition() {
 
     currentCharacter.style.position = "absolute";
     currentCharacter.style.left = (posXPercent * 100) + "%";
     currentCharacter.style.top = (posYPercent * 100) + "%";
+
     currentCharacter.style.transform =
         currentDirection === "LEFT"
             ? "translate(-50%, -100%) scaleX(-1)"
             : "translate(-50%, -100%)";
 }
 
+/* ================= CONTROLS ================= */
+
 function handleWheel(e) {
-    if (!placementMode) return;
-
     e.preventDefault();
-
     togglePose();
 }
 
 function handleKey(e) {
-    if (!placementMode) return;
 
     if (e.key === "ArrowLeft") {
         currentDirection = "LEFT";
-        updateCharacterPosition();
+        updatePosition();
     }
 
     if (e.key === "ArrowRight") {
         currentDirection = "RIGHT";
-        updateCharacterPosition();
+        updatePosition();
     }
 
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
@@ -130,25 +182,24 @@ function handleKey(e) {
 }
 
 function togglePose() {
-    if (!currentCharacter) return;
 
-    currentAction = currentAction === "SIT" ? "STAND" : "SIT";
+    currentAction =
+        currentAction === "SIT" ? "STAND" : "SIT";
 
     currentCharacter.src =
         currentAction === "SIT"
-            ? currentCharacter.dataset.sit
-            : currentCharacter.dataset.stand;
+            ? currentCharacter.dataset.sitImage
+            : currentCharacter.dataset.standImage;
 }
-function showDoneButton() {
 
-    doneBtn.classList.remove("hidden");
-    startBtn.classList.add("hidden");
-}
+/* ================= SAVE ================= */
+
 async function finishPlacement() {
-    if (!currentCharacter || posXPercent == null) return;
+
+    if (!posXPercent) return;
 
     const dto = {
-        playerFriendId: Number(currentCharacter.dataset.friendId),
+        playerFriendId: Number(selectedFriendId),
         friendAction: currentAction,
         direction: currentDirection,
         x: posXPercent,
@@ -160,15 +211,40 @@ async function finishPlacement() {
     exitPlacementMode();
 }
 
+/* ================= EXIT ================= */
+
 function exitPlacementMode() {
+
     placementMode = false;
 
     room.removeEventListener("click", placeCharacter);
     document.removeEventListener("wheel", handleWheel);
     document.removeEventListener("keydown", handleKey);
 
-    doneBtn.classList.add("hidden");
-    startBtn.classList.remove("hidden");
+    hideButtons();
+}
 
-    if (startBtn) startBtn.style.display = "block";
+function showButtons() {
+    doneBtn.classList.remove("hidden");
+    startBtn.classList.add("hidden");
+}
+
+function hideButtons() {
+    doneBtn.classList.add("hidden");
+    deleteBtn.classList.add("hidden");
+    startBtn.classList.remove("hidden");
+}
+
+function resetRoomTransform() {
+    room.style.transform = `translateX(0px) scale(1)`;
+}
+
+/* ===== очистка выделения ===== */
+
+export function clearCardSelection() {
+
+    const cards =
+        document.querySelectorAll(".friend-card");
+
+    cards.forEach(c => c.classList.remove("selected"));
 }

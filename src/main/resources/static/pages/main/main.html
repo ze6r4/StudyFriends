@@ -21,10 +21,6 @@
 
         <div class="items-grid"></div>
 
-        <div class="bottom-bar">
-            <button class="apply-btn" id="applyFriendsBtn">Применить</button>
-        </div>
-
     </aside>
 
     <!-- ПАНЕЛЬ -->
@@ -57,7 +53,10 @@
                      alt="диван">
             </div>
 
-            <div class="room-characters" id="roomCharacters"></div>
+            <div class="room-characters" id="roomCharacters">
+
+            </div>
+
 
         </div>
     </div>
@@ -69,6 +68,7 @@
     <button class="start-btn hidden" id="doneBtn">
         Готово
     </button>
+    <button id="deleteBtn" class="start-btn hidden">✖</button>
 
 </div>
 <button class="edit-room-btn" id="toggleShopBtn">⚙</button>
@@ -88,7 +88,7 @@
 
 <script type="module" src="js/main.js"></script>
 <script type="module" src="js/friend-cards.js"></script>
-
+<script type="module" src="js/visit-transform.js"></script>
 <script src="js/room-zoom.js"></script>
 </body>
 </html>

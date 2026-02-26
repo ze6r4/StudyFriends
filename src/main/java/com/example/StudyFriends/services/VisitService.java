@@ -5,6 +5,8 @@ import com.example.StudyFriends.repositories.FriendVisitRep;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class VisitService {
@@ -13,4 +15,6 @@ public class VisitService {
         return visitRep.findVisitorOfPlayerFriends(playerFriendId);
     }
     public FriendVisit addVisitor(FriendVisit visit){return visitRep.save(visit);}
+    public void deleteVisitor(Long playerFriendId) {visitRep.deleteByFriendId(playerFriendId);}
+    public List<FriendVisit> getVisitorsOfPlayer(Long playerId) {return visitRep.findVisitorsOfPlayer(playerId);}
 }

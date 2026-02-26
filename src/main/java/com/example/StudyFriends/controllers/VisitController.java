@@ -1,6 +1,8 @@
 package com.example.StudyFriends.controllers;
 
+import com.example.StudyFriends.dto.FriendDto;
 import com.example.StudyFriends.dto.VisitDto;
+import com.example.StudyFriends.dto.VisitPanelDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Friend;
 import com.example.StudyFriends.model.FriendVisit;
@@ -12,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -22,21 +23,56 @@ public class VisitController {
     @Autowired
     private FriendService friendService;
 
-    @GetMapping("/visitors")
-    public ResponseEntity<?> getAllVisitors(@RequestParam Long playerId) {
-        try{
-            List<Friend> friends = friendService.getAllFriendsOfPlayer(playerId);
-            List<VisitDto> visits = friends.stream()
-                    .map(Friend::getId)
-                    .map(i -> visitService.getVisitor(i))
-                    .filter(Objects::nonNull)
-                    .map(VisitDto::fromEntity)
+    @GetMapping("/visitors-and-not")
+    public ResponseEntity<?> getVisitorsAndNot(@RequestParam Long playerId) {
+        try {
+
+            List<FriendVisit> visitors = visitService.getVisitorsOfPlayer(playerId);
+            List<Friend> friendsNotVisitors = friendService.getFriendsNotVisitors(playerId);
+
+            List<FriendDto> visitDto = visitors.stream()
+                    .map(FriendDto::fromEntity)
                     .toList();
-            return ResponseEntity.ok(visits);
+
+            List<FriendDto> notVisitDto = friendsNotVisitors.stream()
+                    .map(FriendDto::fromEntity)
+                    .toList();
+
+            return ResponseEntity.ok(
+                    new VisitPanelDto(visitDto, notVisitDto)
+            );
+
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());
+        }
+    }
+//    @GetMapping("/visitors")
+//    public ResponseEntity<?> getAllVisitors(@RequestParam Long playerId) {
+//        try{
+//            List<Friend> friends = friendService.getAllFriendsOfPlayer(playerId);
+//            List<VisitDto> visits = friends.stream()
+//                    .map(Friend::getId)
+//                    .map(i -> visitService.getVisitor(i))
+//                    .filter(Objects::nonNull)
+//                    .map(VisitDto::fromEntity)
+//                    .toList();
+//            return ResponseEntity.ok(visits);
+//        } catch (Exception ex) {
+//            return ResponseEntity
+//                    .status(HttpStatus.BAD_REQUEST)
+//                    .body("Ошибка: " + ex.getMessage());
+//        }
+//    }
+    @DeleteMapping("/visitors")
+    public ResponseEntity<?> deleteVisitor(@RequestParam Long playerFriendId) {
+        try {
+            visitService.deleteVisitor(playerFriendId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ex.getMessage());
         }
     }
     @PostMapping("/visitors")

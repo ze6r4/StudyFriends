@@ -19,7 +19,7 @@ public class FriendService {
     public List<Friend> getAllFriendsOfPlayer(Long playerId){
         return friendRep.findFriendsByPlayerId(playerId);
     }
-
+    public List<Friend> getFriendsNotVisitors(Long playerId){return friendRep.findFriendsNotVisitors(playerId);}
     public Friend updateFriend(Friend friend) {
         return friendRep.save(friend);
     }

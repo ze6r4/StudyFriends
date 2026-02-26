@@ -23,6 +23,7 @@ public class VisitDto {
         dto.id = visit.getId();
         if (visit.getPlayerFriend() != null) {
             dto.playerFriendId = visit.getPlayerFriend().getId();
+
         }
         if (visit.getFriendAction() != null) {
             dto.friendAction = visit.getFriendAction();

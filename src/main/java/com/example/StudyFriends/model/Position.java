@@ -34,7 +34,4 @@ public class Position {
 
     @OneToMany(mappedBy = "posType")
     private List<Item> items = new ArrayList<>();
-
-    @OneToMany(mappedBy = "friendPosType")
-    private List<FriendVisit> friendVisits = new ArrayList<>();
 }

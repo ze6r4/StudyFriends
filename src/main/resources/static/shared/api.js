@@ -90,7 +90,7 @@ export function patchFriend(id, data) {
 }
 /* ================= VISITORS ================= */
 export function getVisitors(playerId) {
-    return apiPublic(`/visitors?playerId=${playerId}`);
+    return apiPublic(`/visitors-and-not?playerId=${playerId}`);
 }
 export function postVisitor(visitorData) {
     return apiPublic('/visitors', {

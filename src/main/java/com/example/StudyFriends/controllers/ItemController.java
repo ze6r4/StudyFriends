@@ -1,6 +1,7 @@
 package com.example.StudyFriends.controllers;
 
 import com.example.StudyFriends.dto.ItemDto;
+import com.example.StudyFriends.dto.ShopItemsDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Item;
 import com.example.StudyFriends.model.PlayerItem;
@@ -25,20 +26,39 @@ public class ItemController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-    @GetMapping("/items")
-    public ResponseEntity<?> getItemsOfPlayer(@RequestParam Long playerId) {
-        try{
-            List<PlayerItem> items = itemService.getAllItemsOfPlayer(playerId);
-            List<ItemDto> response = items.stream()
+    @GetMapping("/shop/items")
+    public ResponseEntity<?> getShopItems(@RequestParam Long playerId) {
+        try {
+
+            List<PlayerItem> ownedItems = itemService.getAllItemsOfPlayer(playerId);
+            List<Item> availableItems = itemService.getItemsNotOfPlayer(playerId);
+
+            List<ItemDto> ownedDto = ownedItems.stream()
                     .map(ItemDto::fromEntity)
                     .toList();
-            return ResponseEntity.ok(response);
+
+            List<ItemDto> availableDto = availableItems.stream()
+                    .map(ItemDto::fromEntity)
+                    .toList();
+
+            return ResponseEntity.ok(
+                    new ShopItemsDto(ownedDto, availableDto)
+            );
+
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());
         }
     }
+    @PostMapping("/shop/buy/{itemId}")
+    public ResponseEntity<?> buyItem(@PathVariable Long itemId,
+                                     @RequestParam Long playerId) {
+
+        itemService.buyItem(playerId, itemId);
+        return ResponseEntity.ok().build();
+    }
+
     @PatchMapping("/items/{id}")
     public ResponseEntity<?> editItem(@PathVariable Long id, @RequestBody ItemDto dto) {
         //НЕ МЕНЯЕТ АЙДИШНИКИ
@@ -48,7 +68,6 @@ public class ItemController {
             Item item = playerItem.getItem();
 
             playerItem.setInRoom(dto.getInRoom());
-            playerItem.setIsBought(dto.getIsBought());
 
             if(dto.getItemName()!=null){
                 item.setName(dto.getItemName());

@@ -1,5 +1,6 @@
 package com.example.StudyFriends.dto;
 
+import com.example.StudyFriends.model.Item;
 import com.example.StudyFriends.model.PlayerItem;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,6 @@ public class ItemDto {
     private Long playerId;
     private Long itemId;
     private Boolean inRoom;
-    private Boolean isBought;
 
     // из сущности Item
     private String itemName;
@@ -23,7 +23,6 @@ public class ItemDto {
         ItemDto dto = new ItemDto();
         dto.setId(playerItem.getId());
         dto.setInRoom(playerItem.getInRoom());
-        dto.setIsBought(playerItem.getIsBought());
 
         // Получаем ID связанных сущностей
         if (playerItem.getPlayer() != null) {
@@ -37,6 +36,20 @@ public class ItemDto {
             dto.setItemImage(playerItem.getItem().getImage());
             dto.setItemPrice(playerItem.getItem().getPrice());
             dto.setItemCard(playerItem.getItem().getImageCard());
+        }
+
+        return dto;
+    }
+    public static ItemDto fromEntity(Item item) {
+        ItemDto dto = new ItemDto();
+
+        if (item!= null) {
+            dto.setItemId(item.getId());
+
+            dto.setItemName(item.getName());
+            dto.setItemImage(item.getImage());
+            dto.setItemPrice(item.getPrice());
+            dto.setItemCard(item.getImageCard());
         }
 
         return dto;

@@ -34,7 +34,7 @@ public class SkillService {
         List<Skill> allSkills = skillRep.findSkillsByPlayerId(playerId);
         List<Long> usedSkillIds = sessionRep.findUsedSkillIds(playerId);
 
-        // 3️⃣ Преобразуем в DTO с usedInSessions
+        // 3️⃣ Преобразуем в DTO с usedInSessions???поччему не fromEntity
         return allSkills.stream()
                 .map(skill -> new SkillDto(
                         skill.getId(),

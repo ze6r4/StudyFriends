@@ -25,6 +25,4 @@ public class PlayerItem {
 
     @Column(name = "in_room", nullable = false)
     private Boolean inRoom;
-    @Column(name = "is_bought", nullable = false)
-    private Boolean isBought;
 }

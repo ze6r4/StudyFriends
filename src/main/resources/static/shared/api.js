@@ -110,8 +110,13 @@ export function getCharacter(characterId) {
     return apiPublic(`/characters/${characterId}`);
 }
 /* ================= ITEMS ================= */
-export function getItems(playerId) {
-    return apiPublic(`/items?playerId=${playerId}`);
+export function getShopItems(playerId) {
+    return apiPublic(`/shop/items?playerId=${playerId}`);
+}
+export function buyItem(playerId,id){
+    return apiPublic(`/shop/buy/${id}?playerId=${playerId}`, {
+        method: 'POST'
+    });
 }
 export function patchItem(id, itemData) {
     return apiPublic(`/items/${id}`, {

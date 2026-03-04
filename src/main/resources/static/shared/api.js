@@ -98,6 +98,12 @@ export function postVisitor(visitorData) {
         body: visitorData
     });
 }
+export function patchVisitor(playerFriendId,visitorData) {
+    return apiPublic(`/visitors/${playerFriendId}`, {
+        method: 'PATCH',
+        body: visitorData
+    });
+}
 export function deleteVisitor(playerFriendId) {
     return apiPublic(`/visitors/${playerFriendId}`, {
         method: 'DELETE'

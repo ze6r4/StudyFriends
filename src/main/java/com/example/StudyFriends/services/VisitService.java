@@ -6,13 +6,17 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class VisitService {
     private final FriendVisitRep visitRep;
-    public FriendVisit getVisitor(Long playerFriendId){
+    public Optional<FriendVisit> getVisitor(Long playerFriendId){
         return visitRep.findVisitorOfPlayerFriends(playerFriendId);
+    }
+    public FriendVisit updateVisitor(FriendVisit visit) {
+        return visitRep.save(visit);
     }
     public FriendVisit addVisitor(FriendVisit visit){return visitRep.save(visit);}
     public void deleteVisitor(Long playerFriendId) {visitRep.deleteByFriendId(playerFriendId);}

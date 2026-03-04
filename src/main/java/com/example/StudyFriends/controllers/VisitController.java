@@ -97,8 +97,33 @@ public class VisitController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());
         }
+    }
+    @PatchMapping("/visitors/{playerFriendId}")
+    public ResponseEntity<?> editVisitor(@PathVariable Long playerFriendId,@RequestBody VisitDto dto) {
+        try{
+            FriendVisit visit = visitService.getVisitor(playerFriendId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Visitor", playerFriendId));
 
+            if(dto.getX() != null) {
+                visit.setX(dto.getX());
+            }
+            if(dto.getY() != null) {
+                visit.setY(dto.getY());
+            }
+            if(dto.getDirection() != null) {
+                visit.setDirection(dto.getDirection());
+            }
+            if(dto.getFriendAction() != null) {
+                visit.setFriendAction(dto.getFriendAction());
+            }
+            FriendVisit updated = visitService.updateVisitor(visit);
 
+            return ResponseEntity.ok(VisitDto.fromEntity(visit));
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
     }
 
 

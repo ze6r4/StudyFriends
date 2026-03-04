@@ -1,6 +1,7 @@
 import {
     postVisitor,
-    deleteVisitor
+    deleteVisitor,
+    patchVisitor
 } from '../../../shared/api.js';
 
 const BASE_PATH = '../../assets/images/characters';
@@ -27,9 +28,13 @@ const startBtn = document.getElementById("startBtn");
 doneBtn.addEventListener("click", finishPlacement);
 deleteBtn.addEventListener("click", removeCharacter);
 
+
+
 /* ================= LOAD EXISTING ================= */
 
 export function loadVisitorsToRoom(visitFriends) {
+
+    roomCharacters.innerHTML = "";
 
     visitFriends.forEach(friend => {
 
@@ -37,6 +42,7 @@ export function loadVisitorsToRoom(visitFriends) {
         img.classList.add("room-character");
 
         img.dataset.friendId = friend.id;
+
         img.dataset.sitImage =
             `${BASE_PATH}/${friend.sitImage}.png`;
 
@@ -61,6 +67,8 @@ export function loadVisitorsToRoom(visitFriends) {
     });
 }
 
+
+
 /* ================= START ================= */
 
 export function startCharacterPlacement(friend, alreadyInRoom) {
@@ -78,14 +86,32 @@ export function startCharacterPlacement(friend, alreadyInRoom) {
         );
 
     if (existing) {
+
         currentCharacter = existing;
+
         posXPercent = parseFloat(existing.style.left) / 100;
         posYPercent = parseFloat(existing.style.top) / 100;
 
+        currentAction =
+            existing.src.includes("_stand")
+                ? "STAND"
+                : "SIT";
+
+        currentDirection =
+            existing.style.transform.includes("scaleX(-1)")
+                ? "LEFT"
+                : "RIGHT";
+
         doneBtn.textContent = "Переместить";
         deleteBtn.classList.remove("hidden");
+
     } else {
+
         currentCharacter = createCharacter(friend);
+
+        currentAction = "SIT";
+        currentDirection = "RIGHT";
+
         doneBtn.textContent = "Готово";
         deleteBtn.classList.add("hidden");
     }
@@ -97,6 +123,8 @@ export function startCharacterPlacement(friend, alreadyInRoom) {
     document.addEventListener("keydown", handleKey);
 }
 
+
+
 function createCharacter(friend) {
 
     const img = document.createElement("img");
@@ -104,6 +132,7 @@ function createCharacter(friend) {
     img.classList.add("room-character");
 
     img.dataset.friendId = friend.id;
+
     img.dataset.sitImage =
         `${BASE_PATH}/${friend.sitImage}.png`;
 
@@ -117,6 +146,8 @@ function createCharacter(friend) {
     return img;
 }
 
+
+
 /* ================= DELETE ================= */
 
 async function removeCharacter() {
@@ -125,10 +156,14 @@ async function removeCharacter() {
 
     await deleteVisitor(selectedFriendId);
 
-    currentCharacter.remove();
+    if (currentCharacter) {
+        currentCharacter.remove();
+    }
 
     exitPlacementMode();
 }
+
+
 
 /* ================= POSITION ================= */
 
@@ -147,6 +182,8 @@ function placeCharacter(e) {
 
 function updatePosition() {
 
+    if (!currentCharacter) return;
+
     currentCharacter.style.position = "absolute";
     currentCharacter.style.left = (posXPercent * 100) + "%";
     currentCharacter.style.top = (posYPercent * 100) + "%";
@@ -156,6 +193,8 @@ function updatePosition() {
             ? "translate(-50%, -100%) scaleX(-1)"
             : "translate(-50%, -100%)";
 }
+
+
 
 /* ================= CONTROLS ================= */
 
@@ -192,11 +231,13 @@ function togglePose() {
             : currentCharacter.dataset.standImage;
 }
 
+
+
 /* ================= SAVE ================= */
 
 async function finishPlacement() {
 
-    if (!posXPercent) return;
+    if (posXPercent == null) return;
 
     const dto = {
         playerFriendId: Number(selectedFriendId),
@@ -206,16 +247,26 @@ async function finishPlacement() {
         y: posYPercent
     };
 
-    await postVisitor(dto);
+    if (editingExisting) {
+
+        await patchVisitor(selectedFriendId, dto);
+
+    } else {
+
+        await postVisitor(dto);
+    }
 
     exitPlacementMode();
 }
+
+
 
 /* ================= EXIT ================= */
 
 function exitPlacementMode() {
 
     placementMode = false;
+    editingExisting = false;
 
     room.removeEventListener("click", placeCharacter);
     document.removeEventListener("wheel", handleWheel);
@@ -238,6 +289,8 @@ function hideButtons() {
 function resetRoomTransform() {
     room.style.transform = `translateX(0px) scale(1)`;
 }
+
+
 
 /* ===== очистка выделения ===== */
 

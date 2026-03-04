@@ -7,11 +7,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FriendVisitRep extends JpaRepository<FriendVisit, Integer> {
     @Query("SELECT f FROM FriendVisit f WHERE f.playerFriend.id = :playerFriendId")
-    FriendVisit findVisitorOfPlayerFriends(@Param("playerFriendId") Long playerFriendId);
+    Optional<FriendVisit> findVisitorOfPlayerFriends(@Param("playerFriendId") Long playerFriendId);
 
     @Query("""
     SELECT fv

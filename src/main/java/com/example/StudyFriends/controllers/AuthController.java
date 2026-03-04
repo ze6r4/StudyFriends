@@ -4,6 +4,7 @@ package com.example.StudyFriends.controllers;
 import com.example.StudyFriends.dto.PlayerDto;
 import com.example.StudyFriends.dto.UserDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
+import com.example.StudyFriends.exceptions.UnauthorizedException;
 import com.example.StudyFriends.model.Player;
 import com.example.StudyFriends.services.PlayerService;
 import jakarta.servlet.http.HttpSession;
@@ -25,7 +26,7 @@ public class AuthController {
     private Long getUserId(HttpSession session) {
         Long userId = (Long) session.getAttribute("USER_ID");
         if (userId == null) {
-            throw new RuntimeException("Не авторизован");
+            throw new UnauthorizedException();
         }
         return userId;
     }

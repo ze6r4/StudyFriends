@@ -11,6 +11,7 @@ async function baseRequest(endpoint, options = {}, withAuth = false) {
         body: options.body ? JSON.stringify(options.body) : undefined
     });
 
+
     const text = await response.text();
     let data = null;
 
@@ -26,6 +27,10 @@ async function baseRequest(endpoint, options = {}, withAuth = false) {
         const error = new Error(data?.message || 'Ошибка сервера');
         error.status = response.status;
         error.code = data?.code || 'UNKNOWN_ERROR';
+        if (response.status === 401) {
+            window.location.href = "/pages/registration/login.html";
+            return;
+        }
 
 
         if(response.status ===500) {

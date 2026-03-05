@@ -2,7 +2,7 @@ import {
     postVisitor,
     deleteVisitor,
     patchVisitor
-} from '../../../shared/api.js';
+} from '../../../../shared/api.js';
 
 const BASE_PATH = '../../assets/images/characters';
 

@@ -1,8 +1,8 @@
 import {
     getVisitors
-} from '../../../shared/api.js';
+} from '../../../../shared/api.js';
 
-import { getCurrentPlayerId } from '../../../shared/current-player.js';
+import { getCurrentPlayerId } from '../../../../shared/current-player.js';
 import { generateFriendHtml } from './friend-cards.html.js';
 
 import {
@@ -15,9 +15,8 @@ let visitFriends = [];
 let notVisitFriends = [];
 let selectedCard = null;
 
-document.addEventListener("DOMContentLoaded", initFriends);
 
-async function initFriends() {
+export async function initFriends() {
     bindToggle();
     await loadData();
     renderFriends();

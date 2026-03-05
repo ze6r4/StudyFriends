@@ -1,5 +1,6 @@
 package com.example.StudyFriends.dto;
 
+import com.example.StudyFriends.model.Direction;
 import com.example.StudyFriends.model.Friend;
 import com.example.StudyFriends.model.FriendVisit;
 import lombok.Data;
@@ -18,6 +19,10 @@ public class FriendDto {
     private String sitImage;
     private String standImage;
 
+    private Action friendAction;
+    private Direction direction;
+    private Double x;
+    private Double y;
     public static FriendDto fromEntity(Friend friend) {
         FriendDto response = new FriendDto();
         response.setId(friend.getId());
@@ -48,6 +53,18 @@ public class FriendDto {
             response.setCardImage(friend.getCharacter() != null? friend.getCharacter().getCardImage() : null);
             response.setStandImage(friend.getCharacter() != null? friend.getCharacter().getStandImage() : null);
             response.setSitImage(friend.getCharacter() != null? friend.getCharacter().getSitImage() : null);
+        }
+        if(visit.getFriendAction() != null) {
+            response.setFriendAction(visit.getFriendAction());
+        }
+        if(visit.getX() != null) {
+            response.setX(visit.getX());
+        }
+        if(visit.getY() != null) {
+            response.setY(visit.getY());
+        }
+        if(visit.getDirection() != null) {
+            response.setDirection(visit.getDirection());
         }
 
         return response;

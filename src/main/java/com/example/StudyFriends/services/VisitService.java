@@ -19,6 +19,6 @@ public class VisitService {
         return visitRep.save(visit);
     }
     public FriendVisit addVisitor(FriendVisit visit){return visitRep.save(visit);}
-    public void deleteVisitor(Long playerFriendId) {visitRep.deleteByFriendId(playerFriendId);}
+    public void deleteVisitor(Long playerFriendId) {visitRep.deleteByPlayerFriendId(playerFriendId);}
     public List<FriendVisit> getVisitorsOfPlayer(Long playerId) {return visitRep.findVisitorsOfPlayer(playerId);}
 }

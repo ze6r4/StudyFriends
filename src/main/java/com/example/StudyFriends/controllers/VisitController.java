@@ -11,6 +11,7 @@ import com.example.StudyFriends.services.VisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,25 +49,10 @@ public class VisitController {
                     .body("Ошибка: " + ex.getMessage());
         }
     }
-//    @GetMapping("/visitors")
-//    public ResponseEntity<?> getAllVisitors(@RequestParam Long playerId) {
-//        try{
-//            List<Friend> friends = friendService.getAllFriendsOfPlayer(playerId);
-//            List<VisitDto> visits = friends.stream()
-//                    .map(Friend::getId)
-//                    .map(i -> visitService.getVisitor(i))
-//                    .filter(Objects::nonNull)
-//                    .map(VisitDto::fromEntity)
-//                    .toList();
-//            return ResponseEntity.ok(visits);
-//        } catch (Exception ex) {
-//            return ResponseEntity
-//                    .status(HttpStatus.BAD_REQUEST)
-//                    .body("Ошибка: " + ex.getMessage());
-//        }
-//    }
-    @DeleteMapping("/visitors")
-    public ResponseEntity<?> deleteVisitor(@RequestParam Long playerFriendId) {
+
+    @Transactional
+    @DeleteMapping("/visitors/{playerFriendId}")
+    public ResponseEntity<?> deleteVisitor(@PathVariable Long playerFriendId) {
         try {
             visitService.deleteVisitor(playerFriendId);
             return ResponseEntity.noContent().build();

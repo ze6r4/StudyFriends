@@ -38,4 +38,7 @@ public class Session {
 
     @Column(nullable = false)
     private Boolean completed;
+
+    @Column(columnDefinition = "TEXT")
+    private String notes;
 }

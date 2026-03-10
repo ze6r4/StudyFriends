@@ -15,6 +15,7 @@ public class SessionDto {
     private Long friendId;
     private Long skillId;
     private Boolean completed;
+    private String notes;
 
     public static SessionDto fromEntity(Session session) {
         SessionDto response = new SessionDto();
@@ -23,6 +24,7 @@ public class SessionDto {
         response.setRestMinutes(session.getRestTime());
         response.setCycles(session.getCycles());
         response.setCompleted(session.getCompleted());
+        response.setNotes(session.getNotes());
 
         // Получаем ID связанных сущностей
         if (session.getPlayerId() != null) {

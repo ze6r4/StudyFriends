@@ -178,13 +178,24 @@ function timerPhaseFinished() {
 async function timerFinished(isCompleted) {
     alert('Сессия завершена!');
     resetTimer();
+
     const newData = {
         workTime: actualWork,
         restTime: actualRest,
-        completed: isCompleted
+        completed: isCompleted,
+        notes: trimNotes()
     }
     console.log(newData);
     await patchSession(sessionData.sessionId,newData);
+}
+
+function trimNotes() {
+    let notes = document.getElementById('notesContent');
+    let notesContent = notes.innerHTML;
+    notesContent = notesContent.replace(/<\/p>/g, '\n');
+    notesContent = notesContent.replace(/<p>/g, '');
+    notesContent = notesContent.trim();
+    return notesContent;
 }
 
 function restoreTimer() {

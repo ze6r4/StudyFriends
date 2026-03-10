@@ -52,6 +52,7 @@ public class SessionController {
             session.setRestTime(dto.getRestMinutes());
             session.setCycles(dto.getCycles());
             session.setCompleted(false);
+            session.setNotes(dto.getNotes());
             Session savedSession = sessionService.addSession(session);
             session.setId(savedSession.getId());
 
@@ -83,6 +84,9 @@ public class SessionController {
             }
             if (dto.getCompleted() != null) {
                 session.setCompleted(dto.getCompleted());
+            }
+            if (dto.getNotes() != null) {
+                session.setNotes(dto.getNotes());
             }
 
             // Обновляем связанные сущности только если их ID переданы (не null)

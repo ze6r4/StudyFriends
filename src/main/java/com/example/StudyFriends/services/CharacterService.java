@@ -5,6 +5,7 @@ import com.example.StudyFriends.repositories.CharacterRep;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,5 +17,8 @@ public class CharacterService {
     }
     public Character updateCharacter(Character character){
         return characterRep.save(character);
+    }
+    public List<Character> getCharactersNotFriends(Long playerId) {
+        return characterRep.getCharactersNotFriends(playerId);
     }
 }

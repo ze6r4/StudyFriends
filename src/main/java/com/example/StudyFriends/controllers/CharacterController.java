@@ -10,13 +10,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/characters")
 @AllArgsConstructor
 public class CharacterController {
+    // TODO: спрашивать список НЕ доступных персонажей
 
     @Autowired
     private final CharacterService characterService;
+
+    @GetMapping("")
+    public ResponseEntity<?> getCharactersNotFriends(@PathVariable Long playerId) {
+        List<CharacterDto> characterDtoList= characterService.getCharactersNotFriends(playerId)
+                .stream()
+                .map(CharacterDto::fromEntity)
+                .toList();
+        return ResponseEntity.ok(characterDtoList);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CharacterDto> getCharacter(@PathVariable Long id) {

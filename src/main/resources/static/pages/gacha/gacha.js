@@ -20,25 +20,28 @@ btn.addEventListener("click", async () => {
 
 
     // 3. зум в двери автобуса
-    scene.style.transform = "scale(1.5) translate(0%, 0%)";
+//    scene.style.transform = "scale(1.5) translate(0%, 0%)";
 
     zoom.style.opacity = 0.7;
 
-    await wait(300);
+    await wait(900);
     bus.src = "../../assets/images/other/BUS_OPENED.png"
-    await wait(1200);
+    await wait(600);
+    reward.style.animation = "rewardAppear 5s ease forwards";
+    await wait(3500);
     // 4. вспышка
     const circle = document.querySelector(".flash-circle");
+// 3. зум в двери автобуса
+    scene.style.transform = "scale(1.5) translate(0%, 0%)";
+    zoom.style.opacity = 0.6;
 
-    circle.style.animation = "circleFlash 0.9s ease-out";
-    circle.style.animation = "circleFlash 0.9s ease-out forwards";
-
+    await wait(1200);
     setTimeout(() => {
         circle.style.animation = "glowPulse 2.5s ease-in-out infinite";
     }, 900);
 
     // 5. показать персонажа
-    reward.style.animation = "rewardAppear 1.5s ease forwards";
+
 });
 
 function wait(ms) {

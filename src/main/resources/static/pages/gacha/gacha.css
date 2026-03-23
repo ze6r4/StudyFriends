@@ -72,16 +72,13 @@ body {
     border-radius: 50%;
 
     background: radial-gradient(circle,
-        rgba(255,255,255,1) 0%,
-        rgba(255,255,255,0.9) 20%,
-        rgba(255,240,180,0.6) 40%,
-        rgba(255,220,120,0.3) 70%,
-        rgba(255,255,255,0) 100%
+        rgba(255,255,200,0.9) 0%,
+        rgba(255,255,200,0.9) 40%,
+        rgba(255,180,60,0.5) 40%,
+        rgba(255,180,60,0) 100%
     );
 
-    filter: blur(2px);
-
-    opacity: 0; /* 👈 ВАЖНО */
+    opacity: 0;
     transform: scale(0.2);
 }
 /* награда */
@@ -117,31 +114,19 @@ body {
 }
 
 /* ================= АНИМАЦИИ ================= */
-@keyframes particleBurst {
-    0% {
-        opacity: 1;
-        transform: translate(0%, 0%) scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform:
-            translate(calc(0%+ var(--x)), calc(0%+ var(--y)))
-            scale(0.3);
-    }
-}
 /* въезд автобуса (реалистично: ускорение + резкая остановка) */
 @keyframes busEnter {
     0% {
         transform: translateX(0);
     }
     70% {
-        transform: translateX(160%);
+        transform: translateX(175%);
     }
     85% {
-        transform: translateX(155%);
+        transform: translateX(170%);
     }
     100% {
-        transform: translateX(155%);
+        transform: translateX(170%);
     }
 }
 
@@ -191,19 +176,27 @@ body {
         transform: scale(4.5);
     }
 }
+#reward img.silhouette {
+    filter: brightness(0);
+}
 /* появление персонажа */
 @keyframes rewardAppear {
     0% {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-    60% {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(0.3);
+        filter: brightness(0); /* 👈 черный */
     }
+
+    50% {
+        opacity: 1;
+        transform: scale(0.5);
+        filter: brightness(0); /* держим силуэт */
+    }
+
     100% {
         opacity: 1;
         transform: scale(0.9);
+        filter: brightness(1); /* 👈 раскрытие */
     }
 }
 #bg {
@@ -220,7 +213,7 @@ body {
     overflow: hidden;
 
     transform: scale(1) translate(0, 0);
-    transition: transform 1.2s cubic-bezier(.2,.8,.2,1);
+    transition: transform 2s cubic-bezier(.2,.8,.2,1);
 }
 /* ================= СЧЕТЧИК МОНЕТ ================= */
 

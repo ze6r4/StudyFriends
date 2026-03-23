@@ -85,12 +85,19 @@ public class FriendController {
 
     @PostMapping("/friend/{playerId}")
     public ResponseEntity<?> addFriendByCharacter(@PathVariable Long playerId, @RequestParam Long characterId){
-        Character character = characterService.getCharacterById(characterId).orElseThrow();
-        Player player = playerService.getPlayerById(playerId).orElseThrow();
-        Friend friend = new Friend();
-        friend.setCharacter(character);
-        friend.setPlayer(player);
-        Friend newFriend = friendService.addFriend(friend);
-        return ResponseEntity.ok(newFriend);
+        try{
+            Character character = characterService.getCharacterById(characterId).orElseThrow();
+            Player player = playerService.getPlayerById(playerId).orElseThrow();
+            Friend friend = new Friend();
+            friend.setCharacter(character);
+            friend.setPlayer(player);
+            Friend newFriend = friendService.addFriend(friend);
+            return ResponseEntity.ok(newFriend);
+        }catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+
     }
 }

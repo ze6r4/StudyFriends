@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Study Friends — Новый друг</title>
+    <link rel="stylesheet" href="gacha.css">
+
+</head>
+<body>
+
+<div class="scene" id="scene">
+    <img id="bg" src="../../assets/images/other/gacha_bg.jpg">
+
+    <img id="bus" src="../../assets/images/other/BUS.png">
+
+    <!-- затемнение + зум -->
+    <div id="zoomLayer"></div>
+
+    <!-- вспышка -->
+    <div id="particles"></div>
+    <div id="flash">
+        <div class="flash-circle"></div>
+    </div>
+
+    <!-- полученный персонаж -->
+    <div id="reward">
+        <img id="rewardImg" src="../../assets/images/characters/nick_stand.png">
+    </div>
+</div>
+
+<div class="coin-display">
+    <span class="coin-count">0</span>
+</div>
+<button class="start-btn" id="startBtn">
+    Оплатить билет<br>120🪙
+</button>
+
+
+<button class="back-btn" id="mainBtn"><</button>
+
+<script src="gacha.js"></script>
+</body>
+</html>

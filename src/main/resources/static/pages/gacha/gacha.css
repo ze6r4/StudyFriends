@@ -1,0 +1,301 @@
+:root {
+    --bg: #fffdf9;
+    --card: #fffaf4;
+
+    --line: #8c6f64;
+    --text: #5b4a44;
+
+    --accent-1: #ffd9e2;
+    --accent-2: #d8ecff;
+    --accent-3: #fff3c8;
+
+    --radius: 10px;
+    --pad: 12px;
+    --font: "Segoe UI", system-ui, sans-serif;
+}
+@font-face {
+font-family: 'overdoze';
+src: url('/shared/overdozesans.ttf') format('truetype'),local('overdozesans');
+font-style: normal;
+font-display: swap;
+}
+
+/* ================= БАЗА ================= */
+
+body {
+    margin: 0;
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text);
+    overflow: hidden;
+    font-size: 16px;
+}
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* автобус изначально вне экрана */
+#bus {
+    position: absolute;
+    bottom: 120px;
+    left: -60%;
+    width: 50%;
+    transform: translateX(0);
+}
+
+/* затемнение для "входа внутрь" */
+#zoomLayer {
+    position: absolute;
+    inset: 0;
+    background: black;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+}
+
+/* вспышка */
+#flash {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.flash-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+
+    background: radial-gradient(circle,
+        rgba(255,255,255,1) 0%,
+        rgba(255,255,255,0.9) 20%,
+        rgba(255,240,180,0.6) 40%,
+        rgba(255,220,120,0.3) 70%,
+        rgba(255,255,255,0) 100%
+    );
+
+    filter: blur(2px);
+
+    opacity: 0; /* 👈 ВАЖНО */
+    transform: scale(0.2);
+}
+/* награда */
+#reward {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+}
+#particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    background: radial-gradient(circle, #fff, #ffd700, transparent);
+    opacity: 0;
+
+    transform: translate(-50%, -50%);
+}
+
+#reward img {
+    width: 300px;
+}
+
+/* ================= АНИМАЦИИ ================= */
+@keyframes particleBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0%, 0%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform:
+            translate(calc(0%+ var(--x)), calc(0%+ var(--y)))
+            scale(0.3);
+    }
+}
+/* въезд автобуса (реалистично: ускорение + резкая остановка) */
+@keyframes busEnter {
+    0% {
+        transform: translateX(0);
+    }
+    70% {
+        transform: translateX(160%);
+    }
+    85% {
+        transform: translateX(155%);
+    }
+    100% {
+        transform: translateX(155%);
+    }
+}
+
+
+/* вспышка */
+@keyframes flashAnim {
+    0% { opacity: 0; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0; }
+}
+.start-btn fade-out {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    pointer-events: none;
+}
+@keyframes circleFlash {
+    0% {
+        opacity: 0;
+        transform: scale(0.2);
+    }
+    40% {
+        opacity: 1;
+        transform: scale(3);
+    }
+    70% {
+        opacity: 0.6;
+        transform: scale(4);
+    }
+    100% {
+        opacity: 0.4;
+        transform: scale(4.5);
+    }
+}
+
+@keyframes glowPulse {
+    0% {
+        opacity: 0.35;
+        transform: scale(4.5);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(4.7);
+    }
+    100% {
+        opacity: 0.35;
+        transform: scale(4.5);
+    }
+}
+/* появление персонажа */
+@keyframes rewardAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(0.9);
+    }
+}
+#bg {
+    position: absolute;
+    inset: 0;           /* top:0 right:0 bottom:0 left:0 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+
+    transform: scale(1) translate(0, 0);
+    transition: transform 1.2s cubic-bezier(.2,.8,.2,1);
+}
+/* ================= СЧЕТЧИК МОНЕТ ================= */
+
+
+.coin-display {
+    position: fixed;
+    top: 20px;
+    right: 40px; /* расположение между кнопками */
+    background: rgba(255, 250, 244, 0.95); /* нежный цвет из палитры --card */
+    border: 2px solid var(--line); /* ЖИРНЫЙ КОНТУР как у кнопок */
+    border-radius: 40px;
+    padding: 8px 24px 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 800;
+    min-width: 80px;
+    min-height: 40px;
+}
+
+.coin-count {
+    font-family: var(--font);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text); /* основной цвет текста */
+    position: relative;
+    padding-left: 32px; /* место для иконки монеты */
+    line-height: 1;
+}
+
+.coin-count::before {
+    content: "🪙";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    opacity: 0.9;
+}
+/* ================= КНОПКА НАЧАТЬ ================= */
+
+.start-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 47%;
+    font-family: 'overdoze', var(--font);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    background: var(--bg); /* нежный желтоватый #fff3c8 */
+    border: 2px solid var(--line); /* жирный контур как у всех элементов */
+    border-radius: 50px;
+    padding: 14px 42px;
+    cursor: pointer;
+    z-index: 800;
+    letter-spacing: 1px;
+    transition: background 0.2s ease;
+    text-transform: uppercase;
+    box-shadow: none; /* без тени */
+    line-height: 1;
+}
+.start-btn {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.start-btn:hover {
+    background: var(--accent-1); /* нежный розовый при наведении */
+}
+
+.hidden {
+    display: none;
+}
+
+#mainBtn {
+    transition: left 0.3s ease;
+}
+
+

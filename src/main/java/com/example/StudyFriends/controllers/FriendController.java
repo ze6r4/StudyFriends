@@ -2,8 +2,12 @@ package com.example.StudyFriends.controllers;
 
 import com.example.StudyFriends.dto.FriendDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
+import com.example.StudyFriends.model.Character;
 import com.example.StudyFriends.model.Friend;
+import com.example.StudyFriends.model.Player;
+import com.example.StudyFriends.services.CharacterService;
 import com.example.StudyFriends.services.FriendService;
+import com.example.StudyFriends.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +20,10 @@ import java.util.List;
 public class FriendController {
     @Autowired
     private FriendService friendService;
+    @Autowired
+    private CharacterService characterService;
+    @Autowired
+    private PlayerService playerService;
 
     @GetMapping("/friends")
     public ResponseEntity<?> getFriendsOfPlayer(@RequestParam Long playerId) {
@@ -73,5 +81,16 @@ public class FriendController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());
         }
+    }
+
+    @PostMapping("/friend/{playerId}")
+    public ResponseEntity<?> addFriendByCharacter(@PathVariable Long playerId, @RequestParam Long characterId){
+        Character character = characterService.getCharacterById(characterId).orElseThrow();
+        Player player = playerService.getPlayerById(playerId).orElseThrow();
+        Friend friend = new Friend();
+        friend.setCharacter(character);
+        friend.setPlayer(player);
+        Friend newFriend = friendService.addFriend(friend);
+        return ResponseEntity.ok(newFriend);
     }
 }

@@ -23,4 +23,5 @@ public class FriendService {
     public Friend updateFriend(Friend friend) {
         return friendRep.save(friend);
     }
+    public Friend addFriend(Friend friend) {return friendRep.save(friend);}
 }

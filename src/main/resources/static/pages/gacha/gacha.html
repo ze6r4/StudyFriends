@@ -10,9 +10,9 @@
 <body>
 
 <div class="scene" id="scene">
-    <img id="bg" src="../../assets/images/other/gacha_bg.jpg">
+    <img id="bg" src="../../assets/images/other/gacha_bg.png">
 
-    <img id="bus" src="../../assets/images/other/BUS.png">
+    <img id="bus" src="../../assets/images/other/bus.png">
 
     <!-- затемнение + зум -->
     <div id="zoomLayer"></div>
@@ -27,17 +27,48 @@
     <div id="reward">
         <img id="rewardImg" src="../../assets/images/characters/nick_stand.png">
     </div>
+    <div class="title">
+        В город приехал новый персонаж!
+        <div class ="characterDesc">
+            <br><br>его зовут Ник
+            <br>
+            <br>О себе: любит Найтмера и пить чай
+        </div>
+    </div>
 </div>
 
 <div class="coin-display">
     <span class="coin-count">0</span>
 </div>
+
 <button class="start-btn" id="startBtn">
-    Оплатить билет<br>120🪙
+    <svg id="svg" width="300" height="250" viewBox="-4 -4 508 208" xmlns="http://www.w3.org/2000/svg">
+        <path d="
+            M 20,0
+            H 480
+            A 20,20 0 0 1 500,20
+            V 70
+            A 20,20 0 0 0 500,130
+            V 180
+            A 20,20 0 0 1 480,200
+            H 20
+            A 20,20 0 0 1 0,180
+            V 130
+            A 20,20 0 0 0 0,70
+            V 20
+            A 20,20 0 0 1 20,0
+            Z
+          "
+      fill="#f9f3e7"
+      stroke="#8c6f64"
+      stroke-width="3"
+      vector-effect="non-scaling-stroke"/>
+
+    </svg>
+    <span class="btn-text">Купить билет<br>150🪙</span>
 </button>
 
 
-<button class="back-btn" id="mainBtn"><</button>
 
 <script src="gacha.js"></script>
 </body>

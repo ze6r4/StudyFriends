@@ -11,37 +11,28 @@ btn.addEventListener("click", async () => {
     btn.hidden = true;
     btn.classList.add("fade-out");
     await wait(1000);
-
-
-    // 1. автобус едет
+    //едет автобус и останавливается
+    bus.src = "../../assets/images/other/bus_stop.png"
     bus.style.animation = "busEnter 2s cubic-bezier(.2,.8,.4,1) forwards";
+    await wait(1500);
+    bus.src = "../../assets/images/other/bus.png"
+    await wait(1500);
+    //затемнение, приближение камеры и открытие дверей
+     zoom.style.opacity = 0.7;
+     scene.style.transform = "scale(1.5) translate(0%, 0%)";
+     await wait(2600);
+     bus.src = "../../assets/images/other/bus_open_1.png"
+     await wait(400);
+    bus.src = "../../assets/images/other/bus_open_2.png"
+    await wait(1700);
 
-    await wait(2000);
-
-
-    // 3. зум в двери автобуса
-//    scene.style.transform = "scale(1.5) translate(0%, 0%)";
-
-    zoom.style.opacity = 0.7;
-
-    await wait(900);
-    bus.src = "../../assets/images/other/BUS_OPENED.png"
-    await wait(600);
-    reward.style.animation = "rewardAppear 5s ease forwards";
-    await wait(3500);
-    // 4. вспышка
+    //появление персонажа со вспышкой
+    reward.style.animation = "rewardBlack 3s ease forwards";
+    await wait(3000);
     const circle = document.querySelector(".flash-circle");
-// 3. зум в двери автобуса
-    scene.style.transform = "scale(1.5) translate(0%, 0%)";
-    zoom.style.opacity = 0.6;
-
+    circle.style.animation = "circleFlash 2s ease-out forwards, glowPulse 2.5s ease-in-out 1.2s infinite";
+    reward.style.animation = "rewardAppear 6s ease forwards";
     await wait(1200);
-    setTimeout(() => {
-        circle.style.animation = "glowPulse 2.5s ease-in-out infinite";
-    }, 900);
-
-    // 5. показать персонажа
-
 });
 
 function wait(ms) {

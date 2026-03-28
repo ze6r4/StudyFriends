@@ -2,10 +2,9 @@ import {
     updateCoinBalance,
     getMe
 } from '../../../../shared/api.js';
-
 import { getCurrentPlayerId } from '../../../../shared/current-player.js';
 
-import {initShop } from './items/shop.js';
+import {initShop,renderCoins } from './items/shop.js';
 import {initFriends } from './friends/friend-cards.js';
 
 

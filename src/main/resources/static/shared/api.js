@@ -23,10 +23,6 @@ export function getMe() {
     return apiAuth('/me');
 }
 
-export function isDeveloper(playerId) {
-    const data = getMe();
-    return data.role == ''
-}
 /* ================= COINS ================= */
 
 export function getCoins(playerId) {

@@ -48,6 +48,10 @@ btn.addEventListener("click", async () => {
     // имя персонажа
     const nameEl = document.querySelector(".characterName");
     nameEl.style.animation = "nameAppear 1s ease forwards";
+    // ОК
+    await wait(1000);
+    okBtn.hidden = false;
+    okBtn.classList.add("show");
 
 });
 

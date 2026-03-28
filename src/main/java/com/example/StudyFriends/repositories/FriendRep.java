@@ -20,10 +20,12 @@ public interface FriendRep extends JpaRepository<Friend,Long> {
     @Query("""
     SELECT f
     FROM Friend f
-    LEFT JOIN FriendVisit fv
-        ON fv.playerFriend.id = f.id
     WHERE f.player.id = :playerId
-      AND fv.id IS NULL
+      AND NOT EXISTS (
+          SELECT fv
+          FROM FriendVisit fv
+          WHERE fv.playerFriend.id = f.id
+      )
 """)
     List<Friend> findFriendsNotVisitors(@Param("playerId") Long playerId);
 }

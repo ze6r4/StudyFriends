@@ -14,16 +14,21 @@ document.addEventListener("DOMContentLoaded", initMain);
 async function initMain() {
     await initShop();
     await initFriends();
-    bindStartButton();
+    binButtns();
     initBalanceButton();
 }
 
 
-function bindStartButton() {
+function binButtns() {
     document.getElementById("startBtn")
         .addEventListener("click", () => {
             window.location.href =
                 'http://localhost:8081/pages/timer-settings/timer-settings.html';
+        });
+    document.getElementById("gachaCharacterBtn")
+            .addEventListener("click", () => {
+                window.location.href =
+                    'http://localhost:8081/pages/gacha/gacha.html';
         });
 }
 

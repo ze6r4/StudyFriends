@@ -34,10 +34,7 @@ public class CharacterController {
                 throw new ResourceNotFoundException("Пустой список");
             }
             CharacterDto randomCharacter = characterDtoList.get(randomIndex);
-            if (randomCharacter == null) {
-                throw new ResourceNotFoundException("Я не умею считать простите");
-            }
-            return ResponseEntity.ok(randomCharacter.getId());
+            return ResponseEntity.ok(randomCharacter);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity
                     .status(HttpStatus.I_AM_A_TEAPOT)

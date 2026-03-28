@@ -91,8 +91,10 @@ public class FriendController {
             Friend friend = new Friend();
             friend.setCharacter(character);
             friend.setPlayer(player);
+            friend.setFriendshipLvl(0.0);
+            friend.setIsFavourite(false);
             Friend newFriend = friendService.addFriend(friend);
-            return ResponseEntity.ok(newFriend);
+            return ResponseEntity.ok(FriendDto.fromEntity(newFriend));
         }catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

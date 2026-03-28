@@ -1,5 +1,5 @@
 import {
-    getVisitors
+    getVisitorsAndNot
 } from '../../../../shared/api.js';
 
 import { getCurrentPlayerId } from '../../../../shared/current-player.js';
@@ -26,7 +26,7 @@ async function loadData() {
 
     const playerId = await getCurrentPlayerId();
 
-    const panelDto = await getVisitors(playerId);
+    const panelDto = await getVisitorsAndNot(playerId);
 
     visitFriends = panelDto.visit || [];
     notVisitFriends = panelDto.notVisit || [];

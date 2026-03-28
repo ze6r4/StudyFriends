@@ -88,8 +88,13 @@ export function patchFriend(id, data) {
         body: data
     });
 }
+export function postFriend(playerId, characterId) {
+    return apiPublic(`/friend/${playerId}?characterId=${characterId}`, {
+        method: 'POST'
+    });
+}
 /* ================= VISITORS ================= */
-export function getVisitors(playerId) {
+export function getVisitorsAndNot(playerId) {
     return apiPublic(`/visitors-and-not?playerId=${playerId}`);
 }
 export function postVisitor(visitorData) {
@@ -114,6 +119,9 @@ export function deleteVisitor(playerFriendId) {
 
 export function getCharacter(characterId) {
     return apiPublic(`/characters/${characterId}`);
+}
+export function getRandomCharacter(playerId) {
+    return apiPublic(`/characters/random/${playerId}`);
 }
 /* ================= ITEMS ================= */
 export function getShopItems(playerId) {

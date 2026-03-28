@@ -1,8 +1,9 @@
 const DEV_EMAIL = 'ze6rarr';
 const DEV_PASS = 'error'
 const PATH = 'http://localhost:8081/pages';
+const NICK_ID = 1;
 
-import { postPlayer, loginPlayer } from '../../shared/api.js';
+import { postPlayer, loginPlayer, postFriend,getMe } from '../../shared/api.js';
 import { showError } from '../../shared/showError.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await postPlayer(data);
+            // при регистрации у всех появляется 1 базовый персонаж
+            const player = await getMe();
+            await postFriend(player.id,NICK_ID);
             window.location.href = '/pages/main/main.html';
         } catch (e) {
             showError(e);

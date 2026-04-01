@@ -4,6 +4,8 @@ import com.example.StudyFriends.model.Session;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class SessionDto {
@@ -16,6 +18,7 @@ public class SessionDto {
     private Long skillId;
     private Boolean completed;
     private String notes;
+    private LocalDateTime date;
 
     public static SessionDto fromEntity(Session session) {
         SessionDto response = new SessionDto();
@@ -25,6 +28,7 @@ public class SessionDto {
         response.setCycles(session.getCycles());
         response.setCompleted(session.getCompleted());
         response.setNotes(session.getNotes());
+        response.setDate(session.getDate());
 
         // Получаем ID связанных сущностей
         if (session.getPlayerId() != null) {

@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 
 @RestController
 @RequestMapping("/api")
@@ -53,6 +55,7 @@ public class SessionController {
             session.setCycles(dto.getCycles());
             session.setCompleted(false);
             session.setNotes(dto.getNotes());
+            session.setDate(LocalDateTime.now());
             Session savedSession = sessionService.addSession(session);
             session.setId(savedSession.getId());
 
@@ -122,6 +125,17 @@ public class SessionController {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+    }
+
+    @RequestMapping("/sessions/{id}")
+    public ResponseEntity<?> getSessionById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(sessionService.getSessionById(id));
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

@@ -3,8 +3,6 @@ import { updateSliderUi } from './ui.js';
 
 const addSkillModal = document.getElementById('addSkillModal');
 const closeAddSkillModal = document.getElementById('closeAddSkillModal');
-const newSkillLevel = document.getElementById('newSkillLevel');
-const skillLevelValue = document.getElementById('skillLevelValue');
 const saveSkillBtn = document.getElementById('saveSkillBtn');
 const newSkillName = document.getElementById('newSkillName');
 
@@ -15,17 +13,13 @@ const newSkillName = document.getElementById('newSkillName');
 export function openAddSkillModal(customSelect) {
   addSkillModal.classList.remove('hidden');
   newSkillName.value = '';
-  newSkillLevel.value = 5;
-  skillLevelValue.textContent = '5';
   newSkillName.focus();
-  updateSliderUi(newSkillLevel);
 
   saveSkillBtn.onclick = () => {
     const enterName = newSkillName.value.trim();
     const skill = {
                 fakeId: Date.now(),
                 name: enterName,
-                level: parseInt(newSkillLevel.value, 10),
                 isActive: true
             };
     if (!enterName) {
@@ -42,7 +36,3 @@ closeAddSkillModal.addEventListener('click', () => {
   addSkillModal.classList.add('hidden');
 });
 
-// обновление значения ползунка
-newSkillLevel.addEventListener('input', () => {
-  skillLevelValue.textContent = newSkillLevel.value;
-});

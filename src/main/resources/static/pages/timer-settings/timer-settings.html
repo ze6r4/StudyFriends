@@ -95,12 +95,25 @@
             <div class="modal-body">
                 <label for="newSkillName">Название навыка</label>
                 <input type="text" id="newSkillName" placeholder="Введите название" />
-
-                <label for="newSkillLevel">Уровень навыка: <span id="skillLevelValue">5</span></label>
-                <input type="range" id="newSkillLevel" min="1" max="10" value="5" />
             </div>
+
             <footer>
                 <button id="saveSkillBtn">Сохранить</button>
+            </footer>
+        </div>
+    </div>
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal">
+            <header>
+                <h2>Подтверждение удаления</h2>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            </header>
+            <div class="modal-body">
+                <p id="confirmMessage">Удалить навык? Весь прогресс удалится! Записи сессий останутся.</p>
+            </div>
+            <footer>
+                <button id="confirmDeleteBtn" class="btn-danger">Удалить</button>
+                <button onclick="closeConfirmModal()" class="btn-secondary">Отмена</button>
             </footer>
         </div>
     </div>
@@ -112,5 +125,6 @@
     <script type="module" src="js/custom-select.logic.js"></script>
 
     <script type="module" src="js/friend-cards.js"></script>
+    <script type="module" src="js/custom-select-confirm-modal.js"></script>
 </body>
 </html>

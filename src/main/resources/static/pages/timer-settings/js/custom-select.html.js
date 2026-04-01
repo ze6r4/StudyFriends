@@ -9,7 +9,6 @@ export function generateSkillHtml(skills) {
     <li id="skillOption-${skill.skillId}"
         role="option"
         data-skill-id="${skill.skillId}"
-        data-progress="${skill.progress}"
         data-is-active="${skill.isActive}">
       <span class="item-text">${skill.name}</span>
       <button type="button"
@@ -41,7 +40,6 @@ export function addNewSkillToDropdown(customSelect, skill) {
   const li = document.createElement('li');
   li.id = `skillOption-${skill.fakeId}`;
   li.dataset.fakeId = skill.fakeId;
-  li.dataset.progress = skill.progress ?? 0;
   li.setAttribute('role', 'option');
 
   li.innerHTML = `

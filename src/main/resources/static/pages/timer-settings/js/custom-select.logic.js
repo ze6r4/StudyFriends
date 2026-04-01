@@ -1,7 +1,7 @@
 import { getSkills } from '../../../shared/api.js';
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { openAddSkillModal } from './custom-select.modal.js';
-
+import {showConfirmModal } from './custom-select-confirm-modal.js'
 import {
   getSelectElements,
   toggleDropdown,
@@ -105,12 +105,16 @@ function setupCustomSelect(customSelect) {
 }
 
 function handleDelete(item, customSelect) {
-  const name = item.querySelector('.item-text')?.textContent;
-  if (!confirm(`Удалить навык "${name}"?`)) return;
+    const name = item.querySelector('.item-text')?.textContent;
+    showConfirmModal(
+        `Удалить навык "${name}"? Весь прогресс удалится! Записи сессий останутся.`,
+        () => {
+            item.remove();
+            selectFirstItem(customSelect);
+            skillsChanged.value = true;
+        }
+    );
 
-  item.remove();
-  selectFirstItem(customSelect);
-  skillsChanged.value = true;
 }
 
 function handleAddSkill(customSelect) {

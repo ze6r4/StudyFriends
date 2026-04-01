@@ -62,7 +62,6 @@ async function saveSkills() {
             const skillToSend = {
                 playerId: skill.playerId,
                 name: skill.name,
-                progress: skill.progress,
                 isActive: true
             };
 
@@ -84,7 +83,6 @@ function mapSkillsFromDom(customSelect, playerId) {
       fakeId: Number(li.dataset.fakeId),
       playerId: playerId,
       name: li.querySelector('.item-text')?.textContent.trim(),
-      progress: Number(li.dataset.progress ?? 0),
       isActive: 1
     }));
 }

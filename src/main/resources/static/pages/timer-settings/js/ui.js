@@ -69,4 +69,3 @@ export function initSlider(sliderId) {
 initSlider("workMinutes");
 initSlider("restMinutes");
 initSlider("cyclesAmount");
-initSlider("newSkillLevel");

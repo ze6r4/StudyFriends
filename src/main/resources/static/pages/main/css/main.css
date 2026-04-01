@@ -36,7 +36,27 @@ body {
     position: relative;
     height: 100vh;
 }
-
+.text {
+    position: absolute;
+    top: 30px;
+    left: 40%;
+    font-family: 'overdoze', sans-serif;
+    font-size: 32px;
+    z-index: 0;
+}
+@keyframes textAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+.hidden {
+    display: none;
+}
 /* ================= ПАНЕЛИ ================= */
 
 .shop-panel {

@@ -18,8 +18,10 @@ let currentDirection = "RIGHT";
 let posXPercent = null;
 let posYPercent = null;
 
+
 const room = document.getElementById("room");
 const roomCharacters = document.getElementById("roomCharacters");
+const hint = document.getElementById("hintText");
 
 const doneBtn = document.getElementById("doneBtn");
 const deleteBtn = document.getElementById("deleteBtn");
@@ -28,7 +30,10 @@ const startBtn = document.getElementById("startBtn");
 doneBtn.addEventListener("click", finishPlacement);
 deleteBtn.addEventListener("click", removeCharacter);
 
-
+let hasSeenHints = false;
+document.addEventListener("DOMContentLoaded", () => {
+    hasSeenHints = localStorage.getItem("hasSeenHints");
+});
 
 /* ================= LOAD EXISTING ================= */
 
@@ -71,11 +76,17 @@ export function loadVisitorsToRoom(visitFriends) {
 
 /* ================= START ================= */
 
-export function startCharacterPlacement(friend, alreadyInRoom) {
+export async function startCharacterPlacement(friend, alreadyInRoom) {
+    await saveCurrentCharacterIfNeeded();
+    posXPercent = null;
+    posYPercent = null;
+    currentCharacter = null;
 
     resetRoomTransform();
+    showHint();
 
     placementMode = true;
+
     editingExisting = alreadyInRoom;
 
     selectedFriendId = friend.id;
@@ -123,7 +134,14 @@ export function startCharacterPlacement(friend, alreadyInRoom) {
     document.addEventListener("keydown", handleKey);
 }
 
+function showHint(){
+    if(!hasSeenHints) {
+        hint.hidden = false;
+        hint.style.animation = "textAppear 1s ease forwards";
+        localStorage.setItem("hasSeenHints", "true");
+    }
 
+}
 
 function createCharacter(friend) {
 
@@ -168,18 +186,25 @@ async function removeCharacter() {
 /* ================= POSITION ================= */
 
 function placeCharacter(e) {
+    hint.hidden = true;
 
     const rect = room.getBoundingClientRect();
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
 
-    posXPercent = x / rect.width;
-    posYPercent = y / rect.height;
+    let xPercent = x / rect.width;
+    let yPercent = y / rect.height;
+
+    // 🔥 ограничение внутри комнаты
+    posXPercent = clamp(xPercent, 0.05, 0.95);
+    posYPercent = clamp(yPercent, 0.1, 1);
 
     updatePosition();
 }
-
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
 function updatePosition() {
 
     if (!currentCharacter) return;
@@ -192,10 +217,37 @@ function updatePosition() {
         currentDirection === "LEFT"
             ? "translate(-50%, -100%) scaleX(-1)"
             : "translate(-50%, -100%)";
+    const characters = Array.from(
+            document.querySelectorAll(".room-character")
+        );
+
+        characters.forEach(el => {
+
+            const topPercent = parseFloat(el.style.top) || 0;
+
+            el.style.zIndex = Math.floor(topPercent);
+        });
 }
 
 
+async function saveCurrentCharacterIfNeeded() {
 
+    if (!currentCharacter || posXPercent == null) return;
+
+    const dto = {
+        playerFriendId: Number(selectedFriendId),
+        friendAction: currentAction,
+        direction: currentDirection,
+        x: posXPercent,
+        y: posYPercent
+    };
+
+    if (editingExisting) {
+        await patchVisitor(selectedFriendId, dto);
+    } else {
+        await postVisitor(dto);
+    }
+}
 /* ================= CONTROLS ================= */
 
 function handleWheel(e) {

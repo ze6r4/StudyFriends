@@ -35,6 +35,7 @@ const secondsEl = document.getElementById('timer-seconds');
 const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('giveupBtn');
 const phaseTitleEl = document.getElementById('phaseTitle');
+const exitBtn = document.getElementById('exitBtn');
 
 const characterImg = document.getElementById('characterImg');
 const tableImg = document.getElementById('tableImg');
@@ -177,6 +178,10 @@ function timerPhaseFinished() {
 
 async function timerFinished(isCompleted) {
     alert('Сессия завершена!');
+
+    exitBtn.style.display = 'block'; // оставить кнопку выхода
+    startBtn.style.display = 'none';
+
     resetTimer();
 
     const newData = {
@@ -228,8 +233,6 @@ function restoreTimer() {
             endTime += SESSION.workTime * 1000;
         }
     }
-
-
     currentPhase = phase;
     currentCycle = cycle;
 
@@ -249,7 +252,18 @@ startBtn.addEventListener('click', async () => {
         await Notification.requestPermission();
     }
 
+    startBtn.style.display = 'none';
+    exitBtn.style.display = 'block';
+
     startTimerPhase('WORK', currentCycle);
+});
+
+exitBtn.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CYCLE_KEY);
+    localStorage.removeItem(PHASE_KEY);
+
+    window.location.href =  'http://localhost:8081/pages/main/main.html'; // или куда тебе нужно
 });
 
 

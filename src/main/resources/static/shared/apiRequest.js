@@ -1,4 +1,5 @@
 const API_BASE = 'http://localhost:8081/api';
+import { showError } from '../../shared/showError.js';
 
 async function baseRequest(endpoint, options = {}, withAuth = false) {
     const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -28,8 +29,13 @@ async function baseRequest(endpoint, options = {}, withAuth = false) {
         error.status = response.status;
         error.code = data?.code || 'UNKNOWN_ERROR';
         if (response.status === 401) {
-            window.location.href = "/pages/registration/login.html";
-            return;
+            showError(error);
+
+            if (window.location.pathname !== "/pages/registration/login.html") {
+                window.location.href = "/pages/registration/login.html";
+            }
+
+            throw error;
         }
 
 

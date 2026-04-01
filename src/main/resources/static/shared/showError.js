@@ -1,16 +1,17 @@
+
 export function showError(error) {
+    const status = error.status || error.response?.status;
     let message = 'Что-то пошло не так 😢';
 
-    if (error.status === 409) {
+    if (status === 409) {
         message = 'Никнейм уже занят';
-    } else if (error.status === 401) {
+    } else if (status === 401) {
         message = 'Неверный логин или пароль';
     } else if (error.message) {
         message = error.message;
     }
 
     showToast(message);
-    alert(message);
 }
 function showToast(text) {
     const toast = document.createElement('div');

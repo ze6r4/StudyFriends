@@ -30,7 +30,6 @@ async function loadData() {
 
     visitFriends = panelDto.visit || [];
     notVisitFriends = panelDto.notVisit || [];
-    console.log(panelDto);
 
     // загружаем персонажей в комнату
     loadVisitorsToRoom(visitFriends);

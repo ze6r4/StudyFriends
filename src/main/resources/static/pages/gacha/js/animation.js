@@ -8,7 +8,7 @@ const coins = document.getElementById("coin-display");
 const title = document.getElementById("title");
 
 
-btn.addEventListener("click", async () => {
+export async function gachaAnimation() {
 
     btn.disabled = true;
     await wait(500);
@@ -53,7 +53,7 @@ btn.addEventListener("click", async () => {
     okBtn.hidden = false;
     okBtn.classList.add("show");
 
-});
+}
 
 function wait(ms) {
     return new Promise(r => setTimeout(r, ms));

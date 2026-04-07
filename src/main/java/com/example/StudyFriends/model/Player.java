@@ -34,10 +34,6 @@ public class Player {
     @Column(nullable = false)
     private UserRole role = UserRole.PLAYER;
 
-    @ManyToOne
-    @JoinColumn(name = "appearance_id")
-    private Appearance appearance;
-
     @OneToMany(mappedBy = "player",fetch = FetchType.EAGER)
     private List<Friend> friends = new ArrayList<>();
 

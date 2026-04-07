@@ -1,6 +1,6 @@
 package com.example.StudyFriends.controllers;
 
-import com.example.StudyFriends.dto.RewardDto;
+import com.example.StudyFriends.dto.RewardData;
 import com.example.StudyFriends.dto.SessionDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RewardController {
     @RequestMapping("/reward")
     public ResponseEntity<?> getReward(@RequestBody SessionDto sessionDto) {
-        RewardDto reward = new RewardDto();
+        RewardData reward = new RewardData();
         reward.setCoins(10);
         reward.setFriendExp(10);
         reward.setSkillExp(10);

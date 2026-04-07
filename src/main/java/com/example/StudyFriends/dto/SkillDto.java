@@ -12,7 +12,8 @@ public class SkillDto {
     private Long skillId;
     private Long playerId;
     private String name;
-    private Integer progress;
+    private Integer level;
+    private Integer expAmount;
     private Boolean isActive;
     private Boolean usedInSessions;
 
@@ -20,7 +21,8 @@ public class SkillDto {
         SkillDto response = new SkillDto();
         response.setSkillId(skill.getId());
         response.setName(skill.getName());
-        response.setProgress(skill.getProgress());
+        response.setLevel(skill.getLevel());
+        response.setExpAmount(skill.getExpAmount());
         response.setPlayerId(skill.getPlayer() != null ? skill.getPlayer().getId() : null);
         response.setIsActive(skill.getIsActive());
         return response;

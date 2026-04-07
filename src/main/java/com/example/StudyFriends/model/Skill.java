@@ -22,8 +22,10 @@ public class Skill {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = true)
-    private Integer progress;
+    @Column(name = "level")
+    private Integer level;
+    @Column(name = "exp_amount")
+    private Integer expAmount;
 
     @Column(name = "is_active")
     private Boolean isActive;

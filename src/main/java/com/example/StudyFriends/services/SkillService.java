@@ -40,7 +40,8 @@ public class SkillService {
                         skill.getId(),
                         skill.getId(),
                         skill.getName(),
-                        skill.getProgress(),
+                        skill.getLevel(),
+                        skill.getExpAmount(),
                         skill.getIsActive(),
                         usedSkillIds.contains(skill.getId())
                 ))

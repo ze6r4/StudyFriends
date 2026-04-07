@@ -49,9 +49,13 @@ public class SkillController {
                 skill.setName(dto.getName());
             }
 
-            if (dto.getProgress() != null) {
-                skill.setProgress(dto.getProgress());
+            if (dto.getLevel() != null) {
+                skill.setLevel(dto.getLevel());
             }
+            if (dto.getExpAmount() != null) {
+                skill.setExpAmount(dto.getExpAmount());
+            }
+
             skill.setIsActive(true);
 
             Skill updatedSkill = skillService.updateSkill(skill);
@@ -84,7 +88,8 @@ public class SkillController {
         try{
             Skill skill = new Skill();
             skill.setName(dto.getName());
-            skill.setProgress(dto.getProgress());
+            skill.setLevel(dto.getLevel());
+            skill.setExpAmount(dto.getExpAmount());
             skill.setIsActive(dto.getIsActive()); //ура!!! ура!!!!
             Player player = playerService.getPlayerById(dto.getPlayerId())
                     .orElseThrow(() -> new ResourceNotFoundException("Player", dto.getPlayerId()));

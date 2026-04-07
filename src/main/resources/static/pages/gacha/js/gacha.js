@@ -6,13 +6,14 @@ const rewardImg = document.getElementById("rewardImg");
 const nameEl = document.querySelector(".characterName");
 const okBtn = document.getElementById("okBtn");
 const coinsText = document.getElementById("coinCount");
+const priceText = document.getElementById("rewardPrice");
 
 let currentCharacter = null;
 let playerId = null;
 
 init();
 
-const PRICE = 150;
+const PRICE = 350;
 
 async function init() {
     try {
@@ -21,6 +22,7 @@ async function init() {
         const coinData = await getCoinBalance();
         const coins = Number(coinData?.coins ?? 0);
         coinsText.textContent = coins;
+        priceText.textContent = PRICE;
 
     } catch (e) {
         console.error("Ошибка получения пользователя", e);

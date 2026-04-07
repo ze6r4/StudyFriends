@@ -12,13 +12,14 @@ export function generateFriendHtml(friends) {
 
                 <h3 class="friend-name">${friend.name}</h3>
                 <p class="friend-description">${friend.description}</p>
-
+                <p class="friend-description"><br>Уровень дружбы:</p>
                 <div class="friendship-bar">
                     <div
                         class="friendship-bar-fill"
                         style="width: ${friend.friendshipLvl ?? 0}%">
                     </div>
                 </div>
+                <p class="friend-description">Бонус:</p>
             </div>
         `;
     });

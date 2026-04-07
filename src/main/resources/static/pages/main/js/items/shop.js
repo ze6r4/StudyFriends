@@ -5,6 +5,7 @@ import {
     getCoinBalance,
     spendCoins
 } from '../../../../shared/api.js';
+import { showError } from '../../../../shared/showError.js';
 
 import { getCurrentPlayerId } from '../../../../shared/current-player.js';
 import { generateItemHtml } from './item-cards.html.js';
@@ -65,7 +66,7 @@ async function loadData() {
     );
 }
 
-async function renderCoins() {
+export async function renderCoins() {
     const coinData = await getCoinBalance();
     const coins = Number(coinData?.coins ?? 0);
 
@@ -147,7 +148,7 @@ async function applyChanges() {
             const currentCoins = await renderCoins();
 
             if (currentCoins < totalPrice) {
-                alert("Не хватает монет");
+                showError("Не хватает монет");
                 return;
             }
 
@@ -194,7 +195,7 @@ async function applyChanges() {
 
     } catch (e) {
         console.error(e);
-        alert("Ошибка сохранения");
+        showError("Ошибка сохранения :(");
     } finally {
         applyBtn.textContent = originalText;
         applyBtn.disabled = false;

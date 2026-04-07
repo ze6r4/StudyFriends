@@ -20,7 +20,8 @@ export function openAddSkillModal(customSelect) {
     const skill = {
                 fakeId: Date.now(),
                 name: enterName,
-                progress: 1,
+                level: 1,
+                expAmount: 0,
                 isActive: true
             };
     if (!enterName) {

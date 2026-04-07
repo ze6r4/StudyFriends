@@ -10,7 +10,7 @@ export function generateSkillHtml(skills) {
         role="option"
         data-skill-id="${skill.skillId}"
         data-is-active="${skill.isActive}">
-      <span class="item-text">${skill.name} | LVL ${skill.progress}</span>
+      <span class="item-text">${skill.name} | LVL ${skill.level}</span>
       <button type="button"
               class="delete-item-btn"
               aria-label="Удалить ${skill.name}">✕</button>
@@ -43,7 +43,9 @@ export function addNewSkillToDropdown(customSelect, skill) {
   li.setAttribute('role', 'option');
 
   li.innerHTML = `
-    <span class="item-text">${skill.name} | LVL ${skill.progress}</span>
+    <span class="item-text">${skill.name} | LVL ${skill.level}</span>
+    <image class="skill-icon">
+
     <button type="button"
             class="delete-item-btn"
             aria-label="Удалить ${skill.name}">✕</button>

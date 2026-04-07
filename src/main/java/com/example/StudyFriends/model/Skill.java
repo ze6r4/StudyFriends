@@ -22,7 +22,7 @@ public class Skill {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer progress;
 
     @Column(name = "is_active")

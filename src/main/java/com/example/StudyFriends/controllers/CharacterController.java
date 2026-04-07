@@ -21,6 +21,8 @@ public class CharacterController {
     @Autowired
     private final CharacterService characterService;
 
+    private static final Random RANDOM = new Random();
+
     @GetMapping("/random/{playerId}")
     public ResponseEntity<?> getRandomCharacter(@PathVariable Long playerId) {
         try {
@@ -37,26 +39,17 @@ public class CharacterController {
             return ResponseEntity.ok(randomCharacter);
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity
-                    .status(HttpStatus.I_AM_A_TEAPOT)
+                    .status(HttpStatus.NOT_FOUND)
                     .body(ex.getMessage());
         }
 
 
     }
     private int getRandomCharacterIndex(int size) {
-
-        if(size == 0) {
+        if (size == 0) {
             return -1;
         }
-        if(size == 1){
-            return 0;
-        }
-
-        Random random = new Random();
-        int randomNumber = random.nextInt(1, size + 1);
-
-        return randomNumber -1;
-
+        return RANDOM.nextInt(size);
     }
 
 

@@ -1,43 +1,60 @@
 package com.example.StudyFriends.services;
 
-import com.example.StudyFriends.dto.ProgressResult;
-import com.example.StudyFriends.dto.RewardStage;
+import com.example.StudyFriends.config.RewardConfig;
 import com.example.StudyFriends.dto.SessionDto;
-import com.example.StudyFriends.model.Skill;
+import com.example.StudyFriends.dto.reward.FriendReward;
+import com.example.StudyFriends.dto.reward.SessionReward;
+import com.example.StudyFriends.dto.reward.SkillReward;
+import com.example.StudyFriends.dto.reward.SkillStageData;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RewardService {
-
-    public RewardService(SessionDto sessionDto) {
-
-    }
-
-    static int totalSessionMinutes(SessionDto sessionDto) {
+    public static int totalSessionMinutes(SessionDto sessionDto) {
         int W = sessionDto.getWorkMinutes();
         int R = sessionDto.getRestMinutes();
         int C = sessionDto.getCycles();
         return (W+R)*C;
     }
+    private int calculateCoins(int totalMinutes) {
+        return totalMinutes/2;
+    }
+    private double skillExp(int totalMinutes) {
+        return totalMinutes;
+    }
+    private double friendExp(int totalMinutes) {
+        return totalMinutes * 0.5;
+    }
 
-    public static ProgressResult calculateSkillProgress(Skill skill, SessionDto sessionDto) {
+    public SessionReward calculateRewards(SessionDto sessionDto, int skillLvl,double oldSkillExp, int friendshipLvl,double oldFriendExp) {
+        int totalMinutes = totalSessionMinutes(sessionDto);
 
-        int level = skill.getLevel();
-        int totalXp = skill.getExpAmount() + totalSessionMinutes(sessionDto);
+        SessionReward rewards = new SessionReward();
 
-        int gainedLevels = 0;
+        SkillReward skillReward = SkillReward.distributeExp(skillLvl,oldSkillExp+skillExp(totalMinutes));
+        FriendReward friendReward = FriendReward.distributeExp(friendshipLvl,oldFriendExp+friendExp(totalMinutes));
 
-        while (true) {
-            int xpToNext = RewardStage.getSkillStageByLevel(level).getXpPerLevel();
+        skillLvl = skillReward.getSkillNewLvl();
+        friendshipLvl = friendReward.getFriendshipNewLvl();
 
-            if (totalXp >= xpToNext) {
-                totalXp -= xpToNext;
-                level++;
-                gainedLevels++;
-            } else break;
-        }
+        rewards.setSkillReward(skillReward);
+        rewards.setFriendReward(friendReward);
 
-        return new ProgressResult(level, totalXp, gainedLevels);
+        int coinsFromSession = calculateCoins(totalMinutes);
+        rewards.setCoinsFromSession(coinsFromSession);
+
+        double skillCoinBonus = SkillStageData.getSkillStageByLevel(skillLvl).coinBonus();
+        rewards.setSkillCoinBonus(skillCoinBonus);
+        rewards.setCoinsFromSkill((int) Math.round(skillCoinBonus * coinsFromSession));
+
+        double friendshipCoinsBonus = RewardConfig.FRIENDSHIP_LVLS.get(friendshipLvl).getCoinsBonus();
+        rewards.setFriendCoinBonus(friendshipCoinsBonus);
+        rewards.setCoinsFromFriendship((int) Math.round( friendshipCoinsBonus * coinsFromSession));
+
+        return rewards;
 
     }
+
 
 
 }

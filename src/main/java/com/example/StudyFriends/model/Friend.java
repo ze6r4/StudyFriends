@@ -1,9 +1,9 @@
 package com.example.StudyFriends.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,10 @@ public class Friend {
     private Character character;
 
     @Column(name = "friendship_lvl", nullable = false)
-    private Double friendshipLvl;
+    private Integer friendshipLvl;
+
+    @Column(name = "exp_amount")
+    private Double expAmount;
 
     @Column(name = "is_favourite", nullable = false)
     private Boolean isFavourite;

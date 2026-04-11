@@ -10,7 +10,8 @@ public class FriendDto {
     private Long id;
     private Long playerId;
     private Long characterId;
-    private Double friendshipLvl;
+    private Integer friendshipLvl;
+    private Double expAmount;
     private Boolean isFavourite;
 
     private String name;
@@ -28,6 +29,7 @@ public class FriendDto {
         response.setId(friend.getId());
         response.setCharacterId(friend.getCharacter() != null ? friend.getCharacter().getId() : null);
         response.setFriendshipLvl(friend.getFriendshipLvl());
+        response.setExpAmount(friend.getExpAmount());
         response.setIsFavourite(friend.getIsFavourite());
         response.setPlayerId(friend.getPlayer() != null ? friend.getPlayer().getId() : null);
 
@@ -45,6 +47,7 @@ public class FriendDto {
             response.setId(friend.getId());
             response.setCharacterId(friend.getCharacter() != null ? friend.getCharacter().getId() : null);
             response.setFriendshipLvl(friend.getFriendshipLvl());
+            response.setExpAmount(friend.getExpAmount());
             response.setIsFavourite(friend.getIsFavourite());
             response.setPlayerId(friend.getPlayer() != null ? friend.getPlayer().getId() : null);
 

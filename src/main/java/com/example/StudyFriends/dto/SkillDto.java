@@ -13,7 +13,7 @@ public class SkillDto {
     private Long playerId;
     private String name;
     private Integer level;
-    private Integer expAmount;
+    private Double expAmount;
     private Boolean isActive;
     private Boolean usedInSessions;
 

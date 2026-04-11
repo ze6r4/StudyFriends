@@ -13,15 +13,23 @@ import java.util.Optional;
 public class FriendService {
     private final FriendRep friendRep;
 
-    public Optional<Friend> getFriendById(Long id){
+    public Optional<Friend> getFriendById(Long id) {
         return friendRep.findFriend(id);
     }
-    public List<Friend> getAllFriendsOfPlayer(Long playerId){
+
+    public List<Friend> getAllFriendsOfPlayer(Long playerId) {
         return friendRep.findFriendsByPlayerId(playerId);
     }
-    public List<Friend> getFriendsNotVisitorsOfPlayer(Long playerId){return friendRep.findFriendsNotVisitors(playerId);}
+
+    public List<Friend> getFriendsNotVisitorsOfPlayer(Long playerId) {
+        return friendRep.findFriendsNotVisitors(playerId);
+    }
+
     public Friend updateFriend(Friend friend) {
         return friendRep.save(friend);
     }
-    public Friend addFriend(Friend friend) {return friendRep.save(friend);}
+
+    public Friend addFriend(Friend friend) {
+        return friendRep.save(friend);
+    }
 }

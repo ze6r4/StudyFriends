@@ -1,13 +1,10 @@
 package com.example.StudyFriends.controllers;
 
-import com.example.StudyFriends.dto.ProgressResult;
-import com.example.StudyFriends.dto.SessionDto;
 import com.example.StudyFriends.dto.SkillDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Player;
 import com.example.StudyFriends.model.Skill;
 import com.example.StudyFriends.services.PlayerService;
-import com.example.StudyFriends.services.RewardService;
 import com.example.StudyFriends.services.SkillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -119,23 +116,26 @@ public class SkillController {
         }
     }
 
-    @PatchMapping("/skills/{id}/reward")
-    public ResponseEntity<?> claimReward(
-            @PathVariable Long id,
-            @RequestBody SessionDto sessionDto
-    ){
-        try {
-            Skill skill = skillService.getSkillById(id).orElseThrow();
-            ProgressResult r = RewardService.calculateSkillProgress(skill,sessionDto);
-            skill.setLevel(r.getLevel());
-            skill.setExpAmount(r.getExp());
-            skillService.updateSkill(skill);
-            return ResponseEntity.ok(r);
-        } catch (Exception exp) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Ошибка: "+ exp.getMessage());
-        }
-    }
+//    @PatchMapping("/skills/{id}/reward")
+//    public ResponseEntity<?> claimReward(
+//            @PathVariable Long id,
+//            @RequestBody SessionRewards rewards
+//    ){
+//        try {
+//            Skill skill = skillService.getSkillById(id).orElseThrow();
+//
+//            //ProgressResult reward = RewardService.calculateSkillProgress(skill,rewards);
+//            skill.setLevel(reward.getLevel());
+//            skill.setExpAmount(reward.getExp());
+//
+//            skillService.updateSkill(skill);
+//            return ResponseEntity.ok(reward);
+//
+//        } catch (Exception exp) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("Ошибка: "+ exp.getMessage());
+//        }
+//    }
 
 
 }

@@ -33,4 +33,8 @@ public class RewardController {
     public ResponseEntity<?> getSkillStages() {
         return ResponseEntity.ok(RewardConfig.SKILL_STAGES);
     }
+    @GetMapping("/friend/levels")
+    public ResponseEntity<?> getFriendLvls() {
+        return ResponseEntity.ok(RewardConfig.FRIENDSHIP_LVLS);
+    }
 }

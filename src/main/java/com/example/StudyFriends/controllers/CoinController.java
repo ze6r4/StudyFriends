@@ -80,4 +80,6 @@ public class CoinController {
 
         return ResponseEntity.ok(Map.of("message", "Баланс обновлён"));
     }
+
+
 }

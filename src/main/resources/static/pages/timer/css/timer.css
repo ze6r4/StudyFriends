@@ -23,7 +23,7 @@ font-display: swap;
 
 /* ФОН */
 body {
-    font-family: var(--font);
+
     overflow: hidden;
     background-color: var(--bg);
 }
@@ -58,7 +58,18 @@ body {
     display: flex;
     align-items: flex-start;
 }
+.notes-content p {
+    position: relative;
+    padding-left: 20px;
+}
 
+.notes-content p::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #6b5b53;
+    font-weight: bold;
+}
 
 .notes-content {
     position: absolute;
@@ -94,21 +105,6 @@ body {
     border: none;
 
 }
-
-.notes-content p {
-    margin-bottom: 10px;
-    padding-left: 14px;
-    position: relative;
-}
-
-
-.notes-content p::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: var(--line);
-}
-
 
 /* ФУТЕР */
 .footer {
@@ -173,4 +169,15 @@ body {
     max-height: 400px;     /* ← ОГРАНИЧИЧИВАЕМ ВЫСОТУ */
     overflow-y: auto;      /* ← СКРОЛЛ, если текст не влезает */
     word-wrap: break-word; /* ← ПЕРЕНОС ДЛИННЫХ СЛОВ */
+}
+.footer.hidden {
+    display: none;
+}
+
+
+.dev-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px;
 }

@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="css/timer.css">
+    <link rel="stylesheet" href="css/reward.css">
 </head>
 <body>
 
@@ -68,7 +69,61 @@
     </div>
 
 </div>
+<div id="rewardsModal" class="rewards-modal hidden">
+    <div class="rewards-content">
 
+        <h2 class="rewards-title">Поздравляю! Мы справились!</h2>
+
+        <!-- ===== НАВЫК ===== -->
+        <div class="reward-block">
+            <h3>Навык</h3>
+
+            <div class="stage-label" id="skillStage"></div>
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="skillProgress"></div>
+                </div>
+
+                <div class="progress-labels">
+                    <span id="skillLevel">1</span>
+                    <span id="skillMaxXp">100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ДРУЖБА ===== -->
+        <div class="reward-block">
+            <h3>Уровень дружбы</h3>
+
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="friendProgress"></div>
+                </div>
+
+                <div class="progress-labels">
+                    <span id="friendLevel">1</span>
+                    <span id="friendMaxXp">100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== МОНЕТЫ ===== -->
+        <div class="coins-block">
+            <p>Навык: <span id="coinsSkill"></span></p>
+            <p>Дружба: <span id="coinsFriend"></span></p>
+            <p>Сессия: <span id="coinsSession"></span></p>
+
+            <p class="divider">- - - - - - - -</p>
+
+            <p class="total">
+                ИТОГО:
+                <span id="coinsTotal"></span> 🪙
+            </p>
+        </div>
+
+        <button id="closeRewardsBtn">ОК</button>
+    </div>
+</div>
 <!-- ТАЙМЕР + КНОПКА -->
 <div class="bottom-left">
 
@@ -84,7 +139,12 @@
     </button>
 </div>
 
-<footer class="footer">
+<footer class="footer hidden">
+    <div class="dev-controls">
+        <button id="devModeBtn">Режим разработчика</button>
+        <button id="finishNowBtn">Закончить сессию</button>
+        <button id="resetTimerDevBtn">Очистить localStorage</button>
+    </div>
 </footer>
 
 <script type="module" src="js/timer.js"></script>

@@ -1,5 +1,5 @@
 import { patchSession, getCharacter, getFriend, getMe } from '../../../shared/api.js';
-
+import {showRewards} from './rewards.js';
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
 const sessionData = sessionDataStr ? JSON.parse(sessionDataStr) : null;
@@ -28,6 +28,11 @@ export const SESSION = {
     skillId: sessionData?.skillId ?? null,
     friendId: sessionData?.friendId ?? null
 };
+const ORIGINAL_SESSION = {
+    workTime: SESSION.workTime,
+    breakTime: SESSION.breakTime,
+    cycles: SESSION.cycles
+};
 
 // ==================== DOM ====================
 const minutesEl = document.getElementById('timer-minutes');
@@ -36,6 +41,9 @@ const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('giveupBtn');
 const phaseTitleEl = document.getElementById('phaseTitle');
 const exitBtn = document.getElementById('exitBtn');
+const finishNowBtn = document.getElementById('finishNowBtn');
+const devModeBtn = document.getElementById('devModeBtn');
+const resetTimerDevBtn = document.getElementById('resetTimerDevBtn');
 
 const characterImg = document.getElementById('characterImg');
 const tableImg = document.getElementById('tableImg');
@@ -63,10 +71,6 @@ async function initCharacter() {
 
     console.log('Персонаж загружен:', character.studyImage);
 }
-
-function setBackground(imageName) {
-    characterImg.src = "/assets/images" + `/characters/${imageName}.png`;
-}
 function updateCharacterImage() {
     if (!currentCharacter) return;
 
@@ -75,10 +79,8 @@ function updateCharacterImage() {
             ? currentCharacter.studyImage
             : currentCharacter.restImage;
 
-    setBackground(imageName);
+     characterImg.src = "/assets/images" + `/characters/${imageName}.png`;
 }
-
-
 // ==================== Таймер ====================
 
 function startTimerPhase(phase, cycle) {
@@ -191,7 +193,9 @@ async function timerFinished(isCompleted) {
         notes: trimNotes()
     }
     console.log(newData);
-    await patchSession(sessionData.sessionId,newData);
+
+    const session = await patchSession(sessionData.sessionId,newData);
+    await showRewards(session);
 }
 
 function trimNotes() {
@@ -217,11 +221,11 @@ function restoreTimer() {
 
     while (endTime <= now) {
         if (phase === 'WORK') {
-            actualWork += SESSION.workTime;
+            actualWork += ORIGINAL_SESSION.workTime;
             phase = 'BREAK';
             endTime += SESSION.breakTime * 1000;
         } else {
-            actualRest += SESSION.breakTime;
+            actualRest += ORIGINAL_SESSION.breakTime;
             cycle++;
 
             if (cycle > SESSION.cycles) {
@@ -230,7 +234,7 @@ function restoreTimer() {
             }
 
             phase = 'WORK';
-            endTime += SESSION.workTime * 1000;
+            endTime += ORIGINAL_SESSION.workTime * 1000;
         }
     }
     currentPhase = phase;
@@ -280,6 +284,13 @@ function playNotify() {
 document.addEventListener('DOMContentLoaded', restoreTimer);
 document.addEventListener('DOMContentLoaded', initCharacter);
 document.addEventListener('DOMContentLoaded', initDeveloperButtons);
+devModeBtn?.addEventListener('click', developerMode);
+resetTimerDevBtn?.addEventListener('click', resetTimerForTesting);
+finishNowBtn?.addEventListener('click', finishSessionDev);
+document.getElementById('closeRewardsBtn').addEventListener('click', () => {
+    document.getElementById('rewardsModal').classList.add('hidden');
+});
+
 
 // ==================== РЕЖИМ РАЗРАБОТЧИКА ====================
 
@@ -292,19 +303,7 @@ async function initDeveloperButtons() {
         const footer = document.querySelector('.footer');
         if (!footer) return;
 
-        // создаём кнопки
-        const devModeBtn = document.createElement('button');
-        devModeBtn.textContent = 'Режим разработчика';
-        devModeBtn.id = 'devModeBtn';
-        devModeBtn.addEventListener('click', developerMode);
-
-        const resetTimerDevBtn = document.createElement('button');
-        resetTimerDevBtn.textContent = 'Очистить localStorage';
-        resetTimerDevBtn.id = 'resetTimerDevBtn';
-        resetTimerDevBtn.addEventListener('click', resetTimerForTesting);
-
-        footer.appendChild(devModeBtn);
-        footer.appendChild(resetTimerDevBtn);
+        footer.classList.remove('hidden');
 
         console.log('Developer mode enabled');
     } catch (e) {
@@ -323,7 +322,17 @@ function developerMode() {
     // Полный сброс таймера
     resetTimer();
 }
+function finishSessionDev() {
+    if (!confirm('Завершить сессию мгновенно?')) return;
 
+    stopTimer();
+
+    // имитируем полностью завершённую сессию
+    actualWork = ORIGINAL_SESSION.workTime * ORIGINAL_SESSION.cycles;
+    actualRest = ORIGINAL_SESSION.breakTime * (ORIGINAL_SESSION.cycles - 1);
+
+    timerFinished(true);
+}
 
 function resetTimerForTesting() {
     if (!confirm('Сбросить таймер и очистить сохранённое состояние?')) {

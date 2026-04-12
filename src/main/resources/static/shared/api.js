@@ -162,3 +162,16 @@ export function patchSession(id, sessionData) {
         body: sessionData
     });
 }
+
+/* ================= REWARDS ================= */
+export async function getSkillStages() {
+    const res = await fetch('/api/rewards/skill/levels');
+    return await res.json();
+}
+
+export function postRewards(sessionData){
+    return apiPublic('/rewards', {
+            method: 'POST',
+            body: sessionData
+    });
+}

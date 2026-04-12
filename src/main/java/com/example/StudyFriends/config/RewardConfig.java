@@ -14,6 +14,7 @@ public class RewardConfig {
 
     public static final int GACHA_PRICE = 350;
     public static final double CHARACTER_CHANCE = 0.6;
+    public static final double COINS_PERCENT = 0.5;
 
     public static Map<Integer, FriendshipData> FRIENDSHIP_LVLS = Map.ofEntries(
             Map.entry(1, new FriendshipData(60,0)),
@@ -27,6 +28,7 @@ public class RewardConfig {
             Map.entry( 9,new FriendshipData(540,0.18)),
             Map.entry( 10,new FriendshipData(600,0.2))
     );
+    public static final double FRIENDSHIP_EXP_PERCENT = 0.5;
 
     public static final SkillStageData[] SKILL_STAGES = new SkillStageData[] {
             new SkillStageData("новичок",60,0,10,0),
@@ -34,6 +36,7 @@ public class RewardConfig {
             new SkillStageData("опытный",24*60,21,30,0.25),
             new SkillStageData("мастер",36*60,31,Integer.MAX_VALUE,0.5)
     };
+    public static final double SKILL_EXP_PERCENT = 1;
 
     public static final int[] ITEMS_MAX_PRICES = new int[] {10,40,120,500};
     //TODO:показывать рекомендуемые цены предметов при добавлении

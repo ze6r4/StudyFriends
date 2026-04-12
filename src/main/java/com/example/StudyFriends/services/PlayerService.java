@@ -57,6 +57,9 @@ public class PlayerService {
     public Player addPlayer(Player player) {
         return playerRep.save(player);
     }
+    public Player updatePlayer(Player player) {
+        return playerRep.save(player);
+    }
 
     public Optional<Player> getPlayerById(Long id) {
         return playerRep.findById(id);

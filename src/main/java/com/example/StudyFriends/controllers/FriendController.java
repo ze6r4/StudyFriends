@@ -40,7 +40,7 @@ public class FriendController {
         }
     }
     @GetMapping("/friend")
-    public ResponseEntity<?> getFriendOfPlayer(@RequestParam Long friendId) {
+    public ResponseEntity<?> getFriendById(@RequestParam Long friendId) {
         try{
             Friend friend = friendService.getFriendById(friendId).get();
             return ResponseEntity.ok(FriendDto.fromEntity(friend));

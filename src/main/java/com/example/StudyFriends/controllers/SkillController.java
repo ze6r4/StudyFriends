@@ -83,6 +83,17 @@ public class SkillController {
                     .body("Ошибка: " + ex.getMessage());
         }
     }
+    @GetMapping("/skills/{skillId}")
+    public ResponseEntity<?> getSkillById(@PathVariable Long skillId) {
+        try{
+            Skill skill = skillService.getSkillById(skillId).get();
+            return ResponseEntity.ok(SkillDto.fromEntity(skill));
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+    }
 
     @PostMapping("/skills")
     public ResponseEntity<?> addSkill(@RequestBody SkillDto dto) {
@@ -116,26 +127,6 @@ public class SkillController {
         }
     }
 
-//    @PatchMapping("/skills/{id}/reward")
-//    public ResponseEntity<?> claimReward(
-//            @PathVariable Long id,
-//            @RequestBody SessionRewards rewards
-//    ){
-//        try {
-//            Skill skill = skillService.getSkillById(id).orElseThrow();
-//
-//            //ProgressResult reward = RewardService.calculateSkillProgress(skill,rewards);
-//            skill.setLevel(reward.getLevel());
-//            skill.setExpAmount(reward.getExp());
-//
-//            skillService.updateSkill(skill);
-//            return ResponseEntity.ok(reward);
-//
-//        } catch (Exception exp) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body("Ошибка: "+ exp.getMessage());
-//        }
-//    }
 
 
 }

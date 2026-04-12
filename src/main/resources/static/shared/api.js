@@ -40,6 +40,11 @@ export function getSkills(playerId) {
     return apiPublic(`/skills?playerId=${playerId}`);
 }
 
+export function getSkill(skillId) {
+    return apiPublic(`/skills/${skillId}`);
+}
+
+
 // навыки + сессии
 export function getPlayerSkillsFull(playerId) {
     return apiPublic(`/skills/full?playerId=${playerId}`);
@@ -166,6 +171,10 @@ export function patchSession(id, sessionData) {
 /* ================= REWARDS ================= */
 export async function getSkillStages() {
     const res = await fetch('/api/rewards/skill/levels');
+    return await res.json();
+}
+export async function getFriendLvls() {
+    const res = await fetch('/api/rewards/friend/levels');
     return await res.json();
 }
 

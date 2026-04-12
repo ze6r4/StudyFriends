@@ -1,6 +1,7 @@
 package com.example.StudyFriends.dto.reward;
 
 import com.example.StudyFriends.config.RewardConfig;
+import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -16,13 +17,22 @@ public class FriendReward {
         double xpToNext = 0;
 
         while (true) {
-            xpToNext = RewardConfig.FRIENDSHIP_LVLS.get(level).getTotalExpForLvl();
+            FriendshipData data = RewardConfig.FRIENDSHIP_LVLS.get(level);
+            if (data == null && level >=10) {
+                double maxXp = RewardConfig.FRIENDSHIP_LVLS.get(10).getTotalExpForLvl();
+                return new FriendReward(10,maxXp,maxXp);
+            }
+            else if(data==null) {
+                throw new ResourceNotFoundException("Не зняю");
+            }
+            xpToNext = data.getTotalExpForLvl();
 
             if (currentExp >= xpToNext) {
                 currentExp -= xpToNext;
                 level++;
             } else break;
         }
+
         return new FriendReward(level,currentExp,xpToNext);
     }
 }

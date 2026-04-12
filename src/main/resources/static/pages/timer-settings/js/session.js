@@ -1,5 +1,6 @@
 // Импортируем всё нужное
 import {postSession, getPlayerSkillsFull, updatePlayerSkill, deletePlayerSkill, postSkill } from '../../../shared/api.js';
+import {showError } from '../../../shared/showError.js';
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 
 const PATH = 'http://localhost:8081/pages';
@@ -14,6 +15,10 @@ async function startSession(){
     }
     const skillId = document.querySelector('.select-dropdown li[aria-selected="true"]')?.dataset.skillId || null;
     const friendId = document.querySelector('.friend-card.selected')?.dataset.friendId;
+    if (friendId == null) {
+        showError({ message: 'Выберите друга!'});
+        return;
+    }
     const sessionData = {
         workMinutes: parseInt(document.getElementById('workMinutes').value, 10),
         restMinutes: parseInt(document.getElementById('restMinutes').value, 10),
@@ -43,11 +48,9 @@ async function saveSkills() {
         const newContainsOld = newSkills.some(n => n.skillId === oldSkill.skillId);
         if (!newContainsOld) {
             if (oldSkill.usedInSessions) {
-                // деактивируем (is_active = 0)
                 await updatePlayerSkill(oldSkill.skillId, { is_active: 0 });
                 console.log('архивирую навык', oldSkill.name)
             } else {
-                // полностью удаляем
                 await deletePlayerSkill(oldSkill.skillId);
                 console.log('полностью удаляю навык', oldSkill.name)
             }
@@ -62,6 +65,8 @@ async function saveSkills() {
             const skillToSend = {
                 playerId: skill.playerId,
                 name: skill.name,
+                level: 1,
+                expInCurrentLevel: 0,
                 isActive: true
             };
 
@@ -82,7 +87,7 @@ function mapSkillsFromDom(customSelect, playerId) {
       skillId: Number(li.dataset.skillId),
       fakeId: Number(li.dataset.fakeId),
       playerId: playerId,
-      name: li.querySelector('.item-text')?.textContent.trim(),
+      name: li.querySelector('.item-text')?.textContent.trim().split('LVL')[0],
       isActive: 1
     }));
 }

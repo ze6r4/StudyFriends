@@ -13,7 +13,7 @@ public class SkillDto {
     private Long playerId;
     private String name;
     private Integer level;
-    private Double expAmount;
+    private Double expInCurrentLevel;
     private Boolean isActive;
     private Boolean usedInSessions;
 
@@ -22,7 +22,7 @@ public class SkillDto {
         response.setSkillId(skill.getId());
         response.setName(skill.getName());
         response.setLevel(skill.getLevel());
-        response.setExpAmount(skill.getExpAmount());
+        response.setExpInCurrentLevel(skill.getExpInCurrentLevel());
         response.setPlayerId(skill.getPlayer() != null ? skill.getPlayer().getId() : null);
         response.setIsActive(skill.getIsActive());
         return response;

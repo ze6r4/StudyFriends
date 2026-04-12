@@ -25,7 +25,7 @@ public class Skill {
     @Column(name = "level")
     private Integer level;
     @Column(name = "exp_amount")
-    private Double expAmount;
+    private Double expInCurrentLevel;
 
     @Column(name = "is_active")
     private Boolean isActive;

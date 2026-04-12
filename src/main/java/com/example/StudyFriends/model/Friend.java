@@ -30,7 +30,7 @@ public class Friend {
     private Integer friendshipLvl;
 
     @Column(name = "exp_amount")
-    private Double expAmount;
+    private Double expInCurrentLevel;
 
     @Column(name = "is_favourite", nullable = false)
     private Boolean isFavourite;

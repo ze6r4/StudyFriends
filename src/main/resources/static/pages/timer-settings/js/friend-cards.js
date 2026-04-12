@@ -1,4 +1,4 @@
-import { getFriends } from '../../../shared/api.js';
+import { getFriends,getFriendLvls } from '../../../shared/api.js';
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { generateFriendHtml } from './friend-cards.html.js';
 
@@ -11,7 +11,8 @@ async function initFriends() {
     friendsGrid = document.querySelector(".friends-grid");
 
     const friends = await loadFriends();
-    renderFriends(friends);
+    const lvls = await getFriendLvls();
+    renderFriends(friends,lvls);
 
     bindFriendCardClick();
 }
@@ -19,16 +20,17 @@ async function initFriends() {
 async function loadFriends() {
     const playerId = await getCurrentPlayerId();
     const friends = await getFriends(playerId);
+
     return Array.isArray(friends) ? friends : [];
 }
 
-function renderFriends(friends) {
+function renderFriends(friends,lvls) {
     if (friends.length === 0) {
         friendsGrid.innerHTML = '<p>Ошибка загрузки 😃</p>';
         return;
     }
 
-    friendsGrid.innerHTML = generateFriendHtml(friends);
+    friendsGrid.innerHTML = generateFriendHtml(friends,lvls);
 }
 
 /* =========================

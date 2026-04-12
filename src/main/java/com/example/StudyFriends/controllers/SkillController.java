@@ -53,8 +53,8 @@ public class SkillController {
             if (dto.getLevel() != null) {
                 skill.setLevel(dto.getLevel());
             }
-            if (dto.getExpAmount() != null) {
-                skill.setExpAmount(dto.getExpAmount());
+            if (dto.getExpInCurrentLevel() != null) {
+                skill.setExpInCurrentLevel(dto.getExpInCurrentLevel());
             }
 
             skill.setIsActive(true);
@@ -90,7 +90,7 @@ public class SkillController {
             Skill skill = new Skill();
             skill.setName(dto.getName());
             skill.setLevel(dto.getLevel());
-            skill.setExpAmount(dto.getExpAmount());
+            skill.setExpInCurrentLevel(dto.getExpInCurrentLevel());
             skill.setIsActive(dto.getIsActive()); //ура!!! ура!!!!
             Player player = playerService.getPlayerById(dto.getPlayerId())
                     .orElseThrow(() -> new ResourceNotFoundException("Player", dto.getPlayerId()));

@@ -41,7 +41,7 @@ public class SkillService {
                         skill.getId(),
                         skill.getName(),
                         skill.getLevel(),
-                        skill.getExpAmount(),
+                        skill.getExpInCurrentLevel(),
                         skill.getIsActive(),
                         usedSkillIds.contains(skill.getId())
                 ))

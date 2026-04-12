@@ -6,12 +6,12 @@ const rewardImg = document.getElementById("rewardImg");
 const nameEl = document.querySelector(".characterName");
 const okBtn = document.getElementById("okBtn");
 const coinsText = document.getElementById("coinCount");
-const priceText = document.getElementById("rewardPrice");
+const priceText = document.getElementById("textPrice");
 
 let currentCharacter = null;
 let playerId = null;
 
-init();
+let coins = 0;
 
 const PRICE = 350;
 
@@ -20,15 +20,18 @@ async function init() {
         const me = await getMe();
         playerId = me.id;
         const coinData = await getCoinBalance();
-        const coins = Number(coinData?.coins ?? 0);
+        coins = Number(coinData?.coins ?? 0);
+        console.log(coins);
         coinsText.textContent = coins;
-        priceText.textContent = PRICE;
+        priceText.textContent = "Купить билет "+ PRICE + "🪙";
+
 
     } catch (e) {
         console.error("Ошибка получения пользователя", e);
     }
 }
 
+document.addEventListener("DOMContentLoaded", init);
 btn.addEventListener("click", playGacha);
 
 async function playGacha() {
@@ -50,9 +53,9 @@ async function playGacha() {
 
 async function tryToBuy() {
     try{
-        const coinData = await getCoinBalance();
-        const coins = Number(coinData?.coins ?? 0);
         if(coins < PRICE) {
+            console.log(coins);
+
             showError({ message: 'Не хватает монет! Нужно поработать' })
             return false;
         }

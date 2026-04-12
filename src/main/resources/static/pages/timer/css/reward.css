@@ -83,3 +83,14 @@ font-display: swap;
 .total {
     font-weight: bold;
 }
+.coins-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
+}
+
+.divider {
+    width: 100%;
+    border-top: 2px dashed #aaa;
+    margin: 10px 0;
+}

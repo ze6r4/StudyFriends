@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const notesEl = document.getElementById('notesContent');
     if (!notesEl) return;
 
+    notesEl.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'x') {
+            e.preventDefault();
+            document.execCommand('strikeThrough');
+        }
+    });
     // 🔹 Восстановление заметок
     const savedNotes = localStorage.getItem(NOTES_STORAGE_KEY);
     if (savedNotes) {

@@ -23,16 +23,6 @@ export function getMe() {
     return apiAuth('/me');
 }
 
-/* ================= COINS ================= */
-
-export function getCoins(playerId) {
-    return apiAuth(`/coins?playerId=${playerId}`);
-}
-export function updateCoinBalance(amount) {
-    return apiAuth(`/coins/set?amount=${amount}`, {
-        method: 'POST'
-    });
-}
 /* ================= SKILLS ================= */
 
 // все навыки игрока
@@ -124,6 +114,9 @@ export function getCharacter(characterId) {
 export function getRandomCharacter(playerId) {
     return apiPublic(`/characters/random/${playerId}`);
 }
+export function rollGacha(playerId) {
+    return apiPublic(`/gacha/${playerId}`)
+}
 /* ================= ITEMS ================= */
 export function getShopItems(playerId) {
     return apiPublic(`/shop/items?playerId=${playerId}`);
@@ -152,6 +145,11 @@ export function spendCoins(amount) {
     });
 }
 
+export function updateCoinBalance(amount) {
+    return apiAuth(`/coins/set?amount=${amount}`, {
+        method: 'POST'
+    });
+}
 /* ================= SESSIONS ================= */
 
 export function postSession(sessionData) {

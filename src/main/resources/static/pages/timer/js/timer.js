@@ -1,4 +1,5 @@
-import { patchSession, getCharacter, getFriend, getMe } from '../../../shared/api.js';
+import { patchSession,postRewards, getCharacter, getFriend, getSkill,getMe } from '../../../shared/api.js';
+import { showError } from '../../../shared/showError.js';
 import {showRewards} from './rewards.js';
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
@@ -195,7 +196,28 @@ async function timerFinished(isCompleted) {
     console.log(newData);
 
     const session = await patchSession(sessionData.sessionId,newData);
-    await showRewards(session);
+    // 🔥 получаем АКТУАЛЬНЫЕ данные
+    const [skillData, friendData] = await Promise.all([
+        getSkill(SESSION.skillId),
+        getFriend(SESSION.friendId)
+    ]);
+
+    const rewards = await postRewards(session);
+
+    if(!rewards) {
+        showError({ message:'не удалось загрузить награды!'});
+    }
+    else if(!skillData){
+        showError({message:'не удалось получить навык!'})
+    }
+    else if(!friendData){
+        showError({message:'не удалось получить друга!'})
+    }
+    else {
+        console.log("fdksfksdf");
+        await showRewards(rewards,skillData,friendData);
+    }
+
 }
 
 function trimNotes() {

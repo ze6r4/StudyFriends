@@ -1,6 +1,7 @@
-import { getSkillStages,postRewards } from '../../../shared/api.js';
+import { getSkillStages, getFriendLvls } from '../../../shared/api.js';
 
 let SKILL_STAGES = [];
+let FRIEND_LVLS = {};
 
 function delay(ms) {
     return new Promise(res => setTimeout(res, ms));
@@ -10,107 +11,160 @@ function getStageByLevel(level) {
     return SKILL_STAGES.find(s => level >= s.minLevel && level <= s.maxLevel);
 }
 
-// ==================== ОСНОВНОЙ МЕТОД ====================
-export async function showRewards(session) {
+// ==================== ГЛАВНАЯ ====================
+export async function showRewards(rewards, skillData, friendData) {
+    SKILL_STAGES = await getSkillStages();
+    FRIEND_LVLS = await getFriendLvls();
+
     const modal = document.getElementById('rewardsModal');
     modal.classList.remove('hidden');
-    session = await postRewards(session);
 
-    // загрузка стадий
-    if (SKILL_STAGES.length === 0) {
-        SKILL_STAGES = await getSkillStages();
-    }
+    // 💰 монеты
+    document.getElementById('coinsSkill').textContent = rewards.coinsFromSkill;
+    document.getElementById('coinsFriend').textContent = rewards.coinsFromFriendship;
+    document.getElementById('coinsSession').textContent = rewards.coinsFromSession;
 
-    const skill = session.skillReward;
-    const friend = session.friendReward;
+    const total =
+        rewards.coinsFromSkill +
+        rewards.coinsFromFriendship +
+        rewards.coinsFromSession;
 
-    // монеты
-    document.getElementById('coinsSkill').textContent = session.coinsFromSkill;
-    document.getElementById('coinsFriend').textContent = session.coinsFromFriendship;
-    document.getElementById('coinsSession').textContent = session.coinsFromSession;
+    document.getElementById('coinsTotal').textContent = total + ' 🪙';
 
-    const total = session.coinsFromSkill + session.coinsFromFriendship + session.coinsFromSession;
-    document.getElementById('coinsTotal').textContent = total;
+    // ===== НАВЫК =====
+    await animateProgress({
+        fillId: 'skillProgress',
+        levelId: 'skillLevel',
+        maxXpId: 'skillMaxXp',
 
-    await animateSkill(skill);
-    await animateFriend(friend);
+        extraUpdate: (lvl) => {
+            const stage = getStageByLevel(lvl);
+            if (stage) {
+                document.getElementById('skillStage').textContent = stage.name;
+            }
+        },
+
+        startLevel: skillData.level,
+        startExp: skillData.expInCurrentLevel ?? 0,
+
+        endLevel: rewards.skillReward.skillNewLvl,
+        endExp: rewards.skillReward.skillExpOfLvl ?? 0,
+
+        getMaxXp: (lvl) => getStageByLevel(lvl)?.xpPerLevel ?? 1,
+        finalMaxXp: rewards.skillReward.skillXpToNext ?? 1
+    });
+
+    // ===== ДРУЖБА =====
+    await animateProgress({
+        fillId: 'friendProgress',
+        levelId: 'friendLevel',
+        maxXpId: 'friendMaxXp',
+
+        extraUpdate: (lvl) => {
+            const data = FRIEND_LVLS[lvl];
+            if (!data) return;
+
+            const bonusEl = document.getElementById('friendBonus');
+            if (bonusEl) {
+                bonusEl.textContent = `+${Math.round(data.coinsBonus * 100)}%`;
+            }
+        },
+
+        startLevel: friendData.friendshipLvl,
+        startExp: friendData.expInCurrentLevel ?? 0,
+
+        endLevel: rewards.friendReward.friendshipNewLvl,
+        endExp: rewards.friendReward.friendshipExpOfLvl ?? 0,
+
+        getMaxXp: (lvl) => FRIEND_LVLS[lvl]?.totalExpForLvl ?? 1,
+        finalMaxXp: rewards.friendReward.friendXpToNext ?? 1
+    });
 }
 
-// ==================== НАВЫК ====================
-async function animateSkill(skill) {
-    const fill = document.getElementById('skillProgress');
-    const levelEl = document.getElementById('skillLevel');
-    const maxXpEl = document.getElementById('skillMaxXp');
-    const stageEl = document.getElementById('skillStage');
+// ==================== УНИВЕРСАЛЬНАЯ АНИМАЦИЯ ====================
+async function animateProgress(config) {
+    const {
+        fillId,
+        levelId,
+        maxXpId,
+        extraUpdate,
 
-    let currentLevel = parseInt(levelEl.textContent) || 1;
+        startLevel,
+        startExp,
 
-    while (currentLevel < skill.skillNewLvl) {
-        const stage = getStageByLevel(currentLevel);
+        endLevel,
+        endExp,
 
-        stageEl.textContent = stage.name;
-        maxXpEl.textContent = stage.xpPerLevel;
+        getMaxXp,
+        finalMaxXp
+    } = config;
 
-        await animateBar(fill, 100);
+    const fill = document.getElementById(fillId);
+    const levelEl = document.getElementById(levelId);
+    const maxXpEl = document.getElementById(maxXpId);
+
+    let currentLevel = startLevel;
+    let currentExp = startExp ?? 0;
+
+    levelEl.textContent = currentLevel;
+
+    let maxXp = getMaxXp(currentLevel);
+    maxXpEl.textContent = Math.round(maxXp);
+
+    extraUpdate?.(currentLevel);
+
+    // 👉 стартовый процент
+    let currentPercent = maxXp > 0 ? (currentExp / maxXp) * 100 : 0;
+    fill.style.width = currentPercent + '%';
+
+    await delay(300);
+
+    const leveledUp = startLevel !== endLevel;
+
+    // ===== LEVEL UP =====
+    while (currentLevel < endLevel) {
+        await animateBar(fill, currentPercent, 100);
 
         currentLevel++;
         levelEl.textContent = currentLevel;
 
-        await delay(300);
+        maxXp = getMaxXp(currentLevel);
+        maxXpEl.textContent = Math.round(maxXp);
+
+        extraUpdate?.(currentLevel);
+
+        await delay(200);
 
         fill.style.width = '0%';
+        currentPercent = 0;
     }
 
-    // финальный уровень
-    const finalStage = getStageByLevel(skill.skillNewLvl);
+    // ===== ФИНАЛ =====
+    const finalXp = finalMaxXp ?? getMaxXp(endLevel);
+    const finalPercent = finalXp > 0 ? (endExp / finalXp) * 100 : 0;
 
-    stageEl.textContent = finalStage.name;
-    maxXpEl.textContent = Math.round(skill.skillXpToNext);
+    maxXpEl.textContent = Math.round(finalXp);
 
-    const percent = (skill.skillExpOfLvl / skill.skillXpToNext) * 100;
+    const fromPercent = leveledUp ? 0 : currentPercent;
 
-    await animateBar(fill, percent);
-}
-
-// ==================== ДРУЖБА ====================
-async function animateFriend(friend) {
-    const fill = document.getElementById('friendProgress');
-    const levelEl = document.getElementById('friendLevel');
-    const maxXpEl = document.getElementById('friendMaxXp');
-
-    let currentLevel = parseInt(levelEl.textContent) || 1;
-
-    while (currentLevel < friend.friendshipNewLvl) {
-        await animateBar(fill, 100);
-
-        currentLevel++;
-        levelEl.textContent = currentLevel;
-
-        await delay(300);
-    }
-
-    maxXpEl.textContent = Math.round(friend.friendXpToNext);
-
-    const percent = (friend.friendshipExpOfLvl / friend.friendXpToNext) * 100;
-
-    await animateBar(fill, percent);
+    await animateBar(fill, fromPercent, finalPercent);
 }
 
 // ==================== АНИМАЦИЯ ====================
-function animateBar(element, targetPercent) {
+function animateBar(element, from, to) {
     return new Promise(resolve => {
-
-
-        let current = 0;
+        let current = from;
 
         const step = () => {
-            current += 2;
+            const diff = to - current;
 
-            if (current >= targetPercent) {
-                element.style.width = targetPercent + '%';
+            if (Math.abs(diff) < 0.5) {
+                element.style.width = to + '%';
                 resolve();
                 return;
             }
+
+            current += diff * 0.15;
 
             element.style.width = current + '%';
             requestAnimationFrame(step);
@@ -119,5 +173,3 @@ function animateBar(element, targetPercent) {
         requestAnimationFrame(step);
     });
 }
-
-// ==================== ЗАКРЫТИЕ ====================

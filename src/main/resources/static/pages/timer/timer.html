@@ -30,15 +30,12 @@
             alt="Фон"
 
     >
-
     <img
             id="characterImg"
             src = ""
             alt="персонаж"
     >
 </div>
-
-
 
 <div class="container">
 
@@ -109,16 +106,28 @@
 
         <!-- ===== МОНЕТЫ ===== -->
         <div class="coins-block">
-            <p>Навык: <span id="coinsSkill"></span></p>
-            <p>Дружба: <span id="coinsFriend"></span></p>
-            <p>Сессия: <span id="coinsSession"></span></p>
+            <div class="coins-row">
+                <span>Навык</span>
+                <span id="coinsSkill"></span>
+            </div>
 
-            <p class="divider">- - - - - - - -</p>
+            <div class="coins-row">
+                <span>Дружба</span>
+                <span id="coinsFriend"></span>
 
-            <p class="total">
-                ИТОГО:
-                <span id="coinsTotal"></span> 🪙
-            </p>
+            </div>
+
+            <div class="coins-row">
+                <span>Сессия</span>
+                <span id="coinsSession"></span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="coins-row total">
+                <span>ИТОГО</span>
+                <span id="coinsTotal">0 🪙</span>
+            </div>
         </div>
 
         <button id="closeRewardsBtn">ОК</button>

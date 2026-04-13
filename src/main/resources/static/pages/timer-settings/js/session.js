@@ -48,7 +48,7 @@ async function saveSkills() {
         const newContainsOld = newSkills.some(n => n.skillId === oldSkill.skillId);
         if (!newContainsOld) {
             if (oldSkill.usedInSessions) {
-                await updatePlayerSkill(oldSkill.skillId, { is_active: 0 });
+                await updatePlayerSkill(oldSkill.skillId, { isActive: 0 });
                 console.log('архивирую навык', oldSkill.name)
             } else {
                 await deletePlayerSkill(oldSkill.skillId);
@@ -87,7 +87,7 @@ function mapSkillsFromDom(customSelect, playerId) {
       skillId: Number(li.dataset.skillId),
       fakeId: Number(li.dataset.fakeId),
       playerId: playerId,
-      name: li.querySelector('.item-text')?.textContent.trim().split('LVL')[0],
+      name: li.querySelector('.item-text')?.textContent.trim().split('| LVL')[0],
       isActive: 1
     }));
 }

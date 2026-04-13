@@ -56,8 +56,9 @@ public class SkillController {
             if (dto.getExpInCurrentLevel() != null) {
                 skill.setExpInCurrentLevel(dto.getExpInCurrentLevel());
             }
-
-            skill.setIsActive(true);
+            if (dto.getIsActive() != null) {
+                skill.setIsActive(dto.getIsActive());
+            }
 
             Skill updatedSkill = skillService.updateSkill(skill);
             return ResponseEntity.ok(SkillDto.fromEntity(updatedSkill));

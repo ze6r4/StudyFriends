@@ -13,6 +13,12 @@
     --pad: 12px;
     --font: "Segoe UI", system-ui, sans-serif;
 }
+.skill-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
 .custom-select {
   margin-top: 0;
   position: relative;

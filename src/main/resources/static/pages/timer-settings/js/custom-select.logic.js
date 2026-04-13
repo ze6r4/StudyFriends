@@ -1,4 +1,4 @@
-import { getSkills } from '../../../shared/api.js';
+import { getSkills, getSkillStages } from '../../../shared/api.js';
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { openAddSkillModal } from './custom-select.modal.js';
 import {showConfirmModal } from './custom-select-confirm-modal.js'
@@ -32,19 +32,22 @@ document.addEventListener('DOMContentLoaded', initialize);
 async function initialize() {
   const customSelects = document.querySelectorAll('.custom-select');
   let skills = [];
+  let stages = [];
 
   try {
     const playerId = await getCurrentPlayerId();
     skills = (await getSkills(playerId)).filter(s => s.isActive);
+    stages = await getSkillStages();
   } catch {
     console.warn('Не удалось получить навыки с сервера');
   }
+
 
   customSelects.forEach(customSelect => {
     const { dropdown } = getSelectElements(customSelect);
 
     dropdown.innerHTML =
-      generateSkillHtml(skills) +
+      generateSkillHtml(skills,stages) +
       generateAddSkillHtml();
 
     setupCustomSelect(customSelect);

@@ -10,9 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Random;
-
 @RestController
 @RequestMapping("/api/characters")
 @AllArgsConstructor
@@ -20,38 +17,6 @@ public class CharacterController {
 
     @Autowired
     private final CharacterService characterService;
-
-    private static final Random RANDOM = new Random();
-
-    @GetMapping("/random/{playerId}")
-    public ResponseEntity<?> getRandomCharacter(@PathVariable Long playerId) {
-        try {
-            List<CharacterDto> characterDtoList = characterService.getCharactersNotFriends(playerId)
-                    .stream()
-                    .map(CharacterDto::fromEntity)
-                    .toList();
-
-            int randomIndex = getRandomCharacterIndex(characterDtoList.size());
-            if(randomIndex == -1) {
-                throw new ResourceNotFoundException("Пустой список");
-            }
-            CharacterDto randomCharacter = characterDtoList.get(randomIndex);
-            return ResponseEntity.ok(randomCharacter);
-        } catch (ResourceNotFoundException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(ex.getMessage());
-        }
-
-
-    }
-    private int getRandomCharacterIndex(int size) {
-        if (size == 0) {
-            return -1;
-        }
-        return RANDOM.nextInt(size);
-    }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<CharacterDto> getCharacter(@PathVariable Long id) {

@@ -1,4 +1,4 @@
-import { getRandomCharacter, postFriend, getMe,getCoinBalance,spendCoins } from '../../../../shared/api.js';
+import { rollGacha, postFriend, getMe,getCoinBalance } from '../../../../shared/api.js';
 import { showError } from '../../../../shared/showError.js';
 import {gachaAnimation} from './animation.js'
 const btn = document.getElementById("startBtn");
@@ -36,8 +36,7 @@ btn.addEventListener("click", playGacha);
 
 async function playGacha() {
     try {
-        if (!(await tryToBuy())) return;
-        currentCharacter = await getRandomCharacter(playerId);
+        currentCharacter = await rollGacha(playerId);
 
         rewardImg.src ="../../assets/images/characters/" + currentCharacter.standImage + ".png";
         nameEl.textContent = currentCharacter.name;
@@ -47,26 +46,10 @@ async function playGacha() {
 
     } catch (e) {
         console.log(e);
-        showError({ message: 'Ошибка получения персонажа' })
+        showError({ message: e })
     }
 }
 
-async function tryToBuy() {
-    try{
-        if(coins < PRICE) {
-            console.log(coins);
-
-            showError({ message: 'Не хватает монет! Нужно поработать' })
-            return false;
-        }
-        await spendCoins(PRICE);
-        return true;
-    } catch(e){
-        console.log(e)
-        return false;
-    }
-
-}
 
 okBtn.addEventListener("click", async () => {
     window.location.href = 'http://localhost:8081/pages/main/main.html';

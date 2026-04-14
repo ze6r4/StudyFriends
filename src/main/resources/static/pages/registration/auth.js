@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const player = await getMe();
+                // добавление стартового бесплатного персонажа
                 await postFriend(player.id, NICK_ID);
 
                 window.location.href = '/pages/main/main.html';

@@ -94,7 +94,7 @@ public class FriendController {
             Friend friend = new Friend();
             friend.setCharacter(character);
             friend.setPlayer(player);
-            friend.setFriendshipLvl(0);
+            friend.setFriendshipLvl(1);
             friend.setExpInCurrentLevel(0.0);
             friend.setIsFavourite(false);
             Friend newFriend = friendService.addFriend(friend);

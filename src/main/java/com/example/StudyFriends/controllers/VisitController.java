@@ -102,9 +102,10 @@ public class VisitController {
             if(dto.getFriendAction() != null) {
                 visit.setFriendAction(dto.getFriendAction());
             }
+
             FriendVisit updated = visitService.updateVisitor(visit);
 
-            return ResponseEntity.ok(VisitDto.fromEntity(visit));
+            return ResponseEntity.ok(VisitDto.fromEntity(updated));
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

@@ -246,6 +246,7 @@ async function saveCurrentCharacterIfNeeded() {
         await patchVisitor(selectedFriendId, dto);
     } else {
         await postVisitor(dto);
+        editingExisting = true;
     }
 }
 /* ================= CONTROLS ================= */

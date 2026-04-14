@@ -6,30 +6,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const notesEl = document.getElementById('notesContent');
     if (!notesEl) return;
 
-    notesEl.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'x') {
-            e.preventDefault();
-            document.execCommand('strikeThrough');
-        }
-    });
-    // 🔹 Восстановление заметок
-    const savedNotes = localStorage.getItem(NOTES_STORAGE_KEY);
-    if (savedNotes) {
-        notesEl.innerHTML = savedNotes;
+    // загрузка
+    const saved = localStorage.getItem(NOTES_STORAGE_KEY);
+    if (saved) {
+        deserializeNotes(saved, notesEl);
     }
 
-    // 🔹 Автосохранение при любом изменении
-    let saveTimeout;
+    // сохранение
+    let timeout;
 
     notesEl.addEventListener('input', () => {
-        // debounce — чтобы не писать в storage на каждый символ
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(() => {
-            localStorage.setItem(NOTES_STORAGE_KEY, notesEl.innerHTML);
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            const data = serializeNotes(notesEl);
+            localStorage.setItem(NOTES_STORAGE_KEY, data);
         }, 300);
     });
 });
+function serializeNotes(notesEl) {
+    const lines = [];
 
+    notesEl.querySelectorAll("p").forEach(p => {
+        const checked = p.getAttribute("data-checked") === "true";
+        const prefix = checked ? "✔ " : "• ";
+
+        let html = p.innerHTML;
+
+        // сохраняем зачёркивание как <s>
+        html = html
+            .replace(/<strike>/g, "<s>")
+            .replace(/<\/strike>/g, "</s>");
+
+        // если строка пустая
+        if (p.innerText.trim() === "") {
+            lines.push("");
+        } else {
+            lines.push(prefix + html);
+        }
+    });
+
+    return lines.join("\n");
+}
+function deserializeNotes(text, notesEl) {
+    notesEl.innerHTML = "";
+
+    const lines = text.split("\n");
+
+    lines.forEach(line => {
+        const p = document.createElement("p");
+
+        if (line.startsWith("✔ ")) {
+            p.setAttribute("data-checked", "true");
+            p.innerHTML = line.slice(2);
+        } else if (line.startsWith("• ")) {
+            p.setAttribute("data-checked", "false");
+            p.innerHTML = line.slice(2);
+        } else {
+            // пустая строка
+            p.setAttribute("data-checked", "false");
+            p.innerHTML = "";
+        }
+
+        notesEl.appendChild(p);
+    });
+}
 document.addEventListener("DOMContentLoaded", () => {
     const notes = document.getElementById("notesContent");
 
@@ -63,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // зачёркивание
             if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "x") {
                 e.preventDefault();
-                document.execCommand("strikeThrough");
+                toggleStrike();
             }
             // 🔥 ДЕЛИМ СТРОКУ
             const afterCursor = range.extractContents();
@@ -143,3 +183,22 @@ document.addEventListener("DOMContentLoaded", () => {
         sel.addRange(range);
     }
 });
+function toggleStrike() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+
+    const range = sel.getRangeAt(0);
+
+    if (range.collapsed) return;
+
+    const wrapper = document.createElement("s");
+    wrapper.appendChild(range.extractContents());
+    range.insertNode(wrapper);
+
+    // курсор после
+    range.setStartAfter(wrapper);
+    range.collapse(true);
+
+    sel.removeAllRanges();
+    sel.addRange(range);
+}

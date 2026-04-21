@@ -14,4 +14,6 @@ public class SessionReward {
     private int coinsFromSkill;
     private int coinsFromFriendship;
     private int coinsFromSession;
+
+    private int totalMinutes;
 }

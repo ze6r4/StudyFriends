@@ -95,6 +95,8 @@ public class RewardService {
         rewards.setFriendCoinBonus(friendshipCoinsBonus);
         rewards.setCoinsFromFriendship((int) Math.round( friendshipCoinsBonus * coinsFromSession));
 
+        rewards.setTotalMinutes(totalMinutes);
+
         return rewards;
     }
 

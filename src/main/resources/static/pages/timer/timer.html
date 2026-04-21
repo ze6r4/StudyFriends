@@ -44,6 +44,11 @@
         <div class="notebook">
 
             <button id="strikeBtn">S̶</button>
+            <div class="notes-header" id="notesHeader">
+                <h1>ЗАМЕТКИ</h1>
+            </div>
+
+
             <div class="notebook-content">
 
                 <div
@@ -54,78 +59,13 @@
                     <p>Можно редактировать этот текст прямо здесь...</p>
                 </div>
             </div>
-
+            <button id="confirmNotesBtn" class="confirm-notes hidden">✔</button>
         </div>
     </div>
 
 </div>
-<div id="rewardsModal" class="rewards-modal hidden">
-    <div class="rewards-content">
 
-        <h2 class="rewards-title">Поздравляю! Мы справились!</h2>
 
-        <!-- ===== НАВЫК ===== -->
-        <div class="reward-block">
-            <h3>Навык</h3>
-
-            <div class="stage-label" id="skillStage"></div>
-            <div class="progress-wrapper">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="skillProgress"></div>
-                </div>
-
-                <div class="progress-labels">
-                    <span id="skillLevel">1</span>
-                    <span id="skillMaxXp">100</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== ДРУЖБА ===== -->
-        <div class="reward-block">
-            <h3>Уровень дружбы</h3>
-
-            <div class="progress-wrapper">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="friendProgress"></div>
-                </div>
-
-                <div class="progress-labels">
-                    <span id="friendLevel">1</span>
-                    <span id="friendMaxXp">100</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== МОНЕТЫ ===== -->
-        <div class="coins-block">
-            <div class="coins-row">
-                <span>Навык</span>
-                <span id="coinsSkill"></span>
-            </div>
-
-            <div class="coins-row">
-                <span>Дружба</span>
-                <span id="coinsFriend"></span>
-
-            </div>
-
-            <div class="coins-row">
-                <span>Сессия</span>
-                <span id="coinsSession"></span>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="coins-row total">
-                <span>ИТОГО</span>
-                <span id="coinsTotal">0 🪙</span>
-            </div>
-        </div>
-
-        <button id="closeRewardsBtn">ОК</button>
-    </div>
-</div>
 <!-- ТАЙМЕР + КНОПКА -->
 <div class="bottom-left">
 

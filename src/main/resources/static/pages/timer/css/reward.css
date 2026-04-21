@@ -4,6 +4,7 @@
     --line: #8c6f64;
     --text: #5b4a44;
     --accent-1: #ffd9e2;
+    --pink:#FCAFC1;
     --radius: 12px;
     --font: "Marck Script", cursive;
 }
@@ -13,84 +14,147 @@ src: url('/shared/overdozesans.ttf') format('truetype'),local('overdozesans');
 font-style: normal;
 font-display: swap;
 }
-.stage-label {
+/* === СКРОЛЛ СЛЕВА === */
+
+.notes-content > * {
+    direction: ltr;
+}
+
+/* === ЗАГОЛОВОК === */
+.notes-header {
+    position: absolute;
+    top: 40px;
+    left: 150px;
+    width: 500px;
     text-align: center;
-    font-size: 13px;
-    margin-bottom: 6px;
-    color: #7a6a63;
+    font-family: 'overdoze';
+    color: #714543;
 }
 
-.rewards-modal {
-    position: fixed;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000;
+.notes-header h1 {
+    font-size: 64px;
 }
 
-.rewards-modal.hidden {
+.notes-header p {
+    font-size: 2rem;
+}
+
+/* === КНОПКА ПОДТВЕРЖДЕНИЯ === */
+.confirm-notes {
+    position: relative;
+    left: 50%;
+
+    font-size: 28px;
+    border: 2px solid #8c6f64;
+    background: #fffaf4;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+
+    cursor: pointer;
+}
+
+.confirm-notes.hidden {
     display: none;
 }
 
-.rewards-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 16px;
-    width: 320px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+/* === БЛОК НАГРАД === */
+.skill-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start; /* не по центру */
 }
 
+.skill-icon-top {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 10px;
+    object-fit: contain;
+}
+/* === АНИМАЦИЯ === */
+.notes-fade {
+    animation: fadeNotes 1s ease;
+}
+
+@keyframes fadeNotes {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+/* === БЛОК НАГРАД В ЗАМЕТКАХ === */
+.rewards-inline {
+    font-family: 'overdoze';
+}
+
+/* заголовок */
 .rewards-title {
-    font-family: 'overdosesans', sans-serif;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
-.reward-block {
-    margin-bottom: 20px;
+/* подпись стадии */
+.stage-label {
+    text-align: left;
+    font-size: 1.5rem; /* было 12px */
+    color: #7a6a63;
+    margin-bottom: 6px;
+}
+
+
+/* === ПРОГРЕСС === */
+
+.progress-wrapper {
+    width: 100%;
 }
 
 .progress-bar {
     width: 100%;
-    height: 12px;
-    background: #eee;
-    border-radius: 10px;
+    height: 16px;
+    border: 3px solid #8c6f64;
+    border-radius: 8px;
     overflow: hidden;
+    background: transparent;
 }
-
 .progress-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #ffb347, #ffcc33);
+    background: var(--pink);
 }
 
 .progress-labels {
     display: flex;
+    margin-top: 7px;
+    margin-left: 3px;
+    margin-right: 3px;
     justify-content: space-between;
-    font-size: 12px;
-    margin-top: 5px;
+    font-size: 1.5rem;
+    color:#7a6a63;
 }
-
-.coins-block {
-    font-size: 14px;
-}
-
 .divider {
-    text-align: center;
+    border-top: 2px dashed #8c6f64;
     margin: 8px 0;
 }
+/* === МОНЕТЫ (ЧЕК) === */
 
-.total {
-    font-weight: bold;
-}
 .coins-row {
     display: flex;
     justify-content: space-between;
-    margin: 4px 0;
+    margin: 6px 0;
 }
 
-.divider {
-    width: 100%;
-    border-top: 2px dashed #aaa;
-    margin: 10px 0;
+/* правая часть (число + монета) */
+.coins-total-value {
+    display: flex;
+    align-items: center;
+}
+/* монетка — меньше */
+.coin-emoji {
+    font-size: 1.2rem; /* 🔥 уменьшили */
+    line-height: 1;
+}
+
+.notes-content::-webkit-scrollbar {
+    position: absolute;
+    left: 0;
 }

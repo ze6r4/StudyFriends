@@ -65,23 +65,18 @@ body {
     position: absolute;
     top: 90px;
     left: 150px;
+    right: 150px; /* 🔥 ВОТ ЭТОГО НЕ ХВАТАЛО */
 
     font-family: "overdoze";
     font-size: 2rem;
-
-    line-height: 1;              /* ← теперь реально работает */
+    line-height: 1;
     color: #714543;
 
-    outline: none;
-    pointer-events: auto;
-
-    max-width: 500px;
     max-height: 400px;
+    max-width: 490px;
     overflow-y: auto;
-
-    word-wrap: break-word;
+    overflow-x: hidden;
 }
-
 /* строки */
 .notes-content p {
     margin: 0;

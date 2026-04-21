@@ -1,6 +1,16 @@
 // notes-storage.js
 
 const NOTES_STORAGE_KEY = 'userNotesContent';
+let saveTimeout;
+
+function triggerSave() {
+    const notesEl = document.getElementById('notesContent');
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        const data = serializeNotes(notesEl);
+        localStorage.setItem(NOTES_STORAGE_KEY, data);
+    }, 200);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const notesEl = document.getElementById('notesContent');
@@ -9,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // загрузка
     const saved = localStorage.getItem(NOTES_STORAGE_KEY);
     if (saved) {
+        console.log("dsf");
+        console.log(saved);
         deserializeNotes(saved, notesEl);
     }
 
@@ -24,48 +36,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 function serializeNotes(notesEl) {
-    const lines = [];
+    const data = [];
 
     notesEl.querySelectorAll("p").forEach(p => {
-        const checked = p.getAttribute("data-checked") === "true";
-        const prefix = checked ? "✔ " : "• ";
-
-        let html = p.innerHTML;
-
-        // сохраняем зачёркивание как <s>
-        html = html
-            .replace(/<strike>/g, "<s>")
-            .replace(/<\/strike>/g, "</s>");
-
-        // если строка пустая
-        if (p.innerText.trim() === "") {
-            lines.push("");
-        } else {
-            lines.push(prefix + html);
-        }
+        data.push({
+            checked: p.getAttribute("data-checked") === "true",
+            html: p.innerHTML
+        });
     });
 
-    return lines.join("\n");
+    return JSON.stringify(data);
 }
 function deserializeNotes(text, notesEl) {
     notesEl.innerHTML = "";
 
-    const lines = text.split("\n");
+    const data = JSON.parse(text);
 
-    lines.forEach(line => {
+    data.forEach(item => {
         const p = document.createElement("p");
 
-        if (line.startsWith("✔ ")) {
-            p.setAttribute("data-checked", "true");
-            p.innerHTML = line.slice(2);
-        } else if (line.startsWith("• ")) {
-            p.setAttribute("data-checked", "false");
-            p.innerHTML = line.slice(2);
-        } else {
-            // пустая строка
-            p.setAttribute("data-checked", "false");
-            p.innerHTML = "";
-        }
+        p.setAttribute("data-checked", item.checked);
+        p.innerHTML = item.html;
 
         notesEl.appendChild(p);
     });
@@ -104,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "x") {
                 e.preventDefault();
                 toggleStrike();
+                triggerSave(); // 🔥 важно
             }
             // 🔥 ДЕЛИМ СТРОКУ
             const afterCursor = range.extractContents();
@@ -154,8 +146,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function toggleCheck(p) {
+        if (notes.classList.contains("rewards-mode")) return;
         const checked = p.getAttribute("data-checked") === "true";
-        p.setAttribute("data-checked", !checked);
+        const newChecked = !checked;
+
+        p.setAttribute("data-checked", newChecked);
+
+        // 🔥 ОБНОВЛЯЕМ ТЕКСТ ПРЯМО СРАЗУ
+        const text = p.innerHTML.replace(/^✔ |^• /, "");
+
+        if (newChecked) {
+            p.innerHTML = text;
+        } else {
+            p.innerHTML = text;
+        }
+
+        triggerSave();
     }
 
     function getCurrentParagraph() {
@@ -191,14 +197,22 @@ function toggleStrike() {
 
     if (range.collapsed) return;
 
-    const wrapper = document.createElement("s");
-    wrapper.appendChild(range.extractContents());
-    range.insertNode(wrapper);
+    const parent = range.commonAncestorContainer;
 
-    // курсор после
-    range.setStartAfter(wrapper);
-    range.collapse(true);
+    // если уже внутри <s> → снимаем
+    let node = parent;
+    while (node && node.tagName !== "S") {
+        node = node.parentNode;
+    }
+
+    if (node && node.tagName === "S") {
+        const text = document.createTextNode(node.textContent);
+        node.replaceWith(text);
+    } else {
+        const wrapper = document.createElement("s");
+        wrapper.appendChild(range.extractContents());
+        range.insertNode(wrapper);
+    }
 
     sel.removeAllRanges();
-    sel.addRange(range);
 }

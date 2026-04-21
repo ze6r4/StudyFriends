@@ -1,6 +1,6 @@
 import { patchSession,postRewards, getCharacter, getFriend, getSkill,getMe } from '../../../shared/api.js';
 import { showError } from '../../../shared/showError.js';
-import {showRewards} from './rewards.js';
+import {showFinalNotes} from './rewards.js';
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
 const sessionData = sessionDataStr ? JSON.parse(sessionDataStr) : null;
@@ -215,7 +215,7 @@ async function timerFinished(isCompleted) {
     }
     else {
         console.log("fdksfksdf");
-        await showRewards(rewards,skillData,friendData);
+        await showFinalNotes(rewards, skillData, friendData);
     }
 
 }
@@ -309,9 +309,7 @@ document.addEventListener('DOMContentLoaded', initDeveloperButtons);
 devModeBtn?.addEventListener('click', developerMode);
 resetTimerDevBtn?.addEventListener('click', resetTimerForTesting);
 finishNowBtn?.addEventListener('click', finishSessionDev);
-document.getElementById('closeRewardsBtn').addEventListener('click', () => {
-    document.getElementById('rewardsModal').classList.add('hidden');
-});
+
 
 
 // ==================== РЕЖИМ РАЗРАБОТЧИКА ====================

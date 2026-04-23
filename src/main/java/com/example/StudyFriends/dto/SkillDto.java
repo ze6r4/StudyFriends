@@ -27,4 +27,12 @@ public class SkillDto {
         response.setIsActive(skill.getIsActive());
         return response;
     }
+    public SkillDto(Long id, Long playerId, String name, Integer level, Double exp, Boolean isActive) {
+        this.skillId = id;
+        this.playerId = playerId;
+        this.name = name;
+        this.level = level;
+        this.expInCurrentLevel = exp;
+        this.isActive = isActive;
+    }
 }

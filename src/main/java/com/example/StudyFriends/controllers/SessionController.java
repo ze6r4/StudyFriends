@@ -2,6 +2,7 @@ package com.example.StudyFriends.controllers;
 
 
 import com.example.StudyFriends.dto.SessionDto;
+import com.example.StudyFriends.dto.SkillStatistics;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Friend;
 import com.example.StudyFriends.model.Player;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @RestController
@@ -141,5 +143,18 @@ public class SessionController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());
         }
+    }
+    @GetMapping("/statistics/{playerId}")
+    public ResponseEntity<?> getStatisticsOfSkill(@PathVariable Long playerId) {
+        try {
+            List<SkillStatistics> skillsStatisticsList = sessionService.getSkillStatistics(playerId);
+
+            return ResponseEntity.ok(skillsStatisticsList);
+        }catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+
     }
 }

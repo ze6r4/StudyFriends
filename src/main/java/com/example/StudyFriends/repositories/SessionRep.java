@@ -57,5 +57,18 @@ public interface SessionRep extends JpaRepository<Session, Long> {
             LocalDateTime weekStart,
             LocalDateTime dayStart
     );
+    @Query("""
+    SELECT s
+    FROM Session s
+    WHERE s.playerId.id = :playerId
+      AND s.completed = true
+      AND s.date BETWEEN :start AND :end
+    ORDER BY s.date ASC
+    """)
+    List<Session> getSessionsOfPeriod(
+            Long playerId,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 
 }

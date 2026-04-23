@@ -166,6 +166,13 @@ export function patchSession(id, sessionData) {
     });
 }
 
+export function getStatistics(playerId){
+    return apiPublic(`/statistics/${playerId}`);
+}
+export function getSessionsOfWeek(playerId){
+    return apiPublic(`/statistics/week/${playerId}`);
+}
+
 /* ================= REWARDS ================= */
 export async function getSkillStages() {
     const res = await fetch('/api/rewards/skill/levels');

@@ -1,6 +1,7 @@
 package com.example.StudyFriends.controllers;
 
 
+import com.example.StudyFriends.dto.DaySessionsDto;
 import com.example.StudyFriends.dto.SessionDto;
 import com.example.StudyFriends.dto.SkillStatistics;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
@@ -145,7 +146,7 @@ public class SessionController {
         }
     }
     @GetMapping("/statistics/{playerId}")
-    public ResponseEntity<?> getStatisticsOfSkill(@PathVariable Long playerId) {
+    public ResponseEntity<?> getStatisticsOfSkills(@PathVariable Long playerId) {
         try {
             List<SkillStatistics> skillsStatisticsList = sessionService.getSkillStatistics(playerId);
 
@@ -156,5 +157,17 @@ public class SessionController {
                     .body("Ошибка: " + ex.getMessage());
         }
 
+    }
+    @GetMapping("/statistics/week/{playerId}")
+    public ResponseEntity<?> getSessionsOfWeek(@PathVariable Long playerId){
+        try {
+            List<DaySessionsDto> list = sessionService.getWeekSessions(playerId);
+
+            return ResponseEntity.ok(list);
+        }catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
     }
 }

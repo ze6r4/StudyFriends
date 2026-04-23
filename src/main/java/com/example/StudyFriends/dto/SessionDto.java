@@ -19,6 +19,7 @@ public class SessionDto {
     private Boolean completed;
     private String notes;
     private LocalDateTime date;
+    private String skillName;
 
     public static SessionDto fromEntity(Session session) {
         SessionDto response = new SessionDto();
@@ -41,6 +42,7 @@ public class SessionDto {
 
         if (session.getSkill() != null) {
             response.setSkillId(session.getSkill().getId());
+            response.setSkillName(session.getSkill().getName());
         }
 
         return response;

@@ -2,7 +2,7 @@ import { getSkillStages, getFriendLvls } from '../../../shared/api.js';
 
 let SKILL_STAGES = [];
 let FRIEND_LVLS = {};
-const SKILL_ICON_PATH = '/assets/images/other/';
+const SKILL_ICON_PATH = '/assets/images/icons/';
 
 function delay(ms) {
     return new Promise(res => setTimeout(res, ms));

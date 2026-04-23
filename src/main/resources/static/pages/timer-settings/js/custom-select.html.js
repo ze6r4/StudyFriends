@@ -3,7 +3,7 @@ import { ADD_ITEM_ID, getSelectElements, selectItem } from './custom-select.dom.
 /* =======================
    HTML generators
 ======================= */
-const SKILL_ICON_PATH = '/assets/images/other/';
+const SKILL_ICON_PATH = '/assets/images/icons/';
 
 function getSkillStageByLevel(level) {
   if (level >= 0 && level <= 10) return 'начинающий';

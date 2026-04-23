@@ -29,6 +29,11 @@ function binButtns() {
                 window.location.href =
                     'http://localhost:8081/pages/gacha/gacha.html';
         });
+    document.getElementById("statisticsBtn")
+                .addEventListener("click", () => {
+                    window.location.href =
+                        'http://localhost:8081/pages/statistics/statistics.html';
+            });
 }
 
 // монеты для разработчика

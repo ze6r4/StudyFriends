@@ -73,10 +73,7 @@ function selectCard(card) {
         [...visitFriends, ...notVisitFriends]
             .find(f => Number(f.id) === friendId);
 
-    const isAlreadyInRoom =
-        visitFriends.some(f => Number(f.id) === friendId);
-
-    startCharacterPlacement(friend, isAlreadyInRoom);
+    startCharacterPlacement(friend);
 }
 
 /* ===== ПАНЕЛЬ ===== */

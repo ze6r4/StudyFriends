@@ -76,8 +76,13 @@ export function loadVisitorsToRoom(visitFriends) {
 
 /* ================= START ================= */
 
-export async function startCharacterPlacement(friend, alreadyInRoom) {
-    await saveCurrentCharacterIfNeeded();
+export async function startCharacterPlacement(friend) {
+    try {
+        await saveCurrentCharacterIfNeeded();
+    } catch (e) {
+        console.error("Save failed", e);
+    }
+
     posXPercent = null;
     posYPercent = null;
     currentCharacter = null;
@@ -87,14 +92,17 @@ export async function startCharacterPlacement(friend, alreadyInRoom) {
 
     placementMode = true;
 
-    editingExisting = alreadyInRoom;
-
     selectedFriendId = friend.id;
 
     const existing =
         document.querySelector(
             `.room-character[data-friend-id="${friend.id}"]`
         );
+    if (existing) {
+        editingExisting = true;
+    } else {
+        editingExisting = false;
+    }
 
     if (existing) {
 
@@ -242,11 +250,15 @@ async function saveCurrentCharacterIfNeeded() {
         y: posYPercent
     };
 
-    if (editingExisting) {
-        await patchVisitor(selectedFriendId, dto);
-    } else {
-        await postVisitor(dto);
-        editingExisting = true;
+    try {
+        await postVisitor(dto); // пробуем создать
+    } catch (e) {
+        // если уже есть — обновляем
+        if (e.message.includes("Duplicate")) {
+            await patchVisitor(selectedFriendId, dto);
+        } else {
+            throw e;
+        }
     }
 }
 /* ================= CONTROLS ================= */

@@ -13,13 +13,17 @@
     <div class="book" id="book">
 
         <div class="page cover">
-            <h1>Моя книга</h1>
+            <div class="cover-title">
+                <h1>StudyFriends</h1>
+                <h2>Статистика</h2>
+            </div>
+
 
             <div class="cover-stats">
                 <p>Сегодня: <span id="dayStats">0</span></p>
-                <p>За неделю: <span id="weekStats">0</span></p>
+                <p>За эту неделю: <span id="weekStats">0</span></p>
                 <p>В этом месяце: <span id="monthStats">0</span></p>
-                <p>Всего сессий: <span id="totalStats">0</span></p>
+                <p>ВСЕГО сессий: <span id="totalStats">0</span></p>
             </div>
 
             <p class="hint">→ открыть</p>
@@ -27,34 +31,7 @@
 
         <div class="spread" id="spread">
 
-            <div class="page left" id="leftPage">
-                <div class="day-block">
-                    <h3 class="day-title">понедельник</h3>
-                    <div class="time-line">
-                        <b>17:14 Работа</b>
-                    </div>
-                    <div class="session">
-                        <div class="minutes">
-                            <div class="row">
-                                <span>30 мин работы</span>
-                            </div>
-
-                            <div class="row">
-                                <span>3 мин отдыха</span>
-                            </div>
-                        </div>
-                        <div class="session-meta">
-
-                            <img class="brace" src="../../assets/images/other/brace.png" alt="}">
-                            <div class="cycles">
-                                4 раза
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="page right" id="rightPage"></div>
+            <div id="spreadContainer"></div>
         </div>
 
 

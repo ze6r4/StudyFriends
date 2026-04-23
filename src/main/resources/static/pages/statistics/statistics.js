@@ -4,6 +4,7 @@ import {
     getSessionsOfWeek
 } from '../../../../shared/api.js';
 
+const SESSIONS_PER_PAGE = 4;
 const days = ["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"];
 
 let book;
@@ -50,70 +51,113 @@ async function loadWeek(playerId) {
 
     document.getElementById("totalStats").textContent = sessions.length;
 }
-
 function renderWeek(daysData) {
 
-    const left = document.getElementById("leftPage");
-    const right = document.getElementById("rightPage");
+    const container = document.getElementById("spreadContainer");
+    container.innerHTML = "";
 
-    left.innerHTML = "";
-    right.innerHTML = "";
+    let pages = [];
 
-    daysData.forEach((dayDto, i) => {
+    // 1. разбиваем дни на страницы
+    daysData.forEach(day => {
+        const dayPages = splitDayIntoPages(day);
+        pages.push(...dayPages);
+    });
 
-        const container = document.createElement("div");
-        container.className = "day-block";
-        let html = `<h3 class="day-title">${dayDto.dayName}</h3>`;
+    // 2. создаём развороты (по 2 страницы)
+    for (let i = 0; i < pages.length; i += 2) {
 
-        if (!dayDto.sessions || dayDto.sessions.length === 0) {
-            html += `<div class="session">
-                        <div class="row">
-                            <span>отдых!</span>
-                        </div>
-                    </div>`;
-        } else {
+        const spread = document.createElement("div");
+        spread.className = "spread";
 
-            dayDto.sessions.forEach(s => {
+        // левая страница
+        const leftPage = createPage(pages[i]);
+        spread.appendChild(leftPage);
 
-                const total = (s.workMinutes + s.restMinutes) * s.cycles;
-
-                html += `
-                <div class="session">
-
-                    <div class="time-line">
-                        <b>${formatTime(s.date)} ${s.skillName}</b>
-
-                        <div class="row">
-                            <span>${s.workMinutes} мин работы</span>
-                        </div>
-
-                        <div class="row">
-                            <span>${s.restMinutes} мин отдыха</span>
-                        </div>
-
-                    </div>
-
-                    <div class="session-meta">
-
-                        <img class="brace" src="/../../assets/images/other/brace.png" alt="}" />
-                        <div class="cycles">
-                            ${formatCycles(s.cycles)}
-                        </div>
-
-
-
-                    </div>
-
-                </div>
-                `;
-            });
+        // правая страница (если есть)
+        if (pages[i + 1]) {
+            const rightPage = createPage(pages[i + 1]);
+            spread.appendChild(rightPage);
         }
 
-        container.innerHTML = html;
+        container.appendChild(spread);
+    }
+}
+function createPage(pageData) {
 
-        if (i < 4) left.appendChild(container);
-        else right.appendChild(container);
-    });
+    const page = document.createElement("div");
+    page.className = "page";
+
+    let html = `<h3 class="day-title">${pageData.dayName}</h3>`;
+
+    if (!pageData.sessions.length) {
+        html += `<div class="session">отдых!</div>`;
+    } else {
+
+        pageData.sessions.forEach(s => {
+
+            const isReversed = Math.random() > 0.5;
+
+            const total = (s.workMinutes + s.restMinutes) * s.cycles;
+
+            html += `
+            <div class="session ${isReversed ? "reverse" : ""}">
+
+                <div class="time-line">
+                    <b>${formatTime(s.date)} ${s.skillName}</b>
+                </div>
+
+                <div class="session-horizontal">
+
+                    <div class="minutes">
+                        <div>${s.workMinutes} мин работы</div>
+                        <div>${s.restMinutes} мин отдыха</div>
+                    </div>
+
+                    <div class="session-cycles">
+                        <img class="brace" src="../../assets/images/other/brace.png">
+                        <div class="cycles">${formatCycles(s.cycles)}</div>
+                    </div>
+
+                    ${s.notes ? `
+                        <div class="sticker">
+                            <p>заметки:</p>
+                            ${s.notes}
+                        </div>
+                    ` : ""}
+
+                </div>
+
+                <div>Всего: ${format(total)}</div>
+
+            </div>`;
+        });
+    }
+
+    page.innerHTML = html;
+    return page;
+}
+function splitDayIntoPages(dayDto) {
+    const pages = [];
+
+    const sessions = dayDto.sessions || [];
+
+    if (sessions.length === 0) {
+        pages.push({
+            dayName: dayDto.dayName,
+            sessions: []
+        });
+        return pages;
+    }
+
+    for (let i = 0; i < sessions.length; i += SESSIONS_PER_PAGE) {
+        pages.push({
+            dayName: dayDto.dayName,
+            sessions: sessions.slice(i, i + SESSIONS_PER_PAGE)
+        });
+    }
+
+    return pages;
 }
 /* ---------------- STATS ---------------- */
 
@@ -126,7 +170,7 @@ async function loadStatistics(playerId) {
         day += s.minutesOfDay || 0;
         week += s.minutesOfWeek || 0;
         month += s.minutesOfMonth || 0;
-        total += s.totalMinutes || 0;
+        total += s.totalCountOfSessions || 0;
     });
 
     document.getElementById("dayStats").textContent = format(day);
@@ -141,8 +185,14 @@ function format(min) {
     if (min >= 60) {
         const h = Math.floor(min / 60);
         const m = min % 60;
+
+        if (m === 0) {
+            return `${h} ч`;
+        }
+
         return `${h} ч ${m} мин`;
     }
+
     return `${min} мин`;
 }
 

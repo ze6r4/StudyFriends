@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты</title>
+
+    <link rel="stylesheet" href="statistics.css">
+</head>
+
+<body>
+
+<div class="book-wrapper" tabindex="0">
+    <div class="book" id="book">
+
+        <div class="page cover">
+            <h1>Моя книга</h1>
+
+            <div class="cover-stats">
+                <p>Сегодня: <span id="dayStats">0</span></p>
+                <p>За неделю: <span id="weekStats">0</span></p>
+                <p>В этом месяце: <span id="monthStats">0</span></p>
+                <p>Всего сессий: <span id="totalStats">0</span></p>
+            </div>
+
+            <p class="hint">→ открыть</p>
+        </div>
+
+        <div class="spread" id="spread">
+
+            <div class="page left" id="leftPage">
+                <div class="day-block">
+                    <h3 class="day-title">понедельник</h3>
+                    <div class="time-line">
+                        <b>17:14 Работа</b>
+                    </div>
+                    <div class="session">
+                        <div class="minutes">
+                            <div class="row">
+                                <span>30 мин работы</span>
+                            </div>
+
+                            <div class="row">
+                                <span>3 мин отдыха</span>
+                            </div>
+                        </div>
+                        <div class="session-meta">
+
+                            <img class="brace" src="../../assets/images/other/brace.png" alt="}">
+                            <div class="cycles">
+                                4 раза
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="page right" id="rightPage"></div>
+        </div>
+
+
+    </div>
+</div>
+
+<script type="module" src="statistics.js"></script>
+</body>
+</html>

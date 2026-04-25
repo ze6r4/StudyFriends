@@ -46,4 +46,8 @@ public class Session {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    public Integer getTotal(){
+        return (workTime+restTime)*cycles;
+    }
 }

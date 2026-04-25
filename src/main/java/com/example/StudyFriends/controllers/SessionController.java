@@ -1,9 +1,7 @@
 package com.example.StudyFriends.controllers;
 
 
-import com.example.StudyFriends.dto.DaySessionsDto;
 import com.example.StudyFriends.dto.SessionDto;
-import com.example.StudyFriends.dto.SkillStatistics;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Friend;
 import com.example.StudyFriends.model.Player;
@@ -19,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 @RestController
@@ -42,13 +39,13 @@ public class SessionController {
         Session session = new Session();
         //кастомная обработка ошибок в классе ResourceNotFoundException
 
-        try{
+        try {
             Player player = playerService.getPlayerById(dto.getPlayerId())
                     .orElseThrow(() -> new ResourceNotFoundException("Player", dto.getPlayerId()));
             Friend friend = friendService.getFriendById(dto.getFriendId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Friend",dto.getFriendId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Friend", dto.getFriendId()));
             Skill skill = skillService.getSkillById(dto.getSkillId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Skill",dto.getSkillId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Skill", dto.getSkillId()));
 
             session.setPlayerId(player);
             session.setFriend(friend);
@@ -71,6 +68,7 @@ public class SessionController {
 
 
     }
+
     @PatchMapping("/sessions/{id}")
     public ResponseEntity<?> editSession(@PathVariable Long id, @RequestBody SessionDto dto) {
         try {
@@ -140,31 +138,6 @@ public class SessionController {
         try {
             return ResponseEntity.ok(sessionService.getSessionById(id));
         } catch (Exception ex) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Ошибка: " + ex.getMessage());
-        }
-    }
-    @GetMapping("/statistics/{playerId}")
-    public ResponseEntity<?> getStatisticsOfSkills(@PathVariable Long playerId) {
-        try {
-            List<SkillStatistics> skillsStatisticsList = sessionService.getSkillStatistics(playerId);
-
-            return ResponseEntity.ok(skillsStatisticsList);
-        }catch (Exception ex) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Ошибка: " + ex.getMessage());
-        }
-
-    }
-    @GetMapping("/statistics/week/{playerId}")
-    public ResponseEntity<?> getSessionsOfWeek(@PathVariable Long playerId){
-        try {
-            List<DaySessionsDto> list = sessionService.getWeekSessions(playerId);
-
-            return ResponseEntity.ok(list);
-        }catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Ошибка: " + ex.getMessage());

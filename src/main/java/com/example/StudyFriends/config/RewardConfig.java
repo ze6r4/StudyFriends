@@ -18,23 +18,23 @@ public class RewardConfig {
 
     public static Map<Integer, FriendshipData> FRIENDSHIP_LVLS = Map.ofEntries(
             Map.entry(1, new FriendshipData(60,0)),
-            Map.entry( 2,new FriendshipData(120,0.04)),
-            Map.entry( 3,new FriendshipData(180,0.06)),
-            Map.entry( 4,new FriendshipData(240,0.08)),
-            Map.entry( 5,new FriendshipData(300,0.10)),
-            Map.entry( 6,new FriendshipData(360,0.12)),
-            Map.entry( 7,new FriendshipData(420,0.14)),
-            Map.entry( 8,new FriendshipData(480,0.16)),
-            Map.entry( 9,new FriendshipData(540,0.18)),
-            Map.entry( 10,new FriendshipData(600,0.2))
+            Map.entry( 2,new FriendshipData(120,0.2)),
+            Map.entry( 3,new FriendshipData(180,0.35)),
+            Map.entry( 4,new FriendshipData(240,0.4)),
+            Map.entry( 5,new FriendshipData(300,0.45)),
+            Map.entry( 6,new FriendshipData(360,0.5)),
+            Map.entry( 7,new FriendshipData(420,0.55)),
+            Map.entry( 8,new FriendshipData(480,0.6)),
+            Map.entry( 9,new FriendshipData(540,0.65)),
+            Map.entry( 10,new FriendshipData(600,0.7))
     );
     public static final double FRIENDSHIP_EXP_PERCENT = 0.5;
 
     public static final SkillStageData[] SKILL_STAGES = new SkillStageData[] {
-            new SkillStageData("новичок",60,0,10,0),
-            new SkillStageData("продолжающий",12*60,11,20,0.1),
-            new SkillStageData("опытный",24*60,21,30,0.25),
-            new SkillStageData("мастер",36*60,31,Integer.MAX_VALUE,0.5)
+            new SkillStageData("новичок",60,0,10,0.1),
+            new SkillStageData("продолжающий",12*60,11,20,0.4),
+            new SkillStageData("опытный",24*60,21,30,0.6),
+            new SkillStageData("мастер",36*60,31,Integer.MAX_VALUE,0.8)
     };
     public static final double SKILL_EXP_PERCENT = 1;
 

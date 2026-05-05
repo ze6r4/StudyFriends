@@ -1,5 +1,6 @@
 /* ===== Модалка ===== */
 .modal-overlay {
+    font-family: "Segoe UI", system-ui, sans-serif;
     position: fixed;
     top: 0;
     left: 0;

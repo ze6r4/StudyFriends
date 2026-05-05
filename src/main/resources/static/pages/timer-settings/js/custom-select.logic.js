@@ -1,7 +1,7 @@
 import { getSkills, getSkillStages } from '../../../shared/api.js';
 import { getCurrentPlayerId } from '../../../shared/current-player.js';
 import { openAddSkillModal } from './custom-select.modal.js';
-import {showConfirmModal } from './custom-select-confirm-modal.js'
+import {showConfirmModal } from '../../../shared/confirm-modal.js';
 import {
   getSelectElements,
   toggleDropdown,

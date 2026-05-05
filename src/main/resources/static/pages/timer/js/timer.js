@@ -1,12 +1,15 @@
-import { patchSession,postRewards, getCharacter, getFriend, getSkill,getMe } from '../../../shared/api.js';
+import { patchSession, postRewards, getCharacter, getFriend, getSkill, getMe } from '../../../shared/api.js';
 import { showError } from '../../../shared/showError.js';
-import {showFinalNotes} from './rewards.js';
+import { showFinalNotes } from './rewards.js';
+import {showConfirmModal } from '../../../shared/confirm-modal.js';
+
 // ==================== КОНФИГУРАЦИЯ ====================
 const sessionDataStr = localStorage.getItem('currentSession');
 const sessionData = sessionDataStr ? JSON.parse(sessionDataStr) : null;
-console.log(sessionData);
 
 const PHASE_KEY = 'timerPhase';
+const STORAGE_KEY = 'timerEndTime';
+const CYCLE_KEY = 'timerCurrentCycle';
 
 const DEFAULTS = {
     WORK_TIME: 25 * 60,
@@ -16,19 +19,16 @@ const DEFAULTS = {
 
 let actualRest = 0;
 let actualWork = 0;
-export const SESSION = {
-    workTime: sessionData?.workMinutes
-        ? sessionData.workMinutes * 60
-        : DEFAULTS.WORK_TIME,
 
-    breakTime: sessionData?.restMinutes
-        ? sessionData.restMinutes * 60
-        : DEFAULTS.BREAK_TIME,
+export const SESSION = {
+    workTime: sessionData?.workMinutes ? sessionData.workMinutes * 60 : DEFAULTS.WORK_TIME,
+    breakTime: sessionData?.restMinutes ? sessionData.restMinutes * 60 : DEFAULTS.BREAK_TIME,
     cycles: sessionData?.cycles ?? DEFAULTS.CYCLES,
     playerId: sessionData?.playerId ?? null,
     skillId: sessionData?.skillId ?? null,
     friendId: sessionData?.friendId ?? null
 };
+
 const ORIGINAL_SESSION = {
     workTime: SESSION.workTime,
     breakTime: SESSION.breakTime,
@@ -39,62 +39,47 @@ const ORIGINAL_SESSION = {
 const minutesEl = document.getElementById('timer-minutes');
 const secondsEl = document.getElementById('timer-seconds');
 const startBtn = document.getElementById('startBtn');
-const resetBtn = document.getElementById('giveupBtn');
-const phaseTitleEl = document.getElementById('phaseTitle');
 const exitBtn = document.getElementById('exitBtn');
-const finishNowBtn = document.getElementById('finishNowBtn');
-const devModeBtn = document.getElementById('devModeBtn');
-const resetTimerDevBtn = document.getElementById('resetTimerDevBtn');
+const phaseTitleEl = document.getElementById('phaseTitle');
+const currentCycleText = document.getElementById('currentCycle');
 
 const characterImg = document.getElementById('characterImg');
-const tableImg = document.getElementById('tableImg');
-const notesImg = document.getElementById('notesImg');
-
-const STORAGE_KEY = 'timerEndTime';
-const CYCLE_KEY = 'timerCurrentCycle';
 
 let animationFrameId = null;
-let currentPhase = 'WORK'; // WORK или BREAK
+let currentPhase = 'WORK';
 let currentCycle = 1;
 let currentCharacter = null;
 
 const notify = new Audio('/assets/audio/notify1.mp3');
-
 notify.volume = 0.5;
-// ==================== Инициализация персонажа ====================
+
+// ==================== ПЕРСОНАЖ ====================
 async function initCharacter() {
     const friend = await getFriend(SESSION.friendId);
     const character = await getCharacter(friend.characterId);
-
-    currentCharacter = character; // сохраняем
-
-    updateCharacterImage(); // устанавливаем картинку по текущей фазе
-
-    console.log('Персонаж загружен:', character.studyImage);
+    currentCharacter = character;
+    updateCharacterImage();
 }
+
 function updateCharacterImage() {
     if (!currentCharacter) return;
 
-    const imageName =
-        currentPhase === 'WORK'
-            ? currentCharacter.studyImage
-            : currentCharacter.restImage;
+    const imageName = currentPhase === 'WORK'
+        ? currentCharacter.studyImage
+        : currentCharacter.restImage;
 
-     characterImg.src = "/assets/images" + `/characters/${imageName}.png`;
+    characterImg.src = "/assets/images/characters/" + imageName + ".png";
 }
-// ==================== Таймер ====================
 
+// ==================== ТАЙМЕР ====================
 function startTimerPhase(phase, cycle) {
     currentPhase = phase;
     currentCycle = cycle;
 
     updatePhaseTitle();
-    updateCharacterImage(); // 👈 ВАЖНО
+    updateCharacterImage();
 
-    const seconds = phase === 'WORK'
-        ? SESSION.workTime
-        : SESSION.breakTime;
-
+    const seconds = phase === 'WORK' ? SESSION.workTime : SESSION.breakTime;
     const endTime = Date.now() + seconds * 1000;
 
     localStorage.setItem(STORAGE_KEY, endTime);
@@ -104,7 +89,6 @@ function startTimerPhase(phase, cycle) {
     stopTimer();
     updateTimer();
 }
-
 
 function stopTimer() {
     if (animationFrameId) {
@@ -117,19 +101,20 @@ function resetTimer() {
     stopTimer();
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CYCLE_KEY);
+    localStorage.removeItem(PHASE_KEY);
 
     currentCycle = 1;
     currentPhase = 'WORK';
 
-    updatePhaseTitle(); // ⬅️
-
+    updatePhaseTitle();
     renderTime(SESSION.workTime);
-}
 
+}
 
 function renderTime(totalSeconds) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
+
     minutesEl.textContent = minutes.toString().padStart(2, '0');
     secondsEl.textContent = seconds.toString().padStart(2, '0');
 }
@@ -141,8 +126,7 @@ function updateTimer() {
         return;
     }
 
-    const diffMs = endTime - Date.now();
-    const diffSeconds = Math.ceil(diffMs / 1000);
+    const diffSeconds = Math.ceil((endTime - Date.now()) / 1000);
 
     if (diffSeconds <= 0) {
         stopTimer();
@@ -153,16 +137,15 @@ function updateTimer() {
     renderTime(diffSeconds);
     animationFrameId = requestAnimationFrame(updateTimer);
 }
+
 function updatePhaseTitle() {
-    phaseTitleEl.textContent =
-        currentPhase === 'WORK' ? 'Работа' : 'Отдых';
+    phaseTitleEl.textContent = currentPhase === 'WORK' ? 'Работа' : 'Отдых';
+    currentCycleText.textContent = "Цикл " + currentCycle;
 }
 
-
 function timerPhaseFinished() {
-    notifyPhase(); // 🔔 уведомление
-
-    playNotify();  // 🔊 звук (сыграет только при активной вкладке)
+    notifyPhase();
+    playNotify();
 
     if (currentPhase === 'WORK') {
         actualWork += SESSION.workTime;
@@ -172,7 +155,6 @@ function timerPhaseFinished() {
         } else {
             timerFinished(true);
         }
-
     } else {
         actualRest += SESSION.breakTime;
         startTimerPhase('WORK', currentCycle + 1);
@@ -182,21 +164,17 @@ function timerPhaseFinished() {
 async function timerFinished(isCompleted) {
     alert('Сессия завершена!');
 
-    exitBtn.style.display = 'block'; // оставить кнопку выхода
-    startBtn.style.display = 'none';
-
     resetTimer();
 
     const newData = {
         workTime: actualWork,
         restTime: actualRest,
         completed: isCompleted,
-        notes: trimNotes()
-    }
-    console.log(newData);
+        notes: trimNotes?.() || ''
+    };
 
-    const session = await patchSession(sessionData.sessionId,newData);
-    // 🔥 получаем АКТУАЛЬНЫЕ данные
+    const session = await patchSession(sessionData.sessionId, newData);
+
     const [skillData, friendData] = await Promise.all([
         getSkill(SESSION.skillId),
         getFriend(SESSION.friendId)
@@ -204,22 +182,66 @@ async function timerFinished(isCompleted) {
 
     const rewards = await postRewards(session);
 
-    if(!rewards) {
-        showError({ message:'не удалось загрузить награды!'});
+    if (!rewards || !skillData || !friendData) {
+        showError({ message: 'Ошибка загрузки наград' });
+        return;
     }
-    else if(!skillData){
-        showError({message:'не удалось получить навык!'})
-    }
-    else if(!friendData){
-        showError({message:'не удалось получить друга!'})
-    }
-    else {
-        console.log("fdksfksdf");
-        await showFinalNotes(rewards, skillData, friendData);
-    }
+    startBtn.style.display = 'none';
+    exitBtn.style.display = 'block';
 
+    await showFinalNotes(rewards, skillData, friendData);
 }
 
+// ==================== ВЫХОД ====================
+exitBtn.addEventListener('click', async () => {
+    const hasActive = localStorage.getItem(STORAGE_KEY);
+
+    if (hasActive) {
+        // Показываем модальное окно подтверждения
+        showConfirmModal(
+            `Вы уверены, что хотите сдаться? Друг будет скучать по вам.. И вы получите намного меньше монет!`,
+            async () => {
+                await handleEarlyExit();
+                resetTimer();
+                //window.location.href = 'http://localhost:8081/pages/main/main.html';
+            }
+        );
+    } else {
+        window.location.href = 'http://localhost:8081/pages/main/main.html';
+    }
+});
+
+// Новая функция для обработки досрочного выхода
+async function handleEarlyExit() {
+    try {
+        if (sessionData?.sessionId) {
+            // Сохраняем как НЕ завершённую сессию (isCompleted = false)
+            const updatedSession = await patchSession(sessionData.sessionId, {
+                workTime: actualWork,
+                restTime: actualRest,
+                completed: 0,  // Используем false вместо 0
+                notes: trimNotes?.() || ''
+            });
+
+            // НАЧИСЛЕНИЕ НАГРАД (используем существующий функционал!)
+            const [skillData, friendData] = await Promise.all([
+                getSkill(SESSION.skillId),
+                getFriend(SESSION.friendId)
+            ]);
+
+            const rewards = await postRewards(updatedSession);
+
+            if (rewards && skillData && friendData) {
+                // Показываем модальное окно с наградами
+                await showFinalNotes(rewards, skillData, friendData);
+            } else {
+                console.warn('Не удалось загрузить награды при досрочном выходе');
+            }
+        }
+    } catch (e) {
+        showError({ message: 'Ошибка при завершении сессии' });
+    }
+}
 function trimNotes() {
     let notes = document.getElementById('notesContent');
     let notesContent = notes.innerHTML;
@@ -228,51 +250,7 @@ function trimNotes() {
     notesContent = notesContent.trim();
     return notesContent;
 }
-
-function restoreTimer() {
-    let endTime = parseInt(localStorage.getItem(STORAGE_KEY));
-    let phase = localStorage.getItem(PHASE_KEY);
-    let cycle = parseInt(localStorage.getItem(CYCLE_KEY)) || 1;
-
-    if (!endTime || !phase) {
-        resetTimer();
-        return;
-    }
-
-    let now = Date.now();
-
-    while (endTime <= now) {
-        if (phase === 'WORK') {
-            actualWork += ORIGINAL_SESSION.workTime;
-            phase = 'BREAK';
-            endTime += SESSION.breakTime * 1000;
-        } else {
-            actualRest += ORIGINAL_SESSION.breakTime;
-            cycle++;
-
-            if (cycle > SESSION.cycles) {
-                timerFinished(true);
-                return;
-            }
-
-            phase = 'WORK';
-            endTime += ORIGINAL_SESSION.workTime * 1000;
-        }
-    }
-    currentPhase = phase;
-    currentCycle = cycle;
-
-    localStorage.setItem(STORAGE_KEY, endTime);
-    localStorage.setItem(PHASE_KEY, phase);
-    localStorage.setItem(CYCLE_KEY, cycle);
-
-    updateCharacterImage();
-    updatePhaseTitle();
-    updateTimer();
-}
-
-
-// ==================== События ====================
+// ==================== START ====================
 startBtn.addEventListener('click', async () => {
     if ('Notification' in window && Notification.permission === 'default') {
         await Notification.requestPermission();
@@ -284,34 +262,54 @@ startBtn.addEventListener('click', async () => {
     startTimerPhase('WORK', currentCycle);
 });
 
-exitBtn.addEventListener('click', () => {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(CYCLE_KEY);
-    localStorage.removeItem(PHASE_KEY);
+// ==================== RESTORE ====================
+function restoreTimer() {
+    let endTime = parseInt(localStorage.getItem(STORAGE_KEY));
+    let phase = localStorage.getItem(PHASE_KEY);
+    let cycle = parseInt(localStorage.getItem(CYCLE_KEY)) || 1;
 
-    window.location.href =  'http://localhost:8081/pages/main/main.html'; // или куда тебе нужно
+    if (!endTime || !phase) {
+        resetTimer();
+        return;
+    }
+
+    currentPhase = phase;
+    currentCycle = cycle;
+
+    updatePhaseTitle();
+    updateCharacterImage();
+    updateTimer();
+
+    startBtn.style.display = 'none';
+    exitBtn.style.display = 'block';
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    restoreTimer();
+    initCharacter();
+    initDeveloperButtons();
 });
+devModeBtn?.addEventListener('click', developerMode);
+resetTimerDevBtn?.addEventListener('click', resetTimerForTesting);
+finishNowBtn?.addEventListener('click', finishSessionDev);
 
-
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) updateTimer();
-});
-
+// ==================== УВЕДОМЛЕНИЯ ====================
 function playNotify() {
     notify.src = notify.src;
     notify.play();
 }
 
-// ==================== Инициализация ====================
-document.addEventListener('DOMContentLoaded', restoreTimer);
-document.addEventListener('DOMContentLoaded', initCharacter);
-document.addEventListener('DOMContentLoaded', initDeveloperButtons);
-devModeBtn?.addEventListener('click', developerMode);
-resetTimerDevBtn?.addEventListener('click', resetTimerForTesting);
-finishNowBtn?.addEventListener('click', finishSessionDev);
+function notifyPhase() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
 
-
-
+    new Notification(
+        currentPhase === 'WORK'
+            ? 'Рабочая фаза завершена'
+            : 'Перерыв окончен'
+    );
+}
 // ==================== РЕЖИМ РАЗРАБОТЧИКА ====================
 
 async function initDeveloperButtons() {
@@ -341,6 +339,8 @@ function developerMode() {
 
     // Полный сброс таймера
     resetTimer();
+    startBtn.style.display = 'block';
+    exitBtn.style.display = 'none';
 }
 function finishSessionDev() {
     if (!confirm('Завершить сессию мгновенно?')) return;
@@ -374,19 +374,3 @@ function resetTimerForTesting() {
 
     console.log('Таймер сброшен для тестирования');
 }
-function notifyPhase() {
-    if (!('Notification' in window)) return;
-    if (Notification.permission !== 'granted') return;
-
-    const isWork = currentPhase === 'WORK';
-
-    new Notification(
-        isWork ? 'Рабочая фаза завершена' : 'Перерыв окончен',
-        {
-            body: isWork
-                ? 'Отдихаем '
-                : 'Возвращаемся к работе '
-        }
-    );
-}
-

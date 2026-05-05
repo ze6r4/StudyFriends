@@ -70,28 +70,21 @@ public class SessionController {
     }
 
     @PatchMapping("/sessions/{id}")
-    public ResponseEntity<?> editSession(@PathVariable Long id, @RequestBody SessionDto dto) {
+    public ResponseEntity<?> endSession(@PathVariable Long id, @RequestBody SessionDto dto) {
         try {
             // Получаем существующую сессию
             Session session = sessionService.getSessionById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Session", id));
 
-            // Обновляем базовые поля только если они переданы (не null)
-            if (dto.getWorkMinutes() != null) {
-                session.setWorkTime(dto.getWorkMinutes());
-            }
-            if (dto.getRestMinutes() != null) {
-                session.setRestTime(dto.getRestMinutes());
-            }
-            if (dto.getCycles() != null) {
-                session.setCycles(dto.getCycles());
-            }
             if (dto.getCompleted() != null) {
                 session.setCompleted(dto.getCompleted());
             }
             if (dto.getNotes() != null) {
                 session.setNotes(dto.getNotes());
             }
+            // обновляем дату окончания сессии!
+            session.setEndDate(LocalDateTime.now());
+
 
             // Обновляем связанные сущности только если их ID переданы (не null)
             if (dto.getPlayerId() != null) {

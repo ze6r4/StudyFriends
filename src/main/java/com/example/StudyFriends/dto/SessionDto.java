@@ -19,6 +19,7 @@ public class SessionDto {
     private Boolean completed;
     private String notes;
     private LocalDateTime date;
+    private LocalDateTime endDate;
     private String skillName;
 
     public static SessionDto fromEntity(Session session) {
@@ -30,6 +31,7 @@ public class SessionDto {
         response.setCompleted(session.getCompleted());
         response.setNotes(session.getNotes());
         response.setDate(session.getDate());
+        response.setEndDate(session.getEndDate());
 
         // Получаем ID связанных сущностей
         if (session.getPlayerId() != null) {

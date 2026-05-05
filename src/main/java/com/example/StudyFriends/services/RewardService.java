@@ -12,6 +12,8 @@ import com.example.StudyFriends.model.Skill;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.temporal.ChronoUnit;
+
 
 @Service
 public class RewardService {
@@ -64,6 +66,7 @@ public class RewardService {
         return sessionReward;
     }
     private SessionReward calculateRewards(SessionDto sessionDto, Skill skill, Friend friend) {
+        if(!sessionDto.getCompleted()) return rewardsNotCompleted(sessionDto,skill,friend);
         int totalMinutes = totalSessionMinutes(sessionDto);
 
         int skillLvl = skill.getLevel();
@@ -74,8 +77,9 @@ public class RewardService {
         SessionReward rewards = new SessionReward();
 
         double skillExp = totalMinutes * RewardConfig.SKILL_EXP_PERCENT;
-        SkillReward skillReward = SkillReward.distributeExp(skillLvl,oldSkillExp+skillExp);
         double friendExp = totalMinutes * RewardConfig.FRIENDSHIP_EXP_PERCENT;
+
+        SkillReward skillReward = SkillReward.distributeExp(skill.getName(),skillLvl,oldSkillExp+skillExp);
         FriendReward friendReward = FriendReward.distributeExp(friendshipLvl,oldFriendExp+friendExp);
 
         skillLvl = skillReward.getSkillNewLvl();
@@ -100,6 +104,31 @@ public class RewardService {
         return rewards;
     }
 
+    private SessionReward rewardsNotCompleted(SessionDto sessionDto,Skill skill,Friend friend){
+        int totalMinutes = (int)ChronoUnit.MINUTES.between(sessionDto.getDate(),sessionDto.getEndDate());
+
+        int skillLvl = skill.getLevel();
+        double oldSkillExp = skill.getExpInCurrentLevel();
+        int friendshipLvl = friend.getFriendshipLvl();
+        double oldFriendExp = friend.getExpInCurrentLevel();
+
+        //нет опыта
+        SkillReward skillReward = SkillReward.distributeExp(skill.getName(),skillLvl,oldSkillExp);
+        FriendReward friendReward = FriendReward.distributeExp(friendshipLvl,oldFriendExp);
+
+        SessionReward rewards = new SessionReward();
+        rewards.setTotalMinutes(totalMinutes);
+        rewards.setCoinsFromFriendship(0);
+        rewards.setCoinsFromSkill(0);
+        rewards.setCoinsFromSession(totalMinutes);
+
+        rewards.setSkillReward(skillReward);
+        rewards.setFriendReward(friendReward);
+        rewards.setFriendCoinBonus(0);
+        rewards.setSkillCoinBonus(0);
+
+        return rewards;
+    }
 
 
 }

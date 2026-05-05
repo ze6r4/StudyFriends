@@ -6,12 +6,13 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class SkillReward {
+    private String skillName;
     private int skillNewLvl;
     private double skillExpOfLvl;
     private double skillXpToNext;
     private String XP;
 
-    public static SkillReward distributeExp(int level, double totalExp) {
+    public static SkillReward distributeExp(String name,int level, double totalExp) {
         double currentExp = totalExp;
         double xpToNext = 0;
 
@@ -26,6 +27,6 @@ public class SkillReward {
             } else break;
         }
 
-        return new SkillReward(level,currentExp,xpToNext, xp.toString());
+        return new SkillReward(name,level,currentExp,xpToNext, xp.toString());
     }
 }

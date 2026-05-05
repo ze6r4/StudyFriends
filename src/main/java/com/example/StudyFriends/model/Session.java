@@ -44,6 +44,9 @@ public class Session {
     @Column(name = "date")
     private LocalDateTime date;
 
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 

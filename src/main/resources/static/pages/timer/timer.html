@@ -11,86 +11,102 @@
 
     <link rel="stylesheet" href="css/timer.css">
     <link rel="stylesheet" href="css/reward.css">
+    <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
 
-<header class="phase-header">
-    <span id="phaseTitle">Работа</span>
-</header>
 
-<div class="bg">
-    <img
-            id="tableImg"
-            src = "/assets/images/other/table_bg.png"
-            alt="олоол"
-    >
-    <img
-            id="notesImg"
-            src = "/assets/images/other/notes_bg.png"
-            alt="Фон"
+<div id="appWrapper">
+    <header class="phase-header">
+        <span id="phaseTitle">Работа</span>
+    </header>
 
-    >
-    <img
-            id="characterImg"
-            src = ""
-            alt="персонаж"
-    >
-</div>
+    <div class="bg">
+        <img
+                id="tableImg"
+                src = "/assets/images/other/table_bg.png"
+                alt="олоол"
+        >
+        <img
+                id="notesImg"
+                src = "/assets/images/other/notes_bg.png"
+                alt="Фон"
 
-<div class="container">
+        >
+        <img
+                id="characterImg"
+                src = ""
+                alt="персонаж"
+        >
 
-    <!-- БЛОКНОТ -->
-    <div class="notebook-section">
-        <div class="notebook">
+    </div>
+    <button id="confirmNotesBtn" class="confirm-notes hidden">✔</button>
+    <div class="container">
 
-            <button id="strikeBtn">S̶</button>
-            <div class="notes-header" id="notesHeader">
-                <h1>ЗАМЕТКИ</h1>
-            </div>
+            <!-- БЛОКНОТ -->
+            <div class="notebook-section">
+                <div class="notebook">
+
+                    <button id="strikeBtn">S̶</button>
+                    <div class="notes-header" id="notesHeader">
+                        <h1>ЗАМЕТКИ</h1>
+                        <h2 id="currentCycle">Цикл 1</h2>
+                    </div>
 
 
-            <div class="notebook-content">
+                    <div class="notebook-content">
 
-                <div
-                        id="notesContent"
-                        class="notes-content"
-                        contenteditable="true"
-                >
-                    <p>Можно редактировать этот текст прямо здесь...</p>
+                        <div id="notesContent" class="notes-content" contenteditable="true"></div>
+
+
+                    </div>
                 </div>
             </div>
-            <button id="confirmNotesBtn" class="confirm-notes hidden">✔</button>
+        </div>
+        <div class="bottom-left">
+
+            <div class="timer-standalone">
+                <span id="timer-minutes">25</span>    <span id="timer-seconds">00</span>
+            </div>
+
+            <button  class="image-button" id="startBtn" >
+                <img src="/assets/images/other/start_button2.png" alt="Начать">
+            </button>
+            <button class="image-button" id="exitBtn" style="display:none;">
+                <img src="/assets/images/other/exit_button.png" alt="Выйти">
+            </button>
         </div>
     </div>
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal">
+            <header>
+                <h2>Сдаться?</h2>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            </header>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <footer>
+                <button id="confirmDeleteBtn" class="btn-danger">Выйти</button>
+                <button class="btn-secondary">Отмена</button>
+            </footer>
+        </div>
+    </div>
+    <footer class="footer hidden">
+        <div class="dev-controls">
+            <button id="devModeBtn">Режим разработчика</button>
+            <button id="finishNowBtn">Закончить сессию</button>
+            <button id="resetTimerDevBtn">Очистить localStorage</button>
+        </div>
+    </footer>
 
 </div>
 
 
-<!-- ТАЙМЕР + КНОПКА -->
-<div class="bottom-left">
-
-    <div class="timer-standalone">
-        <span id="timer-minutes">25</span>    <span id="timer-seconds">00</span>
-    </div>
-
-    <button  class="image-button" id="startBtn" >
-        <img src="/assets/images/other/start_button.png" alt="Начать">
-    </button>
-    <button class="image-button" id="exitBtn" style="display:none;">
-        Выйти
-    </button>
-</div>
-
-<footer class="footer hidden">
-    <div class="dev-controls">
-        <button id="devModeBtn">Режим разработчика</button>
-        <button id="finishNowBtn">Закончить сессию</button>
-        <button id="resetTimerDevBtn">Очистить localStorage</button>
-    </div>
-</footer>
 
 <script type="module" src="js/timer.js"></script>
-<script src="js/notes-storage.js" defer></script>
+<script src="js/notes-storage.js"></script>
+<script src="js/scale.js"></script>
 
 </body>
 </html>

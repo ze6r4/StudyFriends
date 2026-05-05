@@ -24,109 +24,142 @@ import java.util.stream.Collectors;
 public class BookService {
     private final SessionRep sessionRep;
     private final SkillRep skillRep;
-
+    private List<BlockDto> blocks;
     public BookDto getBook(Long playerId) {
         BookDto book = new BookDto();
-        book.setMonths(getMonths(playerId));
-        List<Session> allSessions = sessionRep.getAllSessionsOfPlayer(playerId);
-        Integer total = allSessions.stream().mapToInt(Session::getTotal).sum();
-        book.setTotalCountOfSessions(total);
+        book.setTotalCountOfHours(sessionRep.getTotalMinutes(playerId));
         return book;
     }
+
     private List<MonthStatistic> getMonths(Long playerId) {
-        List<Session> sessions = sessionRep.getAllSessionsOfPlayer(playerId);
+
+        List<Session> sessions = sessionRep.getAllCompletedSessions(playerId);
         Locale locale = new Locale("ru", "RU");
 
+        // 🔥 SQL данные по дням
+        Map<LocalDate, Integer> dailyTotals = sessionRep.getDailyTotals(playerId)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> ((java.sql.Date) row[0]).toLocalDate(),
+                        row -> ((Number) row[1]).intValue()
+                ));
+
         Map<YearMonth, List<Session>> groupedByMonth = sessions.stream()
-                .filter(Session::getCompleted)
-                .collect(Collectors.groupingBy(s ->
-                        YearMonth.from(s.getDate())
-                )); //сессии по месяцам
+                .collect(Collectors.groupingBy(s -> YearMonth.from(s.getDate())));
 
         List<MonthStatistic> result = new ArrayList<>();
 
-        groupedByMonth.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(entry -> {
-                    YearMonth ym = entry.getKey();
-                    List<Session> monthSessions = entry.getValue();
-
-                    MonthStatistic month = new MonthStatistic();
-                    month.setMonthName(
-                            ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale)
-                    );
-
-                    month.setWeeks(getWeeks(monthSessions));
-                    month.setDaysHours(hoursOfEveryDay(monthSessions));
-
-                    return month;
-                })
-                .toList();
-        //заполнение каждого месяца по неделям
         for (var entry : groupedByMonth.entrySet()) {
+
             YearMonth ym = entry.getKey();
             List<Session> monthSessions = entry.getValue();
 
             MonthStatistic month = new MonthStatistic();
-            month.setMonthName(ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale));
+
+            month.setMonthName(
+                    ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale)
+            );
+            month.setYear(ym.getYear());
+            month.setMonthIndex(ym.getMonthValue() - 1); // JS: 0-11
+
             month.setWeeks(getWeeks(monthSessions));
-            month.setDaysHours(hoursOfEveryDay(monthSessions));
+
+            // 🔥 теперь используем SQL данные
+            month.setDaysHours(buildDaysHoursFromSql(dailyTotals, ym));
 
             result.add(month);
         }
 
         return result;
     }
-    private List<WeekStatistic> getWeeks(List<Session> monthSessions){
-        // сессии по неделям
-        Map<Integer, List<Session>> byWeek = monthSessions.stream()
-                .collect(Collectors.groupingBy(s -> {
-                    int day = s.getDate().getDayOfMonth();
-                    return (day - 1) / 7 + 1; // номер недели от 1 до 5
-                }
-                ));
+    private List<WeekStatistic> getWeeks(List<Session> monthSessions) {
+
+        Map<LocalDate, List<Session>> byDate = monthSessions.stream()
+                .collect(Collectors.groupingBy(s -> s.getDate().toLocalDate()));
+
+        LocalDate firstDay = byDate.keySet().stream().min(LocalDate::compareTo).get();
+        LocalDate lastDay = byDate.keySet().stream().max(LocalDate::compareTo).get();
+
+        // двигаемся к понедельнику
+        LocalDate current = firstDay.minusDays(firstDay.getDayOfWeek().getValue() - 1);
 
         List<WeekStatistic> weeks = new ArrayList<>();
+        int weekNumber = 1;
 
-        byWeek.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(e -> getWeek(e.getValue(), e.getKey()))
-                .toList();//сортировка недель по порядку
+        while (!current.isAfter(lastDay)) {
 
-        for (var weekEntry : byWeek.entrySet()) {
-            weeks.add(getWeek(weekEntry.getValue(), weekEntry.getKey()));
+            LocalDate weekStart = current;
+            LocalDate weekEnd = current.plusDays(6);
+
+            List<Session> weekSessions = monthSessions.stream()
+                    .filter(s -> {
+                        LocalDate d = s.getDate().toLocalDate();
+                        return !d.isBefore(weekStart) && !d.isAfter(weekEnd);
+                    })
+                    .toList();
+
+            if (!weekSessions.isEmpty()) {
+                weeks.add(getWeek(weekSessions, weekNumber++));
+            }
+
+            current = current.plusWeeks(1);
         }
+
         return weeks;
     }
-    private List<Integer> hoursOfEveryDay(List<Session> monthSessions){
-        Map<LocalDate, Integer> map = monthSessions.stream()
-                .collect(Collectors.groupingBy(
-                        s -> s.getDate().toLocalDate(),
-                        Collectors.summingInt(Session::getTotal)
-                ));
-
-        YearMonth ym = YearMonth.from(monthSessions.get(0).getDate());
+    private List<Integer> buildDaysHoursFromSql(
+            Map<LocalDate, Integer> map,
+            YearMonth ym
+    ) {
         int daysInMonth = ym.lengthOfMonth();
         List<Integer> result = new ArrayList<>();
+
         for (int i = 1; i <= daysInMonth; i++) {
             LocalDate date = ym.atDay(i);
             result.add(map.getOrDefault(date, 0) / 60);
         }
+
         return result;
     }
-
     private WeekStatistic getWeek(List<Session> sessions, Integer weekNumber) {
         WeekStatistic week = new WeekStatistic();
-        week.setWeekName("Неделя " + weekNumber);
+        week.setWeekName("Итоги недели " + weekNumber);
 
         Map<LocalDate, List<Session>> byDay = sessions.stream()
                 .collect(Collectors.groupingBy(s -> s.getDate().toLocalDate()));
 
         List<DayStatistic> days = new ArrayList<>();
 
-        for (var entry : byDay.entrySet()) {
-            days.add(getDay(entry.getKey(), entry.getValue()));
+        // определяем границы недели
+        LocalDate firstDay = sessions.stream()
+                .map(s -> s.getDate().toLocalDate())
+                .min(LocalDate::compareTo)
+                .get();
+
+        LocalDate weekStart = firstDay.minusDays(firstDay.getDayOfWeek().getValue() - 1);
+
+        // 👉 проходим ВСЕ 7 дней недели
+        for (int i = 0; i < 7; i++) {
+            LocalDate currentDay = weekStart.plusDays(i);
+
+            List<Session> daySessions = byDay.get(currentDay);
+
+            if (daySessions == null) {
+                // день без сессий
+                DayStatistic emptyDay = new DayStatistic();
+                emptyDay.setDayName(currentDay.getDayOfWeek()
+                        .getDisplayName(TextStyle.FULL, Locale.getDefault()));
+
+                emptyDay.setSessions(List.of());
+                emptyDay.setTotalCountOfMinutes(0);
+                emptyDay.setTotalCountBySkills(List.of());
+
+                days.add(emptyDay);
+            } else {
+                days.add(getDay(currentDay, daySessions));
+            }
         }
+
         week.setDays(days);
 
         // общее время

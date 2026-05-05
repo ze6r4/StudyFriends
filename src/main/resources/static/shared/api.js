@@ -167,10 +167,7 @@ export function patchSession(id, sessionData) {
 }
 
 export function getStatistics(playerId){
-    return apiPublic(`/statistics/${playerId}`);
-}
-export function getSessionsOfWeek(playerId){
-    return apiPublic(`/statistics/week/${playerId}`);
+    return apiPublic(`/books/${playerId}`);
 }
 
 /* ================= REWARDS ================= */

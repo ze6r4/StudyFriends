@@ -21,4 +21,32 @@ public interface SessionRep extends JpaRepository<Session, Long> {
     """)
     List<Session> getAllSessionsOfPlayer(Long userId);
 
+    @Query("""
+    SELECT COALESCE(SUM((s.workTime + s.restTime)*s.cycles), 0)
+    FROM Session s
+    WHERE s.playerId.id = :playerId
+      AND s.completed = true
+""")
+    Integer getTotalMinutes(Long playerId);
+
+    @Query("""
+    SELECT 
+        DATE(s.date) as day,
+        SUM((s.workTime + s.restTime)*s.cycles) as total
+    FROM Session s
+    WHERE s.playerId.id = :playerId
+      AND s.completed = true
+    GROUP BY DATE(s.date)
+""")
+    List<Object[]> getDailyTotals(Long playerId);
+
+    @Query("""
+    SELECT s
+    FROM Session s
+    WHERE s.playerId.id = :playerId
+      AND s.completed = true
+    ORDER BY s.date
+""")
+    List<Session> getAllCompletedSessions(Long playerId);//отсортированы по дням
+
 }

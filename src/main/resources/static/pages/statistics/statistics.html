@@ -6,36 +6,30 @@
 
     <link rel="stylesheet" href="statistics.css">
 </head>
-
 <body>
 
-<div class="book-wrapper" tabindex="0">
-    <div class="book" id="book">
+<div class="book" id="book">
 
-        <div class="page cover">
-            <div class="cover-title">
-                <h1>StudyFriends</h1>
-                <h2>Статистика</h2>
-            </div>
-
-
-            <div class="cover-stats">
-                <p>Сегодня: <span id="dayStats">0</span></p>
-                <p>За эту неделю: <span id="weekStats">0</span></p>
-                <p>В этом месяце: <span id="monthStats">0</span></p>
-                <p>ВСЕГО сессий: <span id="totalStats">0</span></p>
-            </div>
-
-            <p class="hint">→ открыть</p>
-        </div>
-
-        <div class="spread" id="spread">
-
-            <div id="spreadContainer"></div>
-        </div>
-
-
+    <!-- ОБЛОЖКА -->
+    <div class="cover-screen" id="coverScreen">
+        <img src="/assets/images/other/book_cover.png" class="bg">
+        <div class="nickname" id="nickname"></div>
+        <p class="hint">→ открыть</p>
     </div>
+
+    <!-- РАЗВОРОТ -->
+    <div class="cover-stats">
+        <p>Сегодня: <span id="dayStats">0</span></p>
+        <p>За эту неделю: <span id="weekStats">0</span></p>
+        <p>В этом месяце: <span id="monthStats">0</span></p>
+        <p>ВСЕГО сессий: <span id="totalStats">0</span></p>
+    </div>
+    <div class="spread-screen" id="spreadScreen">
+        <img src="/assets/images/other/book_pages1.png" class="bg">
+
+        <div id="spreadContainer"></div>
+    </div>
+
 </div>
 
 <script type="module" src="statistics.js"></script>

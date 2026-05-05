@@ -2,11 +2,11 @@ package com.example.StudyFriends.services;
 
 import com.example.StudyFriends.dto.SessionDto;
 import com.example.StudyFriends.dto.SkillDto;
-import com.example.StudyFriends.dto.book.*;
+import com.example.StudyFriends.dto.book.BlockDto;
+import com.example.StudyFriends.dto.book.PageType;
 import com.example.StudyFriends.model.Session;
 import com.example.StudyFriends.model.Skill;
 import com.example.StudyFriends.repositories.SessionRep;
-import com.example.StudyFriends.repositories.SkillRep;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,202 +22,246 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Service
 public class BookService {
-    private final SessionRep sessionRep;
-    private final SkillRep skillRep;
-    private List<BlockDto> blocks;
-    public BookDto getBook(Long playerId) {
-        BookDto book = new BookDto();
-        book.setTotalCountOfHours(sessionRep.getTotalMinutes(playerId));
-        return book;
-    }
 
-    private List<MonthStatistic> getMonths(Long playerId) {
+    private final SessionRep sessionRep;
+
+    public List<BlockDto> getBook(Long playerId) {
 
         List<Session> sessions = sessionRep.getAllCompletedSessions(playerId);
+
         Locale locale = new Locale("ru", "RU");
 
-        // 🔥 SQL данные по дням
-        Map<LocalDate, Integer> dailyTotals = sessionRep.getDailyTotals(playerId)
-                .stream()
-                .collect(Collectors.toMap(
-                        row -> ((java.sql.Date) row[0]).toLocalDate(),
-                        row -> ((Number) row[1]).intValue()
-                ));
-
-        Map<YearMonth, List<Session>> groupedByMonth = sessions.stream()
+        // 🔹 группировка по месяцам
+        Map<YearMonth, List<Session>> byMonth = sessions.stream()
                 .collect(Collectors.groupingBy(s -> YearMonth.from(s.getDate())));
 
-        List<MonthStatistic> result = new ArrayList<>();
+        List<BlockDto> result = new ArrayList<>();
 
-        for (var entry : groupedByMonth.entrySet()) {
+        // 🔥 COVER
+        result.add(createCoverBlock(byMonth));
 
-            YearMonth ym = entry.getKey();
-            List<Session> monthSessions = entry.getValue();
+        for (var monthEntry : byMonth.entrySet()) {
 
-            MonthStatistic month = new MonthStatistic();
+            YearMonth ym = monthEntry.getKey();
+            List<Session> monthSessions = monthEntry.getValue();
 
-            month.setMonthName(
-                    ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale)
-            );
-            month.setYear(ym.getYear());
-            month.setMonthIndex(ym.getMonthValue() - 1); // JS: 0-11
+            // 🔹 MONTH блок
+            result.add(createMonthBlock(ym, monthSessions, locale));
 
-            month.setWeeks(getWeeks(monthSessions));
+            // 🔹 группировка по неделям
+            Map<Integer, List<Session>> byWeek = monthSessions.stream()
+                    .collect(Collectors.groupingBy(s ->
+                            s.getDate().get(java.time.temporal.IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                    ));
 
-            // 🔥 теперь используем SQL данные
-            month.setDaysHours(buildDaysHoursFromSql(dailyTotals, ym));
+            int weekIndex = 1;
 
-            result.add(month);
+            for (var weekEntry : byWeek.entrySet()) {
+
+                List<Session> weekSessions = weekEntry.getValue();
+
+                // 🔹 группировка по дням
+                Map<LocalDate, List<Session>> byDay = weekSessions.stream()
+                        .collect(Collectors.groupingBy(s -> s.getDate().toLocalDate()));
+
+                List<LocalDate> sortedDays = byDay.keySet().stream()
+                        .sorted()
+                        .toList();
+
+                for (LocalDate day : sortedDays) {
+
+                    List<Session> daySessions = byDay.get(day);
+
+                    for (int i = 0; i < daySessions.size(); i++) {
+
+                        Session session = daySessions.get(i);
+
+                        boolean isFirst = i == 0;
+                        boolean isLast = i == daySessions.size() - 1;
+
+                        result.add(createSessionBlock(
+                                session,
+                                day,
+                                isFirst,
+                                isLast,
+                                daySessions,
+                                locale
+                        ));
+                    }
+                }
+
+                // 🔹 WEEK блок
+                result.add(createWeekBlock(weekSessions, weekIndex++));
+            }
         }
 
         return result;
     }
-    private List<WeekStatistic> getWeeks(List<Session> monthSessions) {
 
-        Map<LocalDate, List<Session>> byDate = monthSessions.stream()
-                .collect(Collectors.groupingBy(s -> s.getDate().toLocalDate()));
+    // =========================================
+    // 🔥 BLOCKS
+    // =========================================
 
-        LocalDate firstDay = byDate.keySet().stream().min(LocalDate::compareTo).get();
-        LocalDate lastDay = byDate.keySet().stream().max(LocalDate::compareTo).get();
+    private BlockDto createCoverBlock(Map<YearMonth, List<Session>> byMonth) {
 
-        // двигаемся к понедельнику
-        LocalDate current = firstDay.minusDays(firstDay.getDayOfWeek().getValue() - 1);
+        BlockDto block = new BlockDto();
 
-        List<WeekStatistic> weeks = new ArrayList<>();
-        int weekNumber = 1;
+        block.setType(PageType.COVER);
+        block.setPageCovering("FULL");
+        block.setTitle("Содержание");
 
-        while (!current.isAfter(lastDay)) {
+        List<Map<String, Object>> months = new ArrayList<>();
 
-            LocalDate weekStart = current;
-            LocalDate weekEnd = current.plusDays(6);
-
-            List<Session> weekSessions = monthSessions.stream()
-                    .filter(s -> {
-                        LocalDate d = s.getDate().toLocalDate();
-                        return !d.isBefore(weekStart) && !d.isAfter(weekEnd);
-                    })
-                    .toList();
-
-            if (!weekSessions.isEmpty()) {
-                weeks.add(getWeek(weekSessions, weekNumber++));
-            }
-
-            current = current.plusWeeks(1);
+        for (var entry : byMonth.entrySet()) {
+            months.add(Map.of(
+                    "month", entry.getKey().getMonthValue(),
+                    "year", entry.getKey().getYear(),
+                    "sessions", entry.getValue().size()
+            ));
         }
 
-        return weeks;
+        block.setData(Map.of(
+                "months", months,
+                "totalSessions", byMonth.values().stream().mapToInt(List::size).sum()
+        ));
+
+        return block;
     }
-    private List<Integer> buildDaysHoursFromSql(
-            Map<LocalDate, Integer> map,
-            YearMonth ym
-    ) {
+
+    private BlockDto createMonthBlock(YearMonth ym, List<Session> sessions, Locale locale) {
+
+        BlockDto block = new BlockDto();
+
+        block.setType(PageType.MONTH);
+        block.setPageCovering("FULL");
+
+        block.setTitle(
+                ym.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale)
+        );
+
+        // 🔥 группировка по дням
+        Map<LocalDate, Integer> dailyMinutes = sessions.stream()
+                .collect(Collectors.groupingBy(
+                        s -> s.getDate().toLocalDate(),
+                        Collectors.summingInt(Session::getTotal)
+                ));
+
         int daysInMonth = ym.lengthOfMonth();
-        List<Integer> result = new ArrayList<>();
+        List<Integer> daysHours = new ArrayList<>();
 
         for (int i = 1; i <= daysInMonth; i++) {
             LocalDate date = ym.atDay(i);
-            result.add(map.getOrDefault(date, 0) / 60);
+
+            int minutes = dailyMinutes.getOrDefault(date, 0);
+            daysHours.add(minutes / 60); // 👈 как у тебя было
         }
 
-        return result;
-    }
-    private WeekStatistic getWeek(List<Session> sessions, Integer weekNumber) {
-        WeekStatistic week = new WeekStatistic();
-        week.setWeekName("Итоги недели " + weekNumber);
-
-        Map<LocalDate, List<Session>> byDay = sessions.stream()
-                .collect(Collectors.groupingBy(s -> s.getDate().toLocalDate()));
-
-        List<DayStatistic> days = new ArrayList<>();
-
-        // определяем границы недели
-        LocalDate firstDay = sessions.stream()
-                .map(s -> s.getDate().toLocalDate())
-                .min(LocalDate::compareTo)
-                .get();
-
-        LocalDate weekStart = firstDay.minusDays(firstDay.getDayOfWeek().getValue() - 1);
-
-        // 👉 проходим ВСЕ 7 дней недели
-        for (int i = 0; i < 7; i++) {
-            LocalDate currentDay = weekStart.plusDays(i);
-
-            List<Session> daySessions = byDay.get(currentDay);
-
-            if (daySessions == null) {
-                // день без сессий
-                DayStatistic emptyDay = new DayStatistic();
-                emptyDay.setDayName(currentDay.getDayOfWeek()
-                        .getDisplayName(TextStyle.FULL, Locale.getDefault()));
-
-                emptyDay.setSessions(List.of());
-                emptyDay.setTotalCountOfMinutes(0);
-                emptyDay.setTotalCountBySkills(List.of());
-
-                days.add(emptyDay);
-            } else {
-                days.add(getDay(currentDay, daySessions));
-            }
-        }
-
-        week.setDays(days);
-
-        // общее время
         int totalMinutes = sessions.stream()
                 .mapToInt(Session::getTotal)
                 .sum();
 
-        week.setTotalCountOfMinutes(totalMinutes);
+        block.setData(Map.of(
+                "year", ym.getYear(),
+                "monthIndex", ym.getMonthValue() - 1,
+                "totalMinutes", totalMinutes,
+                "daysHours", daysHours
+        ));
 
-        // по навыкам
+        return block;
+    }
+
+    private BlockDto createWeekBlock(List<Session> sessions, int index) {
+
+        BlockDto block = new BlockDto();
+
+        block.setType(PageType.WEEK);
+        block.setPageCovering("FULL");
+
+        block.setTitle("Итоги недели " + index);
+
+        int totalMinutes = sessions.stream()
+                .mapToInt(Session::getTotal)
+                .sum();
+
         Map<Skill, Integer> skillMap = sessions.stream()
                 .collect(Collectors.groupingBy(
                         Session::getSkill,
                         Collectors.summingInt(Session::getTotal)
                 ));
 
-        List<TotalOfSkill> skills = skillMap.entrySet().stream()
-                .map(e -> new TotalOfSkill(SkillDto.fromEntity(e.getKey()), e.getValue()))
+        List<Map<String, Object>> skills = skillMap.entrySet().stream()
+                .map(e -> Map.of(
+                        "skill", SkillDto.fromEntity(e.getKey()),
+                        "minutes", e.getValue()
+                ))
                 .toList();
 
-        week.setTotalCountBySkills(skills);
+        block.setData(Map.of(
+                "totalMinutes", totalMinutes,
+                "skills", skills
+        ));
 
-        return week;
-    }
-    private DayStatistic getDay(LocalDate date, List<Session> sessions) {
-        DayStatistic day = new DayStatistic();
-
-        day.setDayName(date.getDayOfWeek()
-                .getDisplayName(TextStyle.FULL, Locale.getDefault()));
-
-        // сессии → DTO
-        List<SessionDto> sessionDtos = sessions.stream()
-                .map(SessionDto::fromEntity)
-                .toList();
-
-        day.setSessions(sessionDtos);
-
-        // общее время
-        int totalMinutes = sessions.stream()
-                .mapToInt(Session::getTotal)
-                .sum();
-
-        day.setTotalCountOfMinutes(totalMinutes);
-
-        // по навыкам (можно использовать репозиторий, но быстрее тут)
-        Map<Skill, Integer> skillMap = sessions.stream()
-                .collect(Collectors.groupingBy(
-                        Session::getSkill,
-                        Collectors.summingInt(Session::getTotal)
-                ));
-
-        List<TotalOfSkill> skills = skillMap.entrySet().stream()
-                .map(e -> new TotalOfSkill(SkillDto.fromEntity(e.getKey()), e.getValue()))
-                .toList();
-
-        day.setTotalCountBySkills(skills);
-
-        return day;
+        return block;
     }
 
+    private BlockDto createSessionBlock(
+            Session session,
+            LocalDate date,
+            boolean isFirst,
+            boolean isLast,
+            List<Session> daySessions,
+            Locale locale
+    ) {
+
+        BlockDto block = new BlockDto();
+
+        block.setType(PageType.SESSION);
+        block.setPageCovering("FLOW");
+
+        // 🔹 title только у первой
+        if (isFirst) {
+            block.setTitle(
+                    date.getDayOfWeek()
+                            .getDisplayName(TextStyle.FULL, locale)
+            );
+        } else {
+            block.setTitle(null);
+        }
+
+        SessionDto dto = SessionDto.fromEntity(session);
+
+        // 🔥 если последняя — добавляем итоги дня прямо в data
+        if (isLast) {
+
+            int totalMinutes = daySessions.stream()
+                    .mapToInt(Session::getTotal)
+                    .sum();
+
+            Map<Skill, Integer> skillMap = daySessions.stream()
+                    .collect(Collectors.groupingBy(
+                            Session::getSkill,
+                            Collectors.summingInt(Session::getTotal)
+                    ));
+
+            List<Map<String, Object>> skills = skillMap.entrySet().stream()
+                    .map(e -> Map.of(
+                            "skill", SkillDto.fromEntity(e.getKey()),
+                            "minutes", e.getValue()
+                    ))
+                    .toList();
+
+            block.setData(Map.of(
+                    "session", dto,
+                    "dayTotal", Map.of(
+                            "totalMinutes", totalMinutes,
+                            "skills", skills
+                    )
+            ));
+
+        } else {
+            block.setData(dto);
+        }
+
+        return block;
+    }
 }

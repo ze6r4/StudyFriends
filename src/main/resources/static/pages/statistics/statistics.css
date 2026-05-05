@@ -22,107 +22,146 @@
 
 body {
     margin: 0;
-    background: var(--bg);
+    overflow: hidden;
     font-family: var(--font);
+    font-size: 2rem;
 }
 
-.page {
-    font-family: var(--font);
-    background: #fff8e7;
-    color: var(--text);
-}
-
-/* ---------- BOOK ---------- */
-
-.book-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+/* ---------- FULLSCREEN BOOK ---------- */
 
 .book {
-    width: 900px;
-    height: 600px;
     position: relative;
-    perspective: 2000px;
-    transform-style: preserve-3d;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color:#ba9686;
+}
+/* два экрана */
+.cover-screen,
+.spread-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: 100vw;
+    height: 100vh;
+
+    transform: translate(-50%, -50%);
+
+    object-fit: cover;
 }
 
-/* ---------- COVER ---------- */
-
-.cover {
-    width: 450px;
-    height: 100%;
-    background: #d8c3a5;
+.nickname{
     position: absolute;
     left: 50%;
+    top: 41.5%;
+    font-size: 4rem;
+    color: #753d39;
+}
+/* скрыт по умолчанию */
+.spread-screen {
+    display: none;
+}
+.spread {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* левая / правая */
+    width: 100vw;
+    height: 100vh;
+}
+.spread::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
     transform: translateX(-50%);
-    z-index: 10;
-    transition: transform 0.8s ease;
+    z-index: 2;
+}
+.day-title {
+    break-after: avoid;
 }
 
-.book.open .cover {
-    transform: translateX(-100%) rotateY(-120deg);
-    opacity: 0;
+.session {
+    break-inside: avoid;
 }
+/* ---------- CONTENT LAYERS ---------- */
 
-.cover-title {
-    text-align: center;
-    margin-top: 40px;
-}
+/* центр контента на развороте */
+#spreadContainer {
+    position: absolute;
 
-.cover-stats {
-    margin-top: 40px;
-    padding: 0 30px;
+    top: 0;
+    left: 0;
+
+    width: 75%;   /* СЖАЛИ по горизонтали */
+    height: 75%;  /* СЖАЛИ по вертикали */
+
 }
+/* ---------- HINT ---------- */
 
 .hint {
     position: absolute;
     bottom: 20px;
     right: 20px;
+    z-index: 1;
 }
 
-/* ---------- SPREAD ---------- */
+/* ---------- PAGES (без фона!) ---------- */
 
-.spread {
+.full-page {
+    height: 100vh;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+}
+.page {
     width: 100%;
     height: 100%;
-}
+    padding: 80px 40px 40px 40px;
 
-.page {
-    width: 50%;
-    height: 100%;
-    padding: 20px;
     box-sizing: border-box;
-    position: relative;
-    backface-visibility: hidden;
+    background: transparent;
+    color: var(--text);
+}
+.page:last-child {
+    padding-right: 200px;
 }
 
+.page:first-child {
+    padding-left: 200px;
+}
 /* ---------- DAY BLOCK ---------- */
 
-.day-block {
-    margin-bottom: 24px;
-
-}
 
 .day-title {
-    color: #2f2f2f;
     margin-bottom: 24px;
-    text-align:center;
+    text-align: center;
 }
 
 /* ---------- TIME LINE ---------- */
 
 .time-line {
     width: 100%;
-    border-bottom: 1px dashed #c9b8a8;
+    border-bottom: 3px dashed #c9b8a8;
     padding-bottom: 4px;
     margin-bottom: 10px;
 }
 
 /* ---------- SESSION ---------- */
+
+.session {
+    margin-bottom: 50px;
+}
 
 .session-horizontal {
     position: relative;
@@ -131,9 +170,6 @@ body {
     gap: 10px;
     padding-right: 130px;
     margin-bottom: 2px;
-}
-.session {
-    margin-bottom:24px;
 }
 
 .minutes {
@@ -149,56 +185,86 @@ body {
     gap: 4px;
 }
 
-/* brace */
-
 .brace {
     height: 40px;
     width: 6px;
     opacity: 0.7;
 }
 
-/* cycles text */
-
 .cycles {
     white-space: nowrap;
 }
 
-/* ---------- STICKER (NOTES) ---------- */
+/* ---------- STICKER ---------- */
 
 .sticker {
     position: absolute;
     right: 15px;
     top: -100%;
 
-    width: 90px;
-    height: 90px;
+    width: 150px;
+    height: 150px;
+    max-height: 150px;
 
     background: #ffeaa7;
 
     padding: 8px;
 
-    font-size: 11px;
+    font-size: 1.2rem;
     line-height: 1;
 
-    overflow: hidden;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 12;
-    -webkit-box-orient: vertical;
-
+    overflow-y: auto;
+    overflow-x: hidden;
     transform: rotate(4deg);
 
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
 
     z-index: 5;
+    margin-bottom: 30px;
 }
 
 .sticker-title {
-
     text-align: center;
 }
+
 .sticker p {
     margin: 0;
-    position: relative;
 }
 
+/* ---------- CIRCLES ---------- */
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.circles {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 5px;
+}
+.legends {
+    margin-top: 60px;
+}
+
+.legend.element {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-right: 130px;
+    margin-bottom: 1px;
+}
+.circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid #6b4f3a;
+}
+
+.circle.red { background: #e74c3c; }
+.circle.yellow { background: #f1c40f; }
+.circle.green { background: #2ecc71; }

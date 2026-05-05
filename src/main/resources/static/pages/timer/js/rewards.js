@@ -40,7 +40,7 @@ export async function showFinalNotes(rewards, skillData, friendData) {
                 <!-- НАВЫК -->
 
                 <div class="reward-block">
-                    Уровень навыка
+                    Уровень навыка ${rewards.skillReward.skillName}
                     <div class="skill-header">
                         <img id="skillIcon" class="skill-icon-top" />
                         <div class="stage-label" id="skillStage"></div>

@@ -23,8 +23,8 @@ font-display: swap;
 /* === ЗАГОЛОВОК === */
 .notes-header {
     position: absolute;
-    top: 40px;
-    left: 150px;
+    top: 60px;
+    left: 270px;
     width: 500px;
     text-align: center;
     font-family: 'overdoze';
@@ -32,17 +32,20 @@ font-display: swap;
 }
 
 .notes-header h1 {
-    font-size: 64px;
+    font-size: 72px;
 }
 
 .notes-header p {
-    font-size: 2rem;
+    font-size: 3rem;
 }
-
+.notebook-section{
+    position:relative;
+}
 /* === КНОПКА ПОДТВЕРЖДЕНИЯ === */
 .confirm-notes {
-    position: relative;
-    left: 50%;
+    position: absolute;
+    left: 45%;
+    top: 50%;
 
     font-size: 28px;
     border: 2px solid #8c6f64;

@@ -33,7 +33,6 @@ export async function showFinalNotes(rewards, skillData, friendData) {
             rewards.coinsFromFriendship +
             rewards.coinsFromSession;
 
-        // ===== ВСТАВКА ОРИГИНАЛЬНОГО UI =====
         title.innerHTML = `<h1>награды</h1>`;
         notes.innerHTML = `
             <div class="rewards-inline">
@@ -42,7 +41,7 @@ export async function showFinalNotes(rewards, skillData, friendData) {
                 <div class="reward-block">
                     Уровень навыка ${rewards.skillReward.skillName}
                     <div class="skill-header">
-                        <img id="skillIcon" class="skill-icon-top" />
+                        <img id="skillIcon" class="skill-icon-top" src= ${SKILL_ICON_PATH + getStageByLevel(skillData.level)}/>
                         <div class="stage-label" id="skillStage"></div>
                     </div>
                     <div class="progress-wrapper">
@@ -107,6 +106,8 @@ export async function showFinalNotes(rewards, skillData, friendData) {
         // блокируем заметки
         notes.setAttribute("contenteditable", "false");
         notes.classList.add("rewards-mode");
+        const strikeBtn = document.getElementById('strikeBtn');
+        strikeBtn.style.display = 'none';
 
         // анимация исчезновения
         notes.classList.add("notes-fade");

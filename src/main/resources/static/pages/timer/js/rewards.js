@@ -1,4 +1,8 @@
-import { getSkillStages, getFriendLvls } from '../../../shared/api.js';
+import {
+    getSkillStages,
+    getFriendLvls,
+    patchSession
+} from '../../../shared/api.js';
 
 let SKILL_STAGES = [];
 let FRIEND_LVLS = {};
@@ -13,7 +17,12 @@ function getStageByLevel(level) {
 }
 
 // ==================== ГЛАВНАЯ ====================
-export async function showFinalNotes(rewards, skillData, friendData) {
+export async function showFinalNotes(
+    rewards,
+    skillData,
+    friendData,
+    sessionId
+){
     SKILL_STAGES = await getSkillStages();
     FRIEND_LVLS = await getFriendLvls();
 
@@ -26,6 +35,14 @@ export async function showFinalNotes(rewards, skillData, friendData) {
     confirmBtn.classList.remove('hidden');
 
     confirmBtn.onclick = async () => {
+        const notesContent = notes.innerHTML
+            .replace(/<\/p>/g, '\n')
+            .replace(/<p>/g, '')
+            .trim();
+
+        await patchSession(sessionId, {
+            notes: notesContent
+        });
         confirmBtn.classList.add('hidden');
 
         const total =

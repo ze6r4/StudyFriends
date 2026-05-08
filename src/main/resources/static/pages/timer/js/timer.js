@@ -191,7 +191,12 @@ async function timerFinished(isCompleted) {
     exitBtn.style.display = 'block';
 
 
-    await showFinalNotes(rewards, skillData, friendData);
+    await showFinalNotes(
+        rewards,
+        skillData,
+        friendData,
+        sessionData.sessionId
+    );
 }
 
 // ==================== ВЫХОД ====================
@@ -234,7 +239,12 @@ async function handleEarlyExit() {
             const rewards = await postRewards(updatedSession);
 
             if (rewards && skillData && friendData) {
-                await showFinalNotes(rewards, skillData, friendData);
+                await showFinalNotes(
+                    rewards,
+                    skillData,
+                    friendData,
+                    sessionData.sessionId
+                );
             } else {
                 console.warn('Не удалось загрузить награды при досрочном выходе');
             }

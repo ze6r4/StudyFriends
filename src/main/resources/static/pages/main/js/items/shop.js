@@ -157,7 +157,6 @@ async function applyChanges() {
 
         const playerId = await getCurrentPlayerId();
 
-        // 1️⃣ Покупка новых
         for (const itemId of itemsToAdd) {
             const item = allItems.find(i => i.itemId === itemId);
             if (!item) continue;
@@ -167,7 +166,6 @@ async function applyChanges() {
             }
         }
 
-        // 2️⃣ Обновление inRoom только у купленных
         for (const item of allItems) {
             if (!item.isBought) continue;
 
@@ -203,6 +201,9 @@ async function applyChanges() {
 }
 
 function renderInitialRoom() {
+    const container = document.getElementById("roomItems");
+    container.innerHTML = "";
+
     allItems
         .filter(i => i.isBought && i.inRoom)
         .forEach(item => addPreview(item));
@@ -235,7 +236,7 @@ function closeShop() {
 
     isShopOpen = false;
     panel.classList.remove("open");
-    btn.classList.remove("shifted"); // ← ВАЖНО
+    btn.classList.remove("shifted");
 
     resetChanges();
 }
@@ -292,6 +293,7 @@ function addPreview(item) {
     img.dataset.previewId = item.itemId;
     img.alt = item.itemName;
 
+    document.getElementById("roomItems").appendChild(img);
 }
 
 function removePreview(itemId) {

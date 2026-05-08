@@ -194,7 +194,6 @@ async function removeCharacter() {
 /* ================= POSITION ================= */
 
 function placeCharacter(e) {
-    hint.hidden = true;
 
     const rect = room.getBoundingClientRect();
 
@@ -302,6 +301,7 @@ function togglePose() {
 
 async function finishPlacement() {
 
+    hint.hidden = true;
     if (posXPercent == null) return;
 
     const dto = {

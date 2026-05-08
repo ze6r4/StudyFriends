@@ -17,9 +17,6 @@
 
 
 <div id="appWrapper">
-    <header class="phase-header">
-        <span id="phaseTitle">Работа</span>
-    </header>
 
     <div class="bg">
         <img
@@ -41,18 +38,22 @@
 
     </div>
     <button id="confirmNotesBtn" class="confirm-notes hidden">✔</button>
+    <button id="strikeBtn"> <s>S</s> </button>
     <div class="container">
-
             <!-- БЛОКНОТ -->
             <div class="notebook-section">
                 <div class="notebook">
 
-                    <button id="strikeBtn">S̶</button>
                     <div class="notes-header" id="notesHeader">
                         <h1>ЗАМЕТКИ</h1>
-                        <h2 id="currentCycle">Цикл 1</h2>
-                    </div>
+                        <div class="sessionInformation">
 
+                            <h2 id="currentCycle"> Цикл 1</h2>
+                            <h2>·</h2>
+                            <h2 id="currentTitle">Работа</h2>
+                        </div>
+
+                    </div>
 
                     <div class="notebook-content">
 
@@ -100,13 +101,12 @@
         </div>
     </footer>
 
-</div>
-
 
 
 <script type="module" src="js/timer.js"></script>
 <script src="js/notes-storage.js"></script>
 <script src="js/scale.js"></script>
+<script type="module" src="js/notes-strike.js"></script>
 
 </body>
 </html>

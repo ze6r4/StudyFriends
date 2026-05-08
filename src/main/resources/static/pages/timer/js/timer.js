@@ -1,4 +1,4 @@
-import { patchSession, postRewards, getCharacter, getFriend, getSkill, getMe } from '../../../shared/api.js';
+import { patchSession, postRewards, getCharacter, getFriend, getSkill, getSkillStages, getMe } from '../../../shared/api.js';
 import { showError } from '../../../shared/showError.js';
 import { showFinalNotes } from './rewards.js';
 import {showConfirmModal } from '../../../shared/confirm-modal.js';
@@ -40,9 +40,9 @@ const minutesEl = document.getElementById('timer-minutes');
 const secondsEl = document.getElementById('timer-seconds');
 const startBtn = document.getElementById('startBtn');
 const exitBtn = document.getElementById('exitBtn');
-const phaseTitleEl = document.getElementById('phaseTitle');
 const currentCycleText = document.getElementById('currentCycle');
-
+const currentPhaseText = document.getElementById('currentTitle');
+const strikeBtn = document.getElementById('strikeBtn');
 const characterImg = document.getElementById('characterImg');
 
 let animationFrameId = null;
@@ -139,7 +139,7 @@ function updateTimer() {
 }
 
 function updatePhaseTitle() {
-    phaseTitleEl.textContent = currentPhase === 'WORK' ? 'Работа' : 'Отдых';
+    currentPhaseText.textContent = currentPhase === 'WORK' ? 'Работа' : 'Отдых';
     currentCycleText.textContent = "Цикл " + currentCycle;
 }
 
@@ -186,8 +186,10 @@ async function timerFinished(isCompleted) {
         showError({ message: 'Ошибка загрузки наград' });
         return;
     }
+
     startBtn.style.display = 'none';
     exitBtn.style.display = 'block';
+
 
     await showFinalNotes(rewards, skillData, friendData);
 }
@@ -232,7 +234,6 @@ async function handleEarlyExit() {
             const rewards = await postRewards(updatedSession);
 
             if (rewards && skillData && friendData) {
-                // Показываем модальное окно с наградами
                 await showFinalNotes(rewards, skillData, friendData);
             } else {
                 console.warn('Не удалось загрузить награды при досрочном выходе');
@@ -258,6 +259,7 @@ startBtn.addEventListener('click', async () => {
 
     startBtn.style.display = 'none';
     exitBtn.style.display = 'block';
+    strikeBtn.style.display = 'block';
 
     startTimerPhase('WORK', currentCycle);
 });
@@ -282,6 +284,7 @@ function restoreTimer() {
 
     startBtn.style.display = 'none';
     exitBtn.style.display = 'block';
+    strikeBtn.style.display = 'block';
 }
 
 // ==================== INIT ====================
@@ -341,6 +344,7 @@ function developerMode() {
     resetTimer();
     startBtn.style.display = 'block';
     exitBtn.style.display = 'none';
+    strikeBtn.style.display = 'block';
 }
 function finishSessionDev() {
     if (!confirm('Завершить сессию мгновенно?')) return;
@@ -358,18 +362,10 @@ function resetTimerForTesting() {
     if (!confirm('Сбросить таймер и очистить сохранённое состояние?')) {
         return;
     }
-
-    // Останавливаем анимацию
     stopTimer();
-
-    // Полностью чистим сохранённое состояние таймера
     localStorage.clear();
-
-    // Сбрасываем внутреннее состояние
     currentPhase = 'WORK';
     currentCycle = 1;
-
-    // Отрисовываем стартовое состояние (текущие настройки SESSION)
     renderTime(SESSION.workTime);
 
     console.log('Таймер сброшен для тестирования');

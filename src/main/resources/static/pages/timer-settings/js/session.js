@@ -39,8 +39,6 @@ async function saveSkills() {
 
     const playerId = await getCurrentPlayerId();
     const newSkills = mapSkillsFromDom(customSelect, playerId);
-    console.log('НАВЫКИ ИЗ ДОМА', newSkills);
-
     const oldSkills = await getPlayerSkillsFull(playerId);
 
     for (const oldSkill of oldSkills) {

@@ -203,9 +203,6 @@ async function applyChanges() {
 }
 
 function renderInitialRoom() {
-    const container = document.getElementById("roomItems");
-    container.innerHTML = "";
-
     allItems
         .filter(i => i.isBought && i.inRoom)
         .forEach(item => addPreview(item));
@@ -295,7 +292,6 @@ function addPreview(item) {
     img.dataset.previewId = item.itemId;
     img.alt = item.itemName;
 
-    document.getElementById("roomItems").appendChild(img);
 }
 
 function removePreview(itemId) {

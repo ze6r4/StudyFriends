@@ -191,6 +191,9 @@ body {
     background: #e8dcdc;
     border-color: var(--text);
 }
+#hintText {
+    z-index: 9999;
+}
 
 .item-card img {
     width: 180px;
@@ -320,7 +323,7 @@ body {
 
 /* ================= КНОПКИ ================= */
 
-.edit-room-btn {
+.icon{
     position: fixed;
     width: 60px;
     height: 60px;
@@ -336,7 +339,7 @@ body {
     transition: background 0.2s, transform 0.15s;
 }
 
-.edit-room-btn:hover {
+.icon:hover {
     background: var(--accent-2);
     transform: scale(1.05);
 }
@@ -347,6 +350,10 @@ body {
 }
 
 #toggleShopBtn {
+    top: 20px;
+    left: 100px;
+}
+#exitAccBtn {
     top: 20px;
     left: 20px;
 }

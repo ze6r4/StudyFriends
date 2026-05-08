@@ -50,9 +50,70 @@ function renderBook(blocks) {
     const pages = paginate(elements);
 
     renderSpreads(pages, container);
-//    initThresholdHandlers();
+    initThresholdHandlers();
 }
+function initThresholdHandlers() {
 
+    const yellowInputs = document.querySelectorAll(".yellow-input");
+    const greenInputs = document.querySelectorAll(".green-input");
+
+    yellowInputs.forEach(input => {
+
+        input.addEventListener("input", (e) => {
+
+            let value = parseInt(e.target.value) || 1;
+
+            if (value < 1) value = 1;
+
+            YELLOW_THRESHOLD = value;
+
+            if (GREEN_THRESHOLD <= YELLOW_THRESHOLD) {
+                GREEN_THRESHOLD = YELLOW_THRESHOLD + 1;
+            }
+
+            rerenderThresholdInputs();
+            renderBook(bookBlocks);
+        });
+    });
+
+    greenInputs.forEach(input => {
+
+        input.addEventListener("input", (e) => {
+
+            let value = parseInt(e.target.value) || 0;
+
+            // green должен быть больше yellow
+            if (value <= YELLOW_THRESHOLD) {
+                value = YELLOW_THRESHOLD + 1;
+            }
+
+            GREEN_THRESHOLD = value;
+
+            rerenderThresholdInputs();
+            renderBook(bookBlocks);
+        });
+    });
+}
+function rerenderThresholdInputs() {
+
+    document.querySelectorAll(".yellow-input").forEach(input => {
+        input.value = YELLOW_THRESHOLD;
+
+        const label = input.parentElement.querySelector("span");
+        if (label) {
+            label.textContent = `от ${YELLOW_THRESHOLD} часов`;
+        }
+    });
+
+    document.querySelectorAll(".green-input").forEach(input => {
+        input.value = GREEN_THRESHOLD;
+
+        const label = input.parentElement.querySelector("span");
+        if (label) {
+            label.textContent = `от ${GREEN_THRESHOLD} часов`;
+        }
+    });
+}
 /* ---------------- BUILD CONTENT ---------------- */
 function buildElements(blocks) {
 
@@ -85,14 +146,9 @@ function buildElements(blocks) {
 
                  elements.push(createElement("session", {
                      session,
-                     title: block.title // ✅ ВОТ ОН ФИКС
+                     title: block.title,
+                     results: block.data.dayTotal
                  }));
-
-                 if (block.data.dayTotal) {
-                     elements.push(createElement("day-summary", {
-                         dayTotal: block.data.dayTotal
-                     }));
-                 }
 
                  break;
 
@@ -227,7 +283,7 @@ function renderElement(el) {
             break;
 
         case "session":
-            wrapper.innerHTML = renderSession(el.session, el.title);
+            wrapper.innerHTML = renderSession(el.session, el.title, el.results);
             break;
 
         case "day-summary":
@@ -244,7 +300,7 @@ function renderTOC(months, totalSessions) {
     return `
         <h2>Оглавление</h2>
         ${months.map((m, i) => `
-            <div>${i + 1}. ${m.month}/${m.year} — ${m.sessions}</div>
+            <div>${i + 1}. ${m.month} месяц — ${m.sessions} сессий</div>
         `).join("")}
         <div>ВСЕГО СЕССИЙ: ${totalSessions}</div>
     `;
@@ -280,20 +336,51 @@ function renderMonth(month) {
             <div class="circles">${cells.join("")}</div>
 
             <div class="legends">
+
                 <div class="legend element">
-                    <div class="circle none"></div> нет сессий
+                    <div class="circle none"></div>
+                    нет сессий
                 </div>
+
                 <div class="legend element">
-                    <div class="circle red"></div> ${YELLOW_THRESHOLD}ч
+                    <div class="circle red"></div>
+                    меньше ${YELLOW_THRESHOLD} часов
                 </div>
-                <div class="legend element">
+
+                <div class="legend element slider-legend">
                     <div class="circle yellow"></div>
-                    от <input class="threshold yellow-input" type="number" value="${YELLOW_THRESHOLD}"/>
+
+                    <div class="slider-wrapper">
+                        <span>от ${YELLOW_THRESHOLD} часов</span>
+
+                        <input
+                            class="threshold yellow-input"
+                            type="range"
+                            min="1"
+                            max="12"
+                            step="1"
+                            value="${YELLOW_THRESHOLD}"
+                        />
+                    </div>
                 </div>
-                <div class="legend element">
+
+                <div class="legend element slider-legend">
                     <div class="circle green"></div>
-                    от <input class="threshold green-input" type="number" value="${GREEN_THRESHOLD}"/>
+
+                    <div class="slider-wrapper">
+                        <span>от ${GREEN_THRESHOLD} часов</span>
+
+                        <input
+                            class="threshold green-input"
+                            type="range"
+                            min="1"
+                            max="12"
+                            step="1"
+                            value="${GREEN_THRESHOLD}"
+                        />
+                    </div>
                 </div>
+
             </div>
         </div>
     `;
@@ -323,6 +410,7 @@ function renderWeekSummary(week) {
         ${week.skills.map(t => `
             <div class="row">
                 <span>${t.skill.name}</span>
+                <span>-</span>
                 <span>${format(t.minutes)}</span>
             </div>
         `).join("")}
@@ -332,10 +420,11 @@ function renderWeekSummary(week) {
     `;
 }
 
-function renderSession(s, title) {
+function renderSession(s, title,results) {
 
     const isReversed = Math.random() > 0.5;
     const total = (s.workMinutes + s.restMinutes) * s.cycles;
+    const daySummaryHtml = results ? renderDaySummary(results) : "";
     return `
         <div class="session ${isReversed ? "reverse" : ""}">
             ${title ? `<h3 class="day-title">${title}</h3>` : ""}
@@ -366,6 +455,8 @@ function renderSession(s, title) {
             </div>
 
             <div>Всего: ${format(total)}</div>
+            ${results ? `<div class="day-results">Результаты дня </div>
+                         <div> ${daySummaryHtml}</div>` : ""}
 
         </div>`;
 }
@@ -382,7 +473,8 @@ function format(min) {
     if (min >= 60) {
         const h = Math.floor(min / 60);
         const m = min % 60;
-        return m === 0 ? `${h} ч` : `${h} ч ${m} мин`;
+
+        return m === 0 ? `${h} ${formatHours(h)}` : `${h} ${formatHours(h)} ${m} мин`;
     }
     return `${min} мин`;
 }
@@ -392,6 +484,14 @@ function formatTime(dateStr) {
         hour: "2-digit",
         minute: "2-digit"
     });
+}
+function formatHours(h) {
+    const last = h % 10;
+    const last2 = h % 100;
+
+    if (last > 1 && last <= 4) return'часа';
+    if (last === 1 || h == 1) return 'час';
+    return 'часов'
 }
 
 function formatCycles(n) {

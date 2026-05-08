@@ -23,6 +23,13 @@ export function getMe() {
     return apiAuth('/me');
 }
 
+export function logout() {
+    return apiAuth('/logout', {
+            method: 'POST'
+        });
+}
+
+
 /* ================= SKILLS ================= */
 
 // все навыки игрока

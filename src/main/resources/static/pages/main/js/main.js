@@ -1,6 +1,6 @@
 import {
     updateCoinBalance,
-    getMe
+    getMe, logout
 } from '../../../../shared/api.js';
 import { getCurrentPlayerId } from '../../../../shared/current-player.js';
 
@@ -34,6 +34,21 @@ function binButtns() {
                     window.location.href =
                         'http://localhost:8081/pages/statistics/statistics.html';
             });
+    document.getElementById("exitAccBtn").addEventListener("click", exitAcc);
+}
+
+async function exitAcc() {
+    try {
+        await logout();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'http://localhost:8081/pages/registration/registration.html';
+
+    } catch (e) {
+
+        console.error(e);
+        alert("Не удалось выйти из аккаунта");
+    }
 }
 
 // монеты для разработчика

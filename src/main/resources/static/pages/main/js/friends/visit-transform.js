@@ -6,7 +6,7 @@ import {
 
 const BASE_PATH = '../../assets/images/characters';
 
-let placementMode = false;
+export let placementMode = false;
 let editingExisting = false;
 
 let currentCharacter = null;

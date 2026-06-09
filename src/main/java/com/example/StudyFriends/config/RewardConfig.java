@@ -31,15 +31,13 @@ public class RewardConfig {
     public static final double FRIENDSHIP_EXP_PERCENT = 0.5;
 
     public static final SkillStageData[] SKILL_STAGES = new SkillStageData[] {
-            new SkillStageData("новичок",60,0,10,0.1),
+            new SkillStageData("новичок",60,0,10,0),
             new SkillStageData("продолжающий",12*60,11,20,0.4),
-            new SkillStageData("опытный",24*60,21,30,0.6),
+            new SkillStageData("продвинутый",24*60,21,30,0.6),
             new SkillStageData("мастер",36*60,31,Integer.MAX_VALUE,0.8)
     };
     public static final double SKILL_EXP_PERCENT = 1;
 
     public static final int[] ITEMS_MAX_PRICES = new int[] {10,40,120,500};
-    //TODO:показывать рекомендуемые цены предметов при добавлении
-
 }
 

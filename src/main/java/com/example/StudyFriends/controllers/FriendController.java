@@ -1,5 +1,6 @@
 package com.example.StudyFriends.controllers;
 
+import com.example.StudyFriends.dto.CharacterDto;
 import com.example.StudyFriends.dto.FriendDto;
 import com.example.StudyFriends.exceptions.ResourceNotFoundException;
 import com.example.StudyFriends.model.Character;
@@ -33,6 +34,18 @@ public class FriendController {
                     .map(FriendDto::fromEntity)
                     .toList();
             return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка: " + ex.getMessage());
+        }
+    }
+    @GetMapping("/friends/character/{friendId}")
+    public ResponseEntity<?> getCharacterOfFriend(@PathVariable Long friendId) {
+        try{
+            Friend friend = friendService.getFriendById(friendId).get();
+
+            return ResponseEntity.ok(CharacterDto.fromEntity(friend.getCharacter()));
         } catch (Exception ex) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

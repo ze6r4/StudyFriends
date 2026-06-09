@@ -75,6 +75,7 @@ public class CoinController {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Баланс не может быть отрицательным"));
         }
+        int currentCoins = coinService.getBalance(userId);
 
         coinService.setBalance(userId, amount);
 

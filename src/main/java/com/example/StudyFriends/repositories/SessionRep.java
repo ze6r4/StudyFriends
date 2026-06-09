@@ -41,12 +41,14 @@ public interface SessionRep extends JpaRepository<Session, Long> {
     List<Object[]> getDailyTotals(Long playerId);
 
     @Query("""
-    SELECT s
-    FROM Session s
-    WHERE s.playerId.id = :playerId
-      AND s.completed = true
-    ORDER BY s.date
-""")
-    List<Session> getAllCompletedSessions(Long playerId);//отсортированы по дням
+            SELECT s
+            FROM Session s
+            WHERE s.playerId.id = :playerId
+            AND s.completed = true
+            ORDER BY s.date ASC
+            """)
+    List<Session> getAllCompletedSessions(
+            @Param("playerId") Long playerId
+    );
 
 }

@@ -20,9 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     book = document.getElementById("book");
     document.getElementById("spreadScreen").style.display = "none";
     document.getElementById("coverScreen").style.display = "block";
+    document.getElementById("backBtn").addEventListener("click", goMain);
+
 
     init();
 });
+
+function goMain() {
+    window.location.href = 'http://localhost:8081/pages/main/main.html';
+}
 
 async function init() {
 
@@ -35,21 +41,27 @@ async function init() {
 
     bookBlocks = await getStatistics(playerId);
 
-    renderBook(bookBlocks);
+    renderBook(bookBlocks, true);
 }
 
 /* ---------------- CORE ---------------- */
 
-function renderBook(blocks) {
+function renderBook(blocks, preserveSpread = true) {
 
     const container = document.getElementById("spreadContainer");
     container.innerHTML = "";
 
     const elements = buildElements(blocks);
-
     const pages = paginate(elements);
 
-    renderSpreads(pages, container);
+    const prevSpread = currentSpread;
+
+    renderSpreads(
+        pages,
+        container,
+        preserveSpread ? prevSpread : 0
+    );
+
     initThresholdHandlers();
 }
 function initThresholdHandlers() {
@@ -72,7 +84,7 @@ function initThresholdHandlers() {
             }
 
             rerenderThresholdInputs();
-            renderBook(bookBlocks);
+            renderBook(bookBlocks, true);
         });
     });
 
@@ -82,7 +94,6 @@ function initThresholdHandlers() {
 
             let value = parseInt(e.target.value) || 0;
 
-            // green должен быть больше yellow
             if (value <= YELLOW_THRESHOLD) {
                 value = YELLOW_THRESHOLD + 1;
             }
@@ -90,7 +101,7 @@ function initThresholdHandlers() {
             GREEN_THRESHOLD = value;
 
             rerenderThresholdInputs();
-            renderBook(bookBlocks);
+            renderBook(bookBlocks, true);
         });
     });
 }
@@ -217,7 +228,7 @@ function createEmptyPage() {
 
 /* ---------------- RENDER SPREADS ---------------- */
 
-function renderSpreads(pages, container) {
+function renderSpreads(pages, container, initialIndex = 0) {
 
     spreads = [];
     container.innerHTML = "";
@@ -238,7 +249,7 @@ function renderSpreads(pages, container) {
         spreads.push(spread);
     }
 
-    showSpread(0);
+    showSpread(Math.min(initialIndex, spreads.length - 1));
 }
 
 function showSpread(index) {
@@ -420,11 +431,14 @@ function renderWeekSummary(week) {
     `;
 }
 
-function renderSession(s, title,results) {
+function renderSession(s, title, results) {
 
     const isReversed = Math.random() > 0.5;
     const total = (s.workMinutes + s.restMinutes) * s.cycles;
     const daySummaryHtml = results ? renderDaySummary(results) : "";
+    const randomRotation =
+        (Math.random() * 6 - 3).toFixed(2); // от -3° до +3°
+
     return `
         <div class="session ${isReversed ? "reverse" : ""}">
             ${title ? `<h3 class="day-title">${title}</h3>` : ""}
@@ -446,7 +460,12 @@ function renderSession(s, title,results) {
                 </div>
 
                 ${s.notes ? `
-                    <div class="sticker">
+                    <div
+                        class="sticker"
+                        style="
+                            transform: rotate(${randomRotation}deg);
+                        "
+                    >
                         <p>заметки:</p>
                         ${s.notes}
                     </div>
@@ -455,10 +474,18 @@ function renderSession(s, title,results) {
             </div>
 
             <div>Всего: ${format(total)}</div>
-            ${results ? `<div class="day-results">Результаты дня </div>
-                         <div> ${daySummaryHtml}</div>` : ""}
 
-        </div>`;
+            ${results ? `
+                <div class="day-results">
+                    Результаты дня
+                </div>
+                <div>
+                    ${daySummaryHtml}
+                </div>
+            ` : ""}
+
+        </div>
+    `;
 }
 /* ---------------- UTILS ---------------- */
 

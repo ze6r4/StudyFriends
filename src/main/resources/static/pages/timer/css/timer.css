@@ -5,7 +5,6 @@
     --text: #5b4a44;
     --accent-1: #ffd9e2;
     --radius: 12px;
-    --font: "Marck Script", cursive;
 }
 
 @font-face {
@@ -25,13 +24,12 @@
 
 body {
     margin: 0;
-    overflow: hidden; /* ← теперь можно скроллить */
+    overflow: hidden;
     background: var(--bg);
 }
 
-/* контейнер "сцены" */
 #appWrapper {
-    width: 1920px;   /* ← твой дизайн */
+    width: 1920px;
     height: 1080px;
 
     transform-origin: top left;
@@ -56,26 +54,23 @@ body {
     transition: opacity 0.3s ease;
 }
 
-/* КОНТЕЙНЕР */
 .container {
-    height: 100vh;
+    height: 1080px;
     display: flex;
     align-items: flex-start;
 }
 
-/* === ЗАМЕТКИ === */
 .notebook-section {
     position: relative;
 }
 
-/* Контейнер с содержимым заметок - расширяем */
 .notebook-content {
     position: relative;
     left: 180px;
-    min-height: 600px;  /* Увеличиваем минимальную высоту */
+    min-height: 600px;
 }
 .notes-content {
-    position: absolute;
+    position: relative;
     top: 135px;
 
     font-family: "overdoze";
@@ -94,8 +89,6 @@ body {
     color: #714543;
     text-align: left;
 }
-/* === ТАЙМЕР === */
-
 .timer-standalone {
     position: absolute;
     bottom: 25px;
@@ -120,8 +113,6 @@ body {
     width: auto;
     object-fit: cover;
 }
-
-/* === ФУТЕР === */
 
 .footer {
     position: absolute;
@@ -150,8 +141,6 @@ body {
     justify-content: center;
     padding: 10px;
 }
-
-/* === TOAST === */
 
 .toast-error {
     position: fixed;

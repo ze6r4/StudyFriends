@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Результаты</title>
+    <title>Статистика</title>
 
     <link rel="stylesheet" href="statistics.css">
 </head>
@@ -10,14 +10,16 @@
 
 <div class="book" id="book">
 
-    <!-- ОБЛОЖКА -->
     <div class="cover-screen" id="coverScreen">
         <img src="/assets/images/other/book_cover.png" class="bg">
+        <button class="exit">← выйти</button>
         <div class="nickname" id="nickname"></div>
         <p class="hint">→ открыть</p>
+        <div class="back-btn" id="backBtn">
+            ← выйти
+        </div>
     </div>
 
-    <!-- РАЗВОРОТ -->
     <div class="cover-stats">
         <p>Сегодня: <span id="dayStats">0</span></p>
         <p>За эту неделю: <span id="weekStats">0</span></p>

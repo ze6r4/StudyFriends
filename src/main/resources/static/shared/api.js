@@ -118,6 +118,10 @@ export function deleteVisitor(playerFriendId) {
 export function getCharacter(characterId) {
     return apiPublic(`/characters/${characterId}`);
 }
+export function getCharacterOfFriend(friendId) {
+    return apiPublic(`/friends/character/${friendId}`);
+}
+
 export function getRandomCharacter(playerId) {
     return apiPublic(`/characters/random/${playerId}`);
 }

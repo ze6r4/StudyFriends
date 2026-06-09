@@ -1,10 +1,8 @@
 import {
-    getSkillStages,
     getFriendLvls,
     patchSession
 } from '../../../shared/api.js';
 
-let SKILL_STAGES = [];
 let FRIEND_LVLS = {};
 const SKILL_ICON_PATH = '/assets/images/icons/';
 
@@ -13,7 +11,10 @@ function delay(ms) {
 }
 
 function getStageByLevel(level) {
-    return SKILL_STAGES.find(s => level >= s.minLevel && level <= s.maxLevel);
+  if (level >= 0 && level <= 10) return 'начинающий';
+  if (level >= 11 && level <= 20) return 'продолжающий';
+  if (level >= 21 && level <= 30) return 'продвинутый';
+  return 'мастер';
 }
 
 // ==================== ГЛАВНАЯ ====================
@@ -23,8 +24,9 @@ export async function showFinalNotes(
     friendData,
     sessionId
 ){
-    SKILL_STAGES = await getSkillStages();
     FRIEND_LVLS = await getFriendLvls();
+    const skillStage = getStageByLevel(skillData.level);
+    const iconSrc = `${SKILL_ICON_PATH}${skillStage}_icon.png`;
 
     const notes = document.getElementById('notesContent');
     const confirmBtn = document.getElementById('confirmNotesBtn');
@@ -58,7 +60,7 @@ export async function showFinalNotes(
                 <div class="reward-block">
                     Уровень навыка ${rewards.skillReward.skillName}
                     <div class="skill-header">
-                        <img id="skillIcon" class="skill-icon-top" src= ${SKILL_ICON_PATH + getStageByLevel(skillData.level)}/>
+                        <img id="skillIcon" class="skill-icon-top" src= ${iconSrc}/>
                         <div class="stage-label" id="skillStage"></div>
                     </div>
                     <div class="progress-wrapper">
@@ -72,8 +74,6 @@ export async function showFinalNotes(
                         </div>
                     </div>
                 </div>
-
-                <!-- ДРУЖБА -->
 
                 <div class="reward-block">
                 Уровень дружбы
@@ -130,7 +130,7 @@ export async function showFinalNotes(
         notes.classList.add("notes-fade");
         setTimeout(() => notes.classList.remove("notes-fade"), 1000);
         const skillStage = getStageByLevel(skillData.level);
-        const skillIcon = `${SKILL_ICON_PATH}${skillStage.name}_icon.png`;
+        const skillIcon = `${SKILL_ICON_PATH}${skillStage}_icon.png`;
 
         // ===== ДАННЫЕ =====
         document.getElementById('skillIcon').src = skillIcon;
@@ -149,7 +149,7 @@ export async function showFinalNotes(
             extraUpdate: (lvl) => {
                 const stage = getStageByLevel(lvl);
                 if (stage) {
-                    document.getElementById('skillStage').textContent = stage.name;
+                    document.getElementById('skillStage').textContent = stage;
                 }
             },
 

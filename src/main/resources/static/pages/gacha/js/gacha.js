@@ -23,7 +23,7 @@ async function init() {
         coins = Number(coinData?.coins ?? 0);
         console.log(coins);
         coinsText.textContent = coins;
-        priceText.textContent = "Купить билет "+ PRICE + "🪙";
+        priceText.textContent = PRICE + "🪙";
 
 
     } catch (e) {

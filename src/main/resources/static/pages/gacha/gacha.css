@@ -13,7 +13,7 @@
 
     --radius: 10px;
     --pad: 12px;
-    --font: "Segoe UI", system-ui, sans-serif;
+    --font: 'overdoze';
 }
 
 /* ================= ШРИФТЫ ================= */
@@ -163,10 +163,9 @@ body {
     filter: brightness(0);
 }
 
-/* имя персонажа */
 .characterName {
     position: absolute;
-    top: 30%;               /* 👈 над головой */
+    top: 30%;
     left: 48.5%;
     transform: translateX(-50%);
 
@@ -180,7 +179,6 @@ body {
     pointer-events: none;
 }
 
-/* появление имени */
 @keyframes nameAppear {
     0% {
         opacity: 0;
@@ -193,7 +191,6 @@ body {
 }
 /* ================= АНИМАЦИИ ================= */
 
-/* автобус */
 @keyframes busEnter {
     0% {
         transform: translateX(0);
@@ -209,14 +206,12 @@ body {
     }
 }
 
-/* вспышка */
 @keyframes flashAnim {
     0% { opacity: 0; }
     50% { opacity: 0.7; }
     100% { opacity: 0; }
 }
 
-/* круг света */
 @keyframes circleFlash {
     0% {
         opacity: 0;
@@ -228,7 +223,6 @@ body {
     }
 }
 
-/* пульсация */
 @keyframes glowPulse {
     0% {
         opacity: 0.2;
@@ -244,7 +238,6 @@ body {
     }
 }
 
-/* силуэт */
 @keyframes rewardBlack {
     0% {
         opacity: 0.2;
@@ -263,7 +256,6 @@ body {
     }
 }
 
-/* появление */
 @keyframes rewardAppear {
     0% {
         opacity: 1;
@@ -298,19 +290,21 @@ body {
 
 .start-btn {
     transition: opacity 0.6s ease, transform 0.6s ease;
+    font-family: 'overdoze', sans-serif;
+    font-size: 26px;
+    color: #5b4a44;
 }
 
 .start-btn .btn-text {
     position: absolute;
+    left: 30%;
+    top: 40%;
+    margin-bottom: 15px;
+}
+#textPrice {
+    position: absolute;
+    left: 40%;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    font-family: 'overdoze', sans-serif;
-    font-size: 26px;
-    color: #5b4a44;
-    pointer-events: none;
-    white-space: nowrap;
 }
 
 .svg:hover {
@@ -336,8 +330,9 @@ body {
 }
 
 .coin-count {
+    margin-top:10px;
     font-family: var(--font);
-    font-size: 22px;
+    font-size: 30px;
     font-weight: 600;
     color: var(--text);
     position: relative;

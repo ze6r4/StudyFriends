@@ -21,14 +21,6 @@ export function generateFriendHtml(friends,lvls) {
                 <p class="friend-lvl">
                     Уровень дружбы: ${friend.friendshipLvl}
                 </p>
-
-                <div class="friendship-bar">
-                    <div
-                        class="friendship-bar-fill"
-                        style="width: ${percent}%">
-                    </div>
-                </div>
-
                 <p class="friend-description">
                     Бонус: +${bonus}%
                 </p>

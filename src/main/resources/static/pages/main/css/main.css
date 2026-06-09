@@ -464,3 +464,138 @@ body {
 .room-character {
      height: 20%;
 }
+/*-------Далоги */
+#novelDialog {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+
+    width: min(1100px, 92vw);
+
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+
+    z-index: 9999;
+
+    transform:
+            translateX(-50%)
+            translateY(calc(100% + 40px));
+
+    transition:
+            transform .35s ease;
+
+    pointer-events: none;
+}
+
+#novelDialog.open {
+    transform:
+            translateX(-50%)
+            translateY(0);
+
+    pointer-events: auto;
+}
+
+/* ================= ПЕРСОНАЖ ================= */
+
+.dialog-character {
+    width: 260px;
+    height: 360px;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    pointer-events: none;
+}
+
+.dialog-character-image {
+    height: 560px;
+
+    object-fit: contain;
+
+    transform:
+            translateY(0);
+
+    image-rendering: auto;
+
+    filter:
+            drop-shadow(0 8px 16px rgba(0,0,0,.12));
+}
+
+/* ================= ОКНО ================= */
+
+.dialog-inner {
+    flex: 1;
+
+    background: var(--card);
+
+    border: 3px solid var(--line);
+
+    border-radius: 28px;
+
+    padding: 22px 28px;
+
+    box-shadow:
+            0 12px 30px rgba(0,0,0,0.12);
+}
+
+.dialog-header {
+    margin-bottom: 16px;
+}
+
+.dialog-name {
+    display: inline-block;
+
+    padding: 0;
+    margin-bottom: 8px;
+
+    background: transparent;
+    border: none;
+
+    font-family: 'overdoze', sans-serif;
+    font-size: 32px;
+
+    color: var(--text);
+
+    letter-spacing: 1px;
+}
+
+.dialog-text {
+    min-height: 110px;
+
+    font-size: 23px;
+    line-height: 1.7;
+
+    color: var(--text);
+
+    white-space: pre-wrap;
+}
+
+.dialog-next {
+    margin-top: 12px;
+
+    text-align: right;
+
+    color: var(--line);
+
+    font-size: 14px;
+
+    opacity: 0.7;
+
+    animation: dialogBlink 1.2s infinite;
+}
+
+@keyframes dialogBlink {
+    0%,100% {
+        opacity: .3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}

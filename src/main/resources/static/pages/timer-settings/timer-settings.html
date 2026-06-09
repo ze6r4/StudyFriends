@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Timer Settings</title>
+    <title>Настройки сессии</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/custom-select.css">
     <link rel="stylesheet" href="css/friends.css">
@@ -63,11 +63,11 @@
                 <div class="range-group">
                     <label id="totalTime">Время сессии: ?</label>
                 </div>
+                <div class="controls">
+                    <button onclick="startSession()">Начать сессию</button>
+                </div>
             </div>
 
-            <div class="controls">
-                <button onclick="startSession()">Начать сессию</button>
-            </div>
         </div>
 
         <div class="friends-section">
@@ -106,7 +106,6 @@
         <div class="modal">
             <header>
                 <h2>Подтверждение удаления</h2>
-                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
             </header>
             <div class="modal-body">
                 <p id="confirmMessage">Удалить навык? Весь прогресс удалится! Записи сессий останутся.</p>

@@ -8,7 +8,7 @@ const SKILL_ICON_PATH = '/assets/images/icons/';
 function getSkillStageByLevel(level) {
   if (level >= 0 && level <= 10) return 'начинающий';
   if (level >= 11 && level <= 20) return 'продолжающий';
-  if (level >= 21 && level <= 30) return 'опытный';
+  if (level >= 21 && level <= 30) return 'продвинутый';
   return 'мастер';
 }
 

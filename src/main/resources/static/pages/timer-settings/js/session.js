@@ -19,6 +19,10 @@ async function startSession(){
         showError({ message: 'Выберите друга!'});
         return;
     }
+    if (skillId == null) {
+        showError({ message: 'Выберите навык!' });
+        return;
+    }
     const sessionData = {
         workMinutes: parseInt(document.getElementById('workMinutes').value, 10),
         restMinutes: parseInt(document.getElementById('restMinutes').value, 10),

@@ -148,7 +148,7 @@ async function applyChanges() {
             const currentCoins = await renderCoins();
 
             if (currentCoins < totalPrice) {
-                showError("Не хватает монет");
+                showError("Недостаточно монет");
                 return;
             }
 
@@ -193,7 +193,12 @@ async function applyChanges() {
 
     } catch (e) {
         console.error(e);
-        showError("Ошибка сохранения :(");
+
+        const message =
+            e?.response?.data?.error ||
+            "Ошибка сохранения :(";
+
+        showError(message);
     } finally {
         applyBtn.textContent = originalText;
         applyBtn.disabled = false;

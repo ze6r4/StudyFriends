@@ -7,9 +7,6 @@
     --radius: 12px;
     --font: "overdoze";
 }
-
-/* ---------- FONT ---------- */
-
 @font-face {
     font-family: "overdoze";
     src: url("/shared/overdozesans.ttf") format("truetype"),
@@ -17,18 +14,12 @@
     font-style: normal;
     font-display: swap;
 }
-
-/* ---------- BASE ---------- */
-
 body {
     margin: 0;
     overflow: hidden;
     font-family: var(--font);
     font-size: 2rem;
 }
-
-/* ---------- FULLSCREEN BOOK ---------- */
-
 .book {
     position: relative;
     width: 100vw;
@@ -36,7 +27,6 @@ body {
     overflow: hidden;
     background-color:#ba9686;
 }
-/* два экрана */
 .cover-screen,
 .spread-screen {
     position: absolute;
@@ -65,14 +55,13 @@ body {
     font-size: 4rem;
     color: #753d39;
 }
-/* скрыт по умолчанию */
 .spread-screen {
     display: none;
 }
 .spread {
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* левая / правая */
+    grid-template-columns: 1fr 1fr;
     width: 100vw;
     height: 100vh;
 }
@@ -100,18 +89,12 @@ body {
     break-inside: avoid;
 }
 
-/* ---------- CONTENT LAYERS ---------- */
-
-/* центр контента на развороте */
 #spreadContainer {
     position: absolute;
-
     top: 0;
     left: 0;
-
-    width: 75%;   /* СЖАЛИ по горизонтали */
-    height: 75%;  /* СЖАЛИ по вертикали */
-
+    width: 75%;
+    height: 75%;
 }
 /* ---------- HINT ---------- */
 
@@ -121,7 +104,12 @@ body {
     right: 20px;
     z-index: 1;
 }
-
+.back-btn {
+    position: absolute;
+    bottom: 50px;
+    left: 20px;
+    z-index: 1;
+}
 /* ---------- PAGES (без фона!) ---------- */
 
 .full-page {
@@ -201,8 +189,6 @@ body {
 .cycles {
     white-space: nowrap;
 }
-
-/* ---------- STICKER ---------- */
 
 .sticker {
     position: absolute;
